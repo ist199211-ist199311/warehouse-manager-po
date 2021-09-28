@@ -1,0 +1,62 @@
+classDiagram
+    class Product {
+
+    }
+
+    class SimpleProduct {
+
+    }
+
+    class DerivedProduct {
+
+    }
+
+    class Batch {
+      -int _quantity
+      -float _price
+    }
+
+    class Partner {
+
+    }
+
+    class Recipe {
+      -float _aggravatingFactor;
+    }
+
+    class RecipeProduct {
+      -int _quantity;
+    }
+
+    class Transaction {
+
+    }
+
+    class BreakdownTransaction {
+
+    }
+
+    class SaleTransaction {
+
+    }
+
+    class AcquisitionTransaction {
+
+    }
+
+    Product <|-- SimpleProduct
+    Product <|-- DerivedProduct
+
+    Recipe o-- RecipeProduct: -_recipeProducts
+    DerivedProduct --> Recipe: -_recipe
+    RecipeProduct --> Product: -_product
+
+    Transaction <|-- BreakdownTransaction
+    Transaction <|-- SaleTransaction
+    Transaction <|-- AcquisitionTransaction
+
+    Batch --> Partner: -_partner
+    Transaction --> Partner: -_partner
+    Batch --> Product: -_product
+
+    Product o-- Batch: -_batches
