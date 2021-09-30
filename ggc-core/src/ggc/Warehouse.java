@@ -1,6 +1,9 @@
 package ggc;
 
-// FIXME import classes (cannot import from pt.tecnico or ggc.app)
+import ggc.exceptions.BadEntryException;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Class Warehouse implements a warehouse.

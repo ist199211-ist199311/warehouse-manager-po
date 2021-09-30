@@ -1,6 +1,12 @@
 package ggc;
 
-//FIXME import classes (cannot import from pt.tecnico or ggc.app)
+import ggc.exceptions.BadEntryException;
+import ggc.exceptions.ImportFileException;
+import ggc.exceptions.MissingFileAssociationException;
+import ggc.exceptions.UnavailableFileException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /** Façade for access. */
 public class WarehouseManager {
