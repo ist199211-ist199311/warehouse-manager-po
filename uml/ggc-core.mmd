@@ -1,4 +1,9 @@
 classDiagram
+    class Warehouse {
+        %% TODO include_serialization_thing?
+        -balance: double
+    }
+
     class Product {
 
     }
@@ -12,24 +17,42 @@ classDiagram
     }
 
     class Batch {
-      -int _quantity
-      -float _price
+        -quantity: int
+        -price: double
     }
 
     class Partner {
+        -name: String
+        -address: String
+    }
+
+    class PartnerStatute {
+        <<abstract>>
+        -name: String
+    }
+
+    class NormalPartnerStatute {
+        
+    }
+
+    class SelectionPartnerStatute {
+
+    }
+
+    class ElitePartnerStatute {
 
     }
 
     class Recipe {
-      -float _aggravatingFactor;
+        -aggravatingFactor: double
     }
 
     class RecipeProduct {
-      -int _quantity;
+        -quantity: int
     }
 
     class Transaction {
-
+        -value: double
     }
 
     class BreakdownTransaction {
@@ -47,16 +70,23 @@ classDiagram
     Product <|-- SimpleProduct
     Product <|-- DerivedProduct
 
-    Recipe o-- RecipeProduct: -_recipeProducts
-    DerivedProduct --> Recipe: -_recipe
-    RecipeProduct --> Product: -_product
+    Recipe "1" *--> "*" RecipeProduct: -recipeProducts
+    DerivedProduct --> Recipe: -recipe
+    RecipeProduct --> Product: -product
 
     Transaction <|-- BreakdownTransaction
     Transaction <|-- SaleTransaction
     Transaction <|-- AcquisitionTransaction
 
-    Batch --> Partner: -_partner
-    Transaction --> Partner: -_partner
-    Batch --> Product: -_product
+    Batch --> Partner: -partner
+    Transaction --> Partner: -partner
+    Batch --> Product: -product
 
-    Product o-- Batch: -_batches
+    Partner --> PartnerStatute: -statute
+    Partner "1" o-- "*" Transaction: -transactions
+
+    PartnerStatute <|-- NormalPartnerStatute
+    PartnerStatute <|-- SelectionPartnerStatute
+    PartnerStatute <|-- ElitePartnerStatute
+
+    Product "1" o-- "*" Batch: -batches
