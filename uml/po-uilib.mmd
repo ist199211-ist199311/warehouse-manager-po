@@ -1,0 +1,300 @@
+classDiagram
+
+    %% TODO é suposto meter?
+    %% java.lang
+    class AutoCloseable {
+      <<interface>>
+      close() void
+    }
+
+    %% TODO é suposto meter?
+    %% java.lang
+    class RuntimeException {
+
+    }
+
+    %% pt.tecnico.uilib
+    class Dialog {
+      -ACTION_CHANNEL : String = "ui" %% STATICF
+      -CHANNEL_SWING : String = "swing" %% STATICF
+      -CHANNEL_NEW_SWING : String = "newswing" %% STATICF
+      -CHANNEL_TEXT : String = "text" %% STATICF
+
+      %% TODO maybe_remove_this?
+      +UI : Dialog %% STATIC
+
+      +open(menu: Menu) void
+      +fill(form: Form) void
+      +render(title: String, text: String) void
+      %% TODO from_interface? ()
+      +close() void
+    }
+
+    %% pt.tecnico.uilib
+    %% ver dependencia import static
+    class Display {
+      -_title: String = ""
+      %% TODO mostrar_var_default?
+      -_text: StringBuilder
+      +add(toAdd: Object) Display 
+      +addAll(items: Collection~?~) Display
+      +addLine(toAdd: Object) Display
+      +addNewLine(toAdd: Object, force: boolean) Display
+      +display() void
+      +popup(toPop: Object) void
+      +popup(toPop: Collection~?~) void
+      +clear() void
+    }
+
+    %% pt.tecnico.uilib
+    class InteractionDriver {
+      <<interface>>
+      +open(menu: Menu) void
+      +fill(form: Form) void
+      +render(title: String, text: String) void
+      +close() void
+    }
+
+    %% pt.tecnico.uilib.menus
+    class Menu {
+      -_title: String
+
+      %% TODO getters_setters ()
+      +title() String
+      +size() int
+      +entry(n: int) Command~question~
+      +entries() array_Command~question~
+      +open() void
+    }
+
+    %% pt.tecnico.uilib.menus
+    class menusMessage {
+      <<interface>>
+      %% TODO permission?
+      operationFailed(error: String)$ String
+    }
+
+    %% pt.tecnico.uilib.menus
+    class Command~Receiver~ {
+      <<abstract>>
+      -_last: boolean
+      -_title: String
+      #_receiver: Receiver
+      %% TODO default_value?
+      #_valid: Predicate~Receiver~
+
+      %% TODO getters_setters ()
+      +title() String final
+      +isLast() boolean
+      +isValid() boolean
+      +addBooleanField(key: String, prompt: String) void
+      +addRealField(key: String, prompt: String) void
+      +addIntegerField(key: String, prompt: String) void
+      +addStringField(key: String, prompt: String) void
+      +booleanField(key: String) Boolean
+      +realField(key: String) Double
+      +integerField(key: String) Integer
+      +stringField(key: String) String
+      %% TODO final_throws_CommandException ()
+      +performCommand() void 
+      %% TODO throws_CommandException ()
+      +execute()* void
+    }
+
+    %% pt.tecnico.uilib.menus
+    class CommandException {
+      serialVersionUID: long = 202010150838L %% STATICF
+    }
+
+    %% pt.tecnico.uilib.menus
+    class DoOpenMenu {
+      %% TODO include_overriden? ()
+      #execute() void final
+    }
+
+    %% pt.tecnico.uilib.forms
+    class Form {
+      -_title: String
+      %% TODO ignore_default_value?
+      -_fields: Map<String, Field<?>>
+      +title() String
+      +entries() Collection~Field_question~
+      +field(key: String) Field~question~
+      -add(key: String, in: Field<?>) void
+      +addBooleanField(key: String, label: String) void
+      +addStringField(key: String, label: String) void
+      +addRealField(key: String, label: String) void
+      +addIntegerField(key: String, label: String) void
+      -get(key: String, type: String) Object
+      +booleanField(key: String) Boolean
+      +stringField(key: String) String
+      +realField(key: String) Double
+      +integerField(key: String) Integer
+      +parse() Form
+      +parse(clear: boolean) Form
+      +clear() void
+      +confirm(prompt: String)$ Boolean
+      +requestInteger(prompt: String)$ Integer
+      +requestReal(prompt: String)$ Double
+      +requestString(prompt: String)$ String
+    }
+
+    %% pt.tecnico.uilib.forms
+    class FormException {
+      serialVersionUID: long = 202010272136L %% STATICF
+    }
+
+    %% pt.tecnico.uilib.forms
+    class Messages {
+      <<interface>>
+      keyAlreadyExists(form: String, key: String)$ String
+      keyNotFound(form: String, key: String)$ String
+      typeMismatch(form: String, key: String, actualType: String, requestedType: String)$ String
+    }
+
+    %% pt.tecnico.uilib.forms
+    class Field~Type~ {
+      <<abstract>>
+      -_prompt: String
+      -_clear: boolean
+      #_value: Type
+
+      %% TODO check_if_include_setters_getters
+      +prompt() String
+      +set(value: Type) void
+      +value() Type
+      +clear() void
+      #dirty() void
+      +cleared() boolean
+      +isReadOnly() boolean
+      parse(in: String)* boolean
+    }
+
+    %% pt.tecnico.uilib.forms
+    class FieldBoolean {
+      -BOOLEAN_WORD_YES: String = "sim" %% STATICF
+      -BOOLEAN_WORD_NO: String = "nao" %% STATICF
+      -BOOLEAN_CHAR_YES: char = 's' %% STATICF
+      -BOOLEAN_CHAR_NO: char = 'n' %% STATICF
+
+      %% TODO meter_overrides?
+    }
+
+    %% TODO class permission package
+    %% pt.tecnico.uilib.text
+    class CompositePrintStream {
+      %% TODO default_values
+      -_streams: Collection<PrintStream> = array_list
+      -_error: boolean = false
+
+      -_add(ps: PrintStream) void final
+      %% TODO override_do:print_stream? ()
+    }
+
+    %% TODO como lidar com conflitos de nomes de classes?
+    %% TODO perms
+    %% pt.tecnico.uilib.text
+    class textMessage {
+      <<interface>>
+      +invalidOperation(error: String)$ String
+      +invalidOption()$ String
+      +errorEOF(e: EOFException)$ String
+      +errorIO(ioe: IOException)$ String
+      +errorInvalidNumber(e: NumberFormatException)$ String
+      +errorREOF(e: RuntimeEOFException)$ String
+      +inputError(e: FileNotFoundException)$ String
+      +errorClosingInput(e: IOException)$ String
+      +endOfInput()$ String
+      +outputError(e: FileNotFoundException)$ String
+      +logError(e: FileNotFoundException)$ String
+    }
+
+    %% pt.tecnico.uilib.text
+    class Prompt {
+      <<interface>>
+      +option()$ String
+      +exit()$ String
+    }
+
+    %% TODO final or static?
+    %% pt.tecnico.uilib.text
+    class Properties {
+      <<interface>>
+      WRITE_INPUT: String = "writeInput"
+      BOTH_CHANNELS: String = "both"
+      INPUT_CHANNEL: String = "in"
+      OUTPUT_CHANNEL: String = "out"
+      LOG_CHANNEL: String = "log"
+    }
+
+    %% pt.tecnico.uilib.text
+    class RuntimeEOFException {
+      serialVersionUID: long = 200610291655 %% STATICF
+    }
+
+    %% TODO include default values?
+    %% TODO PrintStream incluir ou só relação?
+    %% TODO include overrides? (preciso deps again?)
+    %% pt.tecnico.uilib.text
+    class TextInteraction {
+      -_in: BufferedReader
+      -_writeInput: boolean
+
+      +close() void
+      +open(menu: Menu) void
+      +fill(form: Form) void
+      +render(title: String, text: String) void
+      %% TODO throws_IOException ()
+      -readString(prompt: String) String final
+      -readInteger(prompt: String) int final
+    }
+
+    %% TODO usar esta seta ou o field na class?
+    Dialog --> Dialog : UI 
+    Dialog --> InteractionDriver : -_backend
+    Dialog ..> Menu
+    Dialog ..> Form
+    Dialog ..|> AutoCloseable
+
+    Display --> Dialog : -_ui
+
+    InteractionDriver ..> Menu
+    InteractionDriver ..> Form
+
+    FieldBoolean --|> Field : TODO Type = Boolean?
+    FieldInteger --|> Field
+    FieldNone --|> Field
+    FieldReal --|> Field
+    FieldString --|> Field
+
+    Form --> Dialog : -_ui
+
+    FormException --|> RuntimeException
+    RuntimeException --|> Exception
+
+    Command --> Form : -final _form
+    Command --> Display : #final _display
+    %% TODO check this relation
+    Command ..> CommandException
+
+    CommandException --|> Exception
+
+    DoOpenMenu --|> Command : TODO Receiver = Menu?
+
+    Menu --> Dialog : -_ui
+    Menu --o Command : -_commands
+
+    CompositePrintStream --|> PrintStream
+
+    textMessage ..> EOFException
+    textMessage ..> IOException
+    textMessage ..> NumberFormatException
+    textMessage ..> RuntimeEOFException
+    textMessage ..> FileNotFoundException
+
+    RuntimeEOFException --|> RuntimeException
+
+    TextInteraction ..|> InteractionDriver
+    TextInteraction --> PrintStream: -_out
+    TextInteraction --> PrintStream: -_log
+    TextInteraction ..> IOException
