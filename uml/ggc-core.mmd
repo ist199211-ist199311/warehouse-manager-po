@@ -52,15 +52,22 @@ classDiagram
     }
 
     class Transaction {
+        -id: int
         -value: double
+        -quantity: double
+        -paymentDate: int
     }
 
     class BreakdownTransaction {
-
+        -paidValue: Double
+        +paymentValue() double
     }
 
     class SaleTransaction {
-
+      -limitDate: int
+      -paidValue: Double
+      +baseValue() double
+      +paymentValue() double
     }
 
     class AcquisitionTransaction {
@@ -77,6 +84,10 @@ classDiagram
     Transaction <|-- BreakdownTransaction
     Transaction <|-- SaleTransaction
     Transaction <|-- AcquisitionTransaction
+
+    Transaction --> Product: -product
+
+    BreakdownTransaction "0" o-- "*" Batch: -batch
 
     Batch --> Partner: -partner
     Transaction --> Partner: -partner
