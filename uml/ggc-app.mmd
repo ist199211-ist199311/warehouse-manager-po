@@ -1,0 +1,66 @@
+classDiagram
+  %% ggc.app
+  class App {
+    -main(args: String[])$ void
+  }
+
+  %% ggc.app.exceptions
+  class Message {
+    <<interface>>
+    +fileNotFound()$ String
+    +fileNotFound(filename: String)$ String
+    +problemOpeningFile(filename: String)$ String
+    +unknownPartnerKey(key: String)$ String
+    +duplicatePartnerKey(key: String)$ String
+    +unknownProductKey(key: String)$ String
+    +unavailable(key: String, requested: int, available: int)$ String
+    +unknownTransactionKey(key: int)$ String
+    +duplicateTransactionKey(key: int)$ String
+    +unknownServiceType(type: String)$ String
+    +unknownServiceLevel(level: String)$ String
+    +invalidDate(date: int)$ String
+  }
+  
+  %% ggc.app.lookups
+  %% TODO: include constants?
+  class Label {
+    <<interface>>
+  }
+
+  %% ggc.app.lookups
+  class Prompt {
+    <<interface>>
+    +productKey()$ String
+    +partnerKey()$ String
+    +transactionKey()$ String
+    +priceLimit()$ String
+    +delay()$ String
+  }
+
+  %% pt.tecnico.uilib.Dialog
+  App ..> Dialog
+  App ..> Menu
+  %% gcc
+  App ..> WarehouseManager
+
+  %% pt.tecnico.uilib.menus.CommandException
+  %% ggc.app.exceptions
+  DuplicatePartnerKeyException --|> CommandException
+  FileOpenFailedException --|> CommandException
+  InvalidDateException --|> CommandException
+  UnavailableProductException --|> CommandException
+  UnknownPartnerKeyException --|> CommandException
+  UnknownProductKeyException --|> CommandException
+  UnknownServiceLevelException --|> CommandException
+  UnknownServiceTypeException --|> CommandException
+  UnknownTransactionKeyException --|> CommandException
+
+  %% pt.tecnico.uilib.menus.Command
+  %% pt.tecnico.uilib.menus.CommandException
+  %% ggc.app.lookups
+  DoLookupPaymentsByPartner --|> Command : Receiver = WarehouseManager
+  DoLookupProductBatchesUnderGivenPrice --|> Command : Receiver = WarehouseManager 
+
+  %% pt.tecnico.uilib.menus.Menu
+  %% ggc.app.lookups
+  Menu --|> UILIBMenu
