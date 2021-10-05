@@ -4,37 +4,25 @@ classDiagram
     -main(args: String[])$ void
   }
 
-  %% ggc.app.exceptions
-  class Message {
-    <<interface>>
-    +fileNotFound()$ String
-    +fileNotFound(filename: String)$ String
-    +problemOpeningFile(filename: String)$ String
-    +unknownPartnerKey(key: String)$ String
-    +duplicatePartnerKey(key: String)$ String
-    +unknownProductKey(key: String)$ String
-    +unavailable(key: String, requested: int, available: int)$ String
-    +unknownTransactionKey(key: int)$ String
-    +duplicateTransactionKey(key: int)$ String
-    +unknownServiceType(type: String)$ String
-    +unknownServiceLevel(level: String)$ String
-    +invalidDate(date: int)$ String
-  }
-  
   %% ggc.app.lookups
-  %% TODO: include constants?
-  class Label {
-    <<interface>>
+  class DoLookupPaymentsByPartner {
+    +execute() void
   }
 
   %% ggc.app.lookups
-  class Prompt {
-    <<interface>>
-    +productKey()$ String
-    +partnerKey()$ String
-    +transactionKey()$ String
-    +priceLimit()$ String
-    +delay()$ String
+  class DoLookupProductBatchesUnderGivenPrice {
+    +execute() void
+  }
+  
+  %% ggc.app.lookups
+  class LookupsMenu {
+
+  }
+
+  %% ..........!!!
+
+  class DoAdvanceDate {
+
   }
 
   %% pt.tecnico.uilib.Dialog
@@ -59,7 +47,11 @@ classDiagram
   %% pt.tecnico.uilib.menus.CommandException
   %% ggc.app.lookups
   DoLookupPaymentsByPartner --|> Command : Receiver = WarehouseManager
+  DoLookupPaymentsByPartner ..> WarehouseManager
+  DoLookupPaymentsByPartner ..> CommandException : throws
   DoLookupProductBatchesUnderGivenPrice --|> Command : Receiver = WarehouseManager 
+  DoLookupProductBatchesUnderGivenPrice ..> WarehouseManager
+  DoLookupProductBatchesUnderGivenPrice ..> CommandException : throws
 
   %% pt.tecnico.uilib.menus.Menu
   %% ggc.app.lookups
