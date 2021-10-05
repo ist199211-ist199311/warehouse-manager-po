@@ -1,13 +1,10 @@
 classDiagram
 
-    %% TODO é suposto meter?
     %% java.lang
     class AutoCloseable {
       <<interface>>
-      close() void
     }
 
-    %% TODO é suposto meter?
     %% java.lang
     class RuntimeException {
 
@@ -20,9 +17,6 @@ classDiagram
       -CHANNEL_NEW_SWING : String = "newswing" %% STATICF
       -CHANNEL_TEXT : String = "text" %% STATICF
 
-      %% TODO maybe_remove_this?
-      +UI : Dialog %% STATIC
-
       +open(menu: Menu) void
       +fill(form: Form) void
       +render(title: String, text: String) void
@@ -30,7 +24,6 @@ classDiagram
     }
 
     %% pt.tecnico.uilib
-    %% ver dependencia import static
     class Display {
       -_title: String
       -_text: StringBuilder
@@ -146,7 +139,6 @@ classDiagram
 
     %% pt.tecnico.uilib.forms
     class FieldBoolean {
-      %% TODO
       -BOOLEAN_WORD_YES: String = "sim" %% STATICF
       -BOOLEAN_WORD_NO: String = "nao" %% STATICF
       -BOOLEAN_CHAR_YES: char = 's' %% STATICF
@@ -175,13 +167,12 @@ classDiagram
       +parse(in: String) boolean
     }
 
-    %% TODO class permission package
     %% pt.tecnico.uilib.text
     class CompositePrintStream {
       -_error: boolean
 
       ~<<final>> add(ps: PrintStream) void final
-      %% TODO override_do:print_stream? ()
+      
     }
 
     %% pt.tecnico.uilib.text
@@ -189,8 +180,6 @@ classDiagram
       
     }
 
-    %% TODO PrintStream incluir ou só relação?
-    %% TODO include overrides? (preciso deps again?)
     %% pt.tecnico.uilib.text
     class TextInteraction {
       -_writeInput: boolean
@@ -203,7 +192,6 @@ classDiagram
       -<<final>> readInteger(prompt: String) int
     }
 
-    %% TODO usar esta seta ou o field na class?
     Dialog --> Dialog : UI 
     Dialog --> InteractionDriver : -_backend
     Dialog ..> Menu
@@ -215,7 +203,7 @@ classDiagram
     InteractionDriver ..> Menu
     InteractionDriver ..> Form
 
-    FieldBoolean --|> Field : TODO Type = Boolean?
+    FieldBoolean --|> Field : <<bind>> Type->Boolean
     FieldInteger --|> Field
     FieldNone --|> Field
     FieldReal --|> Field
@@ -232,19 +220,13 @@ classDiagram
 
     CommandException --|> Exception
 
-    DoOpenMenu --|> Command : TODO Receiver = Menu?
+    DoOpenMenu --|> Command : <<bind>> Receiver->Menu
 
     Menu --> Dialog : -_ui
     Menu o--> Command : -_commands
 
     CompositePrintStream --|> PrintStream
     CompositePrintStream "0" o--> "*" PrintStream: _streams
-
-    textMessage ..> EOFException
-    textMessage ..> IOException
-    textMessage ..> NumberFormatException
-    textMessage ..> RuntimeEOFException
-    textMessage ..> FileNotFoundException
 
     RuntimeEOFException --|> RuntimeException
 
