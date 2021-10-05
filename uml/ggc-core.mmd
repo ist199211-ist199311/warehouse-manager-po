@@ -49,25 +49,25 @@ classDiagram
         <<abstract>>
         -name: String
         +applyStatuteRewards(transaction: SaleTransaction)* void
-        +applySanctions(transaction: SaleTransaction, int points)* int
+        +applySanctions(transaction: SaleTransaction, points: int)* int
         +getLowerStatute()* PartnerStatute
     }
 
     class NormalPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
-        +applySanctions(transaction: SaleTransaction, int points) int
+        +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
     }
 
     class SelectionPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
-        +applySanctions(transaction: SaleTransaction, int points) int
+        +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
     }
 
     class ElitePartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
-        +applySanctions(transaction: SaleTransaction, int points) int
+        +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
     }
 
