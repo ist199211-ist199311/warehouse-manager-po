@@ -143,9 +143,9 @@ classDiagram
 
     WarehouseManager --> Warehouse: -_warehouse
 
-    Warehouse o--> Transaction: -transactions
-    Warehouse o--> Partner: -partners
-    Warehouse o--> Product: -products
+    Warehouse *--> Transaction: -transactions
+    Warehouse *--> Partner: -partners
+    Warehouse *--> Product: -products
     Warehouse --> Date: -date
 
     Product <|-- DerivedProduct
@@ -166,6 +166,7 @@ classDiagram
     SaleTransaction ..> PaymentPeriod
 
     BreakdownTransaction "0..0" *-- "1..*" BreakdownTransactionProduct: -resultingProducts
+    BreakdownTransactionProduct --> Product : -product
 
     Batch --> Partner: -partner
     Transaction --> Partner: -partner
@@ -182,7 +183,7 @@ classDiagram
 
     Notification --> Product: -product
     Notification --> NotificationDeliveryMethod: -deliveryMethod
-    Notification --> NotificationType: -notificationType
+    Notification --> NotificationType: -type
     Notification --* Partner: -notificaations
 
     NotificationDeliveryMethod <-- Partner: -preferredNotificationMethod
