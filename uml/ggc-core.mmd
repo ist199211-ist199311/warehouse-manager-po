@@ -1,7 +1,16 @@
 classDiagram
-    class Warehouse {
-        -balance: double
+    class WarehouseManager {
+        -_filename: String
+        +save() void
+        +saveAs(fileName: String) void
+        +load(fileName: String) void
+        +importFile(textfile: String) void
+    }
 
+    class Warehouse {
+        -availableBalance: double
+
+        +calculateAccountingBalance() double
         +createBreakdownTransaction(partner: Partner, product: Product, quantity: int) BreakdownTransaction
         +createSaleTransaction(partner: Partner, deadlineDate: int, product: Product, quantity: int) SaleTransaction
         +createAcquisitionTransaction(partner: Partner, product: Product, price: double, quantity: double) AcquisitionTransaction
@@ -43,6 +52,8 @@ classDiagram
         -points: int
 
         +addTransaction(transaction: Transaction) void
+        +readNotifications(method: NotificationDeliveryMethod) List~Notification~
+        +sendNotification(notification: Notification) void
     }
 
     class PartnerStatute {
@@ -127,7 +138,10 @@ classDiagram
     }
 
     class Notification {
+      -productPrice: double
     }
+
+    WarehouseManager --> Warehouse: -_warehouse
 
     Warehouse o--> Transaction: -transactions
     Warehouse o--> Partner: -partners
