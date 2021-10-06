@@ -9,6 +9,7 @@ public class Menu extends pt.tecnico.uilib.menus.Menu {
   public Menu(WarehouseManager receiver) {
     super(Label.TITLE, //
         new DoShowTransaction(receiver), //
+        new DoRegisterBreakdownTransaction(receiver), //
         new DoRegisterSaleTransaction(receiver), //
         new DoRegisterAcquisitionTransaction(receiver), //
         new DoReceivePayment(receiver) //
