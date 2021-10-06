@@ -12,7 +12,7 @@ class DoAdvanceDate extends Command<WarehouseManager> {
 
   DoAdvanceDate(WarehouseManager receiver) {
     super(Label.ADVANCE_DATE, receiver);
-    //FIXME add command fields
+    addIntegerField("days", Prompt.daysToAdvance());
   }
 
   @Override

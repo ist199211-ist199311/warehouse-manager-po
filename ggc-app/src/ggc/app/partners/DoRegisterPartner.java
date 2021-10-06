@@ -12,7 +12,9 @@ class DoRegisterPartner extends Command<WarehouseManager> {
 
   DoRegisterPartner(WarehouseManager receiver) {
     super(Label.REGISTER_PARTNER, receiver);
-    //FIXME add command fields
+    addStringField("id", Prompt.partnerKey());
+    addStringField("name", Prompt.partnerName());
+    addStringField("address", Prompt.partnerAddress());
   }
 
   @Override

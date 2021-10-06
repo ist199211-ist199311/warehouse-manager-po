@@ -13,7 +13,8 @@ class DoSaveFile extends Command<WarehouseManager> {
   /** @param receiver */
   DoSaveFile(WarehouseManager receiver) {
     super(Label.SAVE, receiver);
-    //FIXME maybe add command fields
+    // TODO if no file opened
+    addStringField("fileName", Prompt.newSaveAs());
   }
 
   @Override

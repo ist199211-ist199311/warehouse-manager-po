@@ -12,7 +12,7 @@ public class DoLookupPaymentsByPartner extends Command<WarehouseManager> {
 
   public DoLookupPaymentsByPartner(WarehouseManager receiver) {
     super(Label.PAID_BY_PARTNER, receiver);
-    //FIXME add command fields
+    addStringField("partnerId", Prompt.partnerKey());
   }
 
   @Override

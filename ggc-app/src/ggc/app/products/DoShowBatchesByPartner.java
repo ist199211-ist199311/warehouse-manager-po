@@ -12,7 +12,7 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
 
   DoShowBatchesByPartner(WarehouseManager receiver) {
     super(Label.SHOW_BATCHES_SUPPLIED_BY_PARTNER, receiver);
-    //FIXME maybe add command fields
+    addStringField("partnerId", Prompt.partnerKey());
   }
 
   @Override

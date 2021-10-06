@@ -13,7 +13,7 @@ class DoOpenFile extends Command<WarehouseManager> {
   /** @param receiver */
   DoOpenFile(WarehouseManager receiver) {
     super(Label.OPEN, receiver);
-    //FIXME maybe add command fields
+    addStringField("fileName", Prompt.openFile());
   }
 
   @Override

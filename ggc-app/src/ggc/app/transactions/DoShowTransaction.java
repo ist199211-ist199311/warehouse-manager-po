@@ -12,7 +12,7 @@ public class DoShowTransaction extends Command<WarehouseManager> {
 
   public DoShowTransaction(WarehouseManager receiver) {
     super(Label.SHOW_TRANSACTION, receiver);
-    //FIXME maybe add command fields
+    addStringField("transactionId", Prompt.transactionKey());
   }
 
   @Override

@@ -12,7 +12,10 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
 
   public DoRegisterSaleTransaction(WarehouseManager receiver) {
     super(Label.REGISTER_SALE_TRANSACTION, receiver);
-    //FIXME maybe add command fields 
+    addStringField("partnerId", Prompt.partnerKey());
+    addIntegerField("deadline", Prompt.paymentDeadline());
+    addStringField("productId", Prompt.productKey());
+    addStringField("quantity", Prompt.amount());
   }
 
   @Override

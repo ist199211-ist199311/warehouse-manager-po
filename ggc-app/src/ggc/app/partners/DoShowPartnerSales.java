@@ -12,7 +12,7 @@ class DoShowPartnerSales extends Command<WarehouseManager> {
 
   DoShowPartnerSales(WarehouseManager receiver) {
     super(Label.SHOW_PARTNER_SALES, receiver);
-    //FIXME add command fields
+    addStringField("partnerId", Prompt.partnerKey());
   }
 
   @Override
