@@ -12,7 +12,7 @@ classDiagram
 
         +calculateAccountingBalance() double
         +createBreakdownTransaction(partner: Partner, product: Product, quantity: int) BreakdownTransaction
-        +createSaleTransaction(partner: Partner, deadlineDate: int, product: Product, quantity: int) SaleTransaction
+        +createSaleTransaction(partner: Partner, deadlineDate: Date, product: Product, quantity: int) SaleTransaction
         +createAcquisitionTransaction(partner: Partner, product: Product, price: double, quantity: double) AcquisitionTransaction
         +getNextTransactionId() int
     }
