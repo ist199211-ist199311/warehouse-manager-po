@@ -5,16 +5,59 @@ classDiagram
         +saveAs(fileName: String) void
         +load(fileName: String) void
         +importFile(textfile: String) void
+        +lookupPaymentsByPartner(partnerId: String) Transaction[]
+        +lookupProductBatchesUnderGivenPrice(priceLimit: double) Batch[]
+        +advanceDate(days: int) void
+        +displayDate() int
+        +availableBalance() int
+        +accountingBalance() int
+        +registerPartner(id: String, name: String, address: String) void
+        +getAllPartners() Partner[]
+        +getPartner(partnerId: String) Partner
+        +getPartnerSalesOrBreakdowns(partnerId: String) Transaction[]
+        +getPartnerAcquisitions(partnerId: String) Transaction[]
+        +toggleProductNotifications(partnerId: String, productId: String) void
+        +getAllProducts() Product[]
+        +getAllBatches() Batch[]
+        +getBatchesByPartner(partnerId: String) Batch[]
+        +getBatchesByProduct(productId: String) Batch[]
+        +receivePayment(transactionId: String) void
+        +registerAcquisitionTransaction(partnerId: String, productId: String, price: double, quantity: int) void
+        +createSimpleProduct(productId: String) void
+        +createDerivedProduct(productId: String, aggravatingFactor: double, recipeProducts: String[], recipeQuantities: int[]) void
+        +registerBreakdownTransaction(partnerId: String, productId: String, quantity: int) void
+        +registerSaleTransaction(partnerId: String, deadline: int, productId: String, quantity: int) void
+        +getTransaction(transactionId: String) Transaction
     }
 
     class Warehouse {
         -availableBalance: double
 
+        +lookupPaymentsByPartner(partnerId: String) Transaction[]
+        +lookupProductBatchesUnderGivenPrice(priceLimit: double) Batch[]
+        +advanceDate(days: int) void
+        +displayDate() int
         +calculateAccountingBalance() double
-        +createBreakdownTransaction(partner: Partner, product: Product, quantity: int) BreakdownTransaction
-        +createSaleTransaction(partner: Partner, deadlineDate: Date, product: Product, quantity: int) SaleTransaction
-        +createAcquisitionTransaction(partner: Partner, product: Product, price: double, quantity: double) AcquisitionTransaction
+        +registerAcquisitionTransaction(partnerId: String, productId: String, price: double, quantity: int) void
+        +createSimpleProduct(productId: String) void
+        +createDerivedProduct(productId: String, aggravatingFactor: double, recipeProducts: String[], recipeQuantities: int[]) void
+        +registerBreakdownTransaction(partnerId: String, productId: String, quantity: int) void
+        +registerSaleTransaction(partnerId: String, deadline: int, productId: String, quantity: int) void
         +getNextTransactionId() int
+        +getAllBatches() Batch[]
+        +getAllBatchesUnderGivenPrice(priceLimit: double) Batch[]
+        +registerPartner(id: String, name: String, address: String) Partner
+        +subscribeToAllProducts(partner: Partner) void
+        +getAllPartners() Partner[]
+        +getPartner(partnerId: String) Partner
+        +getPartnerSalesOrBreakdowns(partnerId: String) Transaction[]
+        +getPartnerAcquisitions(partnerId: String) Transaction[]
+        +toggleProductNotifications(partnerId: String, productId: String) void
+        +getAllProducts() Product[]
+        +getBatchesByPartnerKey(partnerId: String) Batch[]
+        +getBatchesByProductKey(productId: String) Batch[]
+        +receivePayment(transactionId: String) void
+        +getTransaction(transactionId: String) Transaction
     }
 
     class Date {
@@ -29,8 +72,12 @@ classDiagram
         -id: String
         +getQuantityInBatches() int
         +getTotalQuantity() int
-        +getBatchesForAquisition(quantity: int) List~Batches~
+        +getBatchesForAquisition(quantity: int) Batches[]
         +getCheapestPrice() int
+        +subscribe(partner: Partner) void
+        +unsubscribe(partner: Partner) void
+        +toggleSubscription(partner: Partner) void
+        +isSubscribed(partner: Partner) boolean
     }
 
     class DerivedProduct {
@@ -52,8 +99,11 @@ classDiagram
         -points: int
 
         +addTransaction(transaction: Transaction) void
-        +readNotifications(method: NotificationDeliveryMethod) List~Notification~
+        +readNotifications(method: NotificationDeliveryMethod) Notification[]
         +sendNotification(notification: Notification) void
+        +getPaidSales() SaleTransaction[]
+        +getSalesOrBreakdowns() Transaction[]
+        +getAcquisitions() AcquisitionTransaction[]
     }
 
     class PartnerStatute {
@@ -62,32 +112,24 @@ classDiagram
         +applyStatuteRewards(transaction: SaleTransaction)* void
         +applySanctions(transaction: SaleTransaction, points: int)* int
         +getLowerStatute()* PartnerStatute
-        +getUpperStatute()* PartnerStatute
-        +shouldPromote()* boolean
     }
 
     class NormalPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
-        +getUpperStatute() PartnerStatute
-        +shouldPromote() boolean
     }
 
     class SelectionPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
-        +getUpperStatute() PartnerStatute
-        +shouldPromote() boolean
     }
 
     class ElitePartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
-        +getUpperStatute() PartnerStatute
-        +shouldPromote() boolean
     }
 
     class Recipe {
@@ -148,6 +190,14 @@ classDiagram
     class Notification {
       -productPrice: double
     }
+
+    UnknownPartnerKeyException --|> Exception
+    UnknownProductKeyException --|> Exception
+    UnknownTransactionKeyException --|> Exception
+    InvalidDateException --|> Exception
+    UnavailableFileException --|> Exception
+    DuplicatePartnerKeyException --|> Exception
+    UnavailableProductException --|> Exception
 
     WarehouseManager --> Warehouse: -_warehouse
 
