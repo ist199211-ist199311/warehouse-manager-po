@@ -14,7 +14,7 @@ interface Message {
    * @return string describing balance.
    */
   static String currentBalance(double available, double accounting) {
-    return "Saldo disponível: " + Math.round(accounting) + "\n" + "Saldo contabilístico: " + Math.round(accounting);
+    return "Saldo disponível: " + Math.round(available) + "\n" + "Saldo contabilístico: " + Math.round(accounting);
   }
 
 }
