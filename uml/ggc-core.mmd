@@ -43,7 +43,7 @@ classDiagram
         +createDerivedProduct(productId: String, aggravatingFactor: double, recipeProducts: String[], recipeQuantities: int[]) void
         +registerBreakdownTransaction(partnerId: String, productId: String, quantity: int) void
         +registerSaleTransaction(partnerId: String, deadline: int, productId: String, quantity: int) void
-        +getNextTransactionId() int
+        -getNextTransactionId() int
         +getAllBatches() Batch[]
         +getAllBatchesUnderGivenPrice(priceLimit: double) Batch[]
         +registerPartner(id: String, name: String, address: String) Partner
@@ -63,7 +63,7 @@ classDiagram
     class Date {
         -days: int
 
-        +advanceDate(days: int)
+        +advanceDate(days: int) void
         +currentDate() int
         +dateDiff(other: Date) int
     }
@@ -155,9 +155,9 @@ classDiagram
     class SaleTransaction {
         -adjustedValue: Double
 		-paid: boolean
-        -isPaid() boolean
-        -pay() double
-        -calculateCurrentPaymentPeriod() PaymentPeriod
+        +isPaid() boolean
+        +pay() double
+        +calculateCurrentPaymentPeriod() PaymentPeriod
     }
 
     class PaymentPeriod {
@@ -173,8 +173,8 @@ classDiagram
     }
 
     class BreakdownTransactionProduct {
-        -<<final>> quantity: int;
-        -<<final>> price: double;
+        -<<final>> quantity: int
+        -<<final>> price: double
     }
 
     class NotificationType {
