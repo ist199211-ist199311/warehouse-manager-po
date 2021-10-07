@@ -112,24 +112,32 @@ classDiagram
         +applyStatuteRewards(transaction: SaleTransaction)* void
         +applySanctions(transaction: SaleTransaction, points: int)* int
         +getLowerStatute()* PartnerStatute
+        +getUpperStatute()* PartnerStatute
+        +shouldPromote()* boolean
     }
 
     class NormalPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
+        +getUpperStatute() PartnerStatute
+        +shouldPromote() boolean
     }
 
     class SelectionPartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
+        +getUpperStatute() PartnerStatute
+        +shouldPromote() boolean
     }
 
     class ElitePartnerStatute {
         +applyStatuteRewards(transaction: SaleTransaction) void
         +applySanctions(transaction: SaleTransaction, points: int) int
         +getLowerStatute() PartnerStatute
+        +getUpperStatute() PartnerStatute
+        +shouldPromote() boolean
     }
 
     class Recipe {
