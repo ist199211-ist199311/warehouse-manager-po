@@ -12,7 +12,7 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
 
   DoShowBatchesByProduct(WarehouseManager receiver) {
     super(Label.SHOW_BATCHES_BY_PRODUCT, receiver);
-    addStringField("productId", Prompt.productId());
+    addStringField("productId", Prompt.productKey());
   }
 
   @Override

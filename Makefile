@@ -6,3 +6,6 @@ all::
 	$(MAKE) $(MFLAGS) -C $(GGC_CORE_PATH)
 	$(MAKE) $(MFLAGS) -C $(GGC_APP_PATH)
 	CLASSPATH=$(CLASSPATH) java ggc.app.App
+clean:
+	$(MAKE) $(MFLAGS) -C $(GGC_CORE_PATH) clean
+	$(MAKE) $(MFLAGS) -C $(GGC_APP_PATH) clean
