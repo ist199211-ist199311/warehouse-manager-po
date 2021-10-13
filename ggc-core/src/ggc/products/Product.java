@@ -5,6 +5,7 @@ import ggc.partners.Partner;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +59,12 @@ public class Product implements Comparable<Product> {
         return batches.get(0).getPrice();
     }
 
+    public double getMostExpensivePrice() {
+        // TODO get all time most expensive price (from transactions)
+        // TODO is it all time or from existing batches?
+        return 0;
+    }
+
     public void subscribe(Partner partner) {
         this.subscribers.add(partner);
     }
@@ -79,15 +86,16 @@ public class Product implements Comparable<Product> {
     }
 
     private void ensureBatchesSorted() {
-        this.batches.sort((batch1, batch2) -> {
-            int priceCmp = Double.compare(batch1.getPrice(), batch2.getPrice());
-            if (priceCmp != 0) return priceCmp;
-            return Integer.compare(batch1.getQuantity(), batch2.getQuantity());
-        });
+        this.batches.sort(Comparator.comparingDouble(Batch::getPrice).thenComparingInt(Batch::getQuantity));
     }
 
     @Override
     public int compareTo(Product product) {
         return this.id.compareTo(product.getId());
+    }
+
+    @Override
+    public String toString() {
+        return this.id + "|" + getMostExpensivePrice() + "|" + getQuantityInBatches();
     }
 }

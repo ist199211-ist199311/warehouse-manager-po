@@ -2,9 +2,14 @@ package ggc;
 
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.InvalidDateException;
+import ggc.products.Product;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class Warehouse implements a warehouse.
@@ -17,6 +22,7 @@ public class Warehouse implements Serializable {
     private static final long serialVersionUID = 202109192006L;
 
     private int date = 0;
+    private Map<String, Product> products = new HashMap<>();
 
     // FIXME define attributes
     // FIXME define contructor(s)
@@ -31,6 +37,10 @@ public class Warehouse implements Serializable {
             throw new InvalidDateException(days);
         }
         this.date += days;
+    }
+
+    public Collection<Product> getAllProducts() {
+        return products.values().stream().sorted().collect(Collectors.toList());
     }
 
     /**

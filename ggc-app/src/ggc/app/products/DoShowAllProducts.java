@@ -1,8 +1,8 @@
 package ggc.app.products;
 
+import ggc.WarehouseManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
 //FIXME import classes
 
 /**
@@ -16,7 +16,7 @@ class DoShowAllProducts extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    _receiver.getAllProducts().forEach(_display::popup);
   }
 
 }

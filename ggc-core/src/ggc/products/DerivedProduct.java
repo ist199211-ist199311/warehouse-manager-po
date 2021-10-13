@@ -38,4 +38,9 @@ public class DerivedProduct extends Product {
     public Recipe getRecipe() {
         return recipe;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "|" + this.recipe.toString();
+    }
 }

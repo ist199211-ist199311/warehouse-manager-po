@@ -2,6 +2,8 @@ package ggc.products;
 
 import ggc.partners.Partner;
 
+import java.util.Comparator;
+
 public class Batch implements Comparable<Batch> {
 
     private int quantity;
@@ -39,12 +41,11 @@ public class Batch implements Comparable<Batch> {
     @Override
     public int compareTo(Batch batch) {
         // TODO review
-        int productCmp = getProduct().compareTo(batch.getProduct());
-        if (productCmp != 0) return productCmp;
-        int partnerCmp = getPartner().compareTo(batch.getPartner());
-        if (partnerCmp != 0) return partnerCmp;
-        int priceCmp = Double.compare(getPrice(), batch.getPrice());
-        if (priceCmp != 0) return priceCmp;
-        return Integer.compare(getQuantity(), batch.getQuantity());
+        return Comparator
+                .comparing(Batch::getProduct)
+                .thenComparing(Batch::getPartner)
+                .thenComparingDouble(Batch::getPrice)
+                .thenComparingInt(Batch::getQuantity)
+                .compare(this, batch);
     }
 }

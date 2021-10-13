@@ -17,4 +17,9 @@ public class RecipeProduct {
     public Product getProduct() {
         return product;
     }
+
+    @Override
+    public String toString() {
+        return this.getProduct().getId() + ":" + this.getQuantity();
+    }
 }

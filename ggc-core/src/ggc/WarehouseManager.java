@@ -5,9 +5,11 @@ import ggc.exceptions.ImportFileException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
+import ggc.products.Product;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Façade for access.
@@ -34,6 +36,10 @@ public class WarehouseManager {
 
   public int displayDate() {
     return this._warehouse.displayDate();
+  }
+
+  public Collection<Product> getAllProducts() {
+    return this._warehouse.getAllProducts();
   }
 
   /**
