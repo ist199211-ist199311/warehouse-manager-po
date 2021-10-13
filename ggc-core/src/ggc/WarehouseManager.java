@@ -2,24 +2,39 @@ package ggc;
 
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.ImportFileException;
+import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/** Façade for access. */
+/**
+ * Façade for access.
+ */
 public class WarehouseManager {
 
-  /** Name of file storing current store. */
+  /**
+   * Name of file storing current store.
+   */
   private String _filename = "";
 
-  /** The warehouse itself. */
+  /**
+   * The warehouse itself.
+   */
   private Warehouse _warehouse = new Warehouse();
 
   //FIXME define other attributes
   //FIXME define constructor(s)
   //FIXME define other methods
+
+  public void advanceDate(int days) throws InvalidDateException {
+    this._warehouse.advanceDate(days);
+  }
+
+  public int displayDate() {
+    return this._warehouse.displayDate();
+  }
 
   /**
    * @@throws IOException
