@@ -5,14 +5,27 @@ jobs:
   compile-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout project
+        uses: actions/checkout@v2
+        with:
+          path: 'project'
       - name: Setup JDK 16
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: 16
       - name: Place po-uilib in correct folder and compile it
+        working-directory: $GITHUB_WORKSPACE/project
         run: wget https://web.tecnico.ulisboa.pt/\~david.matos/w/pt/images/3/37/Po-uilib-202109221024.tar.bz2 && tar xvf Po-uilib-202109221024.tar.bz2 && mv po-uilib-202109221024 po-uilib && rm Po-uilib-202109221024.tar.bz2 && cd po-uilib && make && cd ..
       - name: Run makefile
+        working-directory: $GITHUB_WORKSPACE/project
         run: make compile
-      # TODO run tests
+      - name: Checkout tests
+        uses: actions/checkout@v2
+        with:
+          repository: diogotcorreia/proj-ist-unit-tests
+          path: 'tests'
+      - name: Run tests
+        working-directory: $GITHUB_WORKSPACE/tests
+        run: make
+
