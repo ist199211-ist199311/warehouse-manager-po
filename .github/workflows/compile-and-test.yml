@@ -25,6 +25,9 @@ jobs:
         with:
           repository: diogotcorreia/proj-ist-unit-tests
           path: 'tests'
+      - name: Configure tests
+        working-directory: tests/po/2021-2022/po-p1
+        run: echo "PROJECT_CLASSPATH=$(cd $GITHUB_WORKSPACE/project && echo "$(pwd)/po-uilib/po-uilib.jar:$(pwd)/ggc-app/ggc-app.jar:$(pwd)/ggc-core/ggc-core.jar")" > config
       - name: Run tests
         working-directory: tests/po/2021-2022/po-p1
         run: make
