@@ -15,10 +15,10 @@ jobs:
           distribution: 'adopt'
           java-version: 16
       - name: Place po-uilib in correct folder and compile it
-        working-directory: $GITHUB_WORKSPACE/project
+        working-directory: project
         run: wget https://web.tecnico.ulisboa.pt/\~david.matos/w/pt/images/3/37/Po-uilib-202109221024.tar.bz2 && tar xvf Po-uilib-202109221024.tar.bz2 && mv po-uilib-202109221024 po-uilib && rm Po-uilib-202109221024.tar.bz2 && cd po-uilib && make && cd ..
       - name: Run makefile
-        working-directory: $GITHUB_WORKSPACE/project
+        working-directory: project
         run: make compile
       - name: Checkout tests
         uses: actions/checkout@v2
@@ -26,6 +26,6 @@ jobs:
           repository: diogotcorreia/proj-ist-unit-tests
           path: 'tests'
       - name: Run tests
-        working-directory: $GITHUB_WORKSPACE/tests
+        working-directory: tests
         run: make
 
