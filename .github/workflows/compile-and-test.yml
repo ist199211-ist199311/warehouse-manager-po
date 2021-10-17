@@ -26,6 +26,6 @@ jobs:
           repository: diogotcorreia/proj-ist-unit-tests
           path: 'tests'
       - name: Run tests
-        working-directory: tests
+        working-directory: tests/po/2021-2022/po-p1
         run: make
 
