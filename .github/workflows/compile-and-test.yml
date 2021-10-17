@@ -11,7 +11,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 16
-      - name: Place po-uilib on correct folder and compile it
+      - name: Place po-uilib in correct folder and compile it
         run: wget https://web.tecnico.ulisboa.pt/\~david.matos/w/pt/images/3/37/Po-uilib-202109221024.tar.bz2 && tar xvf Po-uilib-202109221024.tar.bz2 && mv po-uilib-202109221024 po-uilib && rm Po-uilib-202109221024.tar.bz2 && cd po-uilib && make && cd ..
       - name: Run makefile
         run: make compile
