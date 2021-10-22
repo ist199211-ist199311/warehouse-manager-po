@@ -7,8 +7,14 @@ import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
 import ggc.products.Product;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 
 /**
@@ -48,7 +54,11 @@ public class WarehouseManager {
    * @@throws MissingFileAssociationException
    */
   public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-    //FIXME implement serialization method
+    if (_filename == null || _filename.isBlank()) throw new MissingFileAssociationException();
+
+    try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)))) {
+      out.writeObject(_warehouse);
+    }
   }
 
   /**
@@ -67,7 +77,12 @@ public class WarehouseManager {
    * @@throws UnavailableFileException
    */
   public void load(String filename) throws UnavailableFileException {
-    //FIXME implement serialization method
+    try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+      _warehouse = (Warehouse) in.readObject();
+      this._filename = filename;
+    } catch (IOException | ClassNotFoundException e) {
+      throw new UnavailableFileException(filename);
+    }
   }
 
   /**

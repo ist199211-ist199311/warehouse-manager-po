@@ -1,10 +1,15 @@
 package ggc.products;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Recipe {
+public class Recipe implements Serializable {
+    /**
+     * Serial number for serialization.
+     */
+    private static final long serialVersionUID = 202110221420L;
 
     private final List<RecipeProduct> recipeProducts = new ArrayList<>();
     private double aggravatingFactor;

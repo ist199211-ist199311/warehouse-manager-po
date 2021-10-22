@@ -1,8 +1,12 @@
 package ggc.app.main;
 
+import ggc.WarehouseManager;
+import ggc.exceptions.MissingFileAssociationException;
+import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
+
+import java.io.IOException;
 //FIXME import classes
 
 /**
@@ -13,13 +17,23 @@ class DoSaveFile extends Command<WarehouseManager> {
   /** @param receiver */
   DoSaveFile(WarehouseManager receiver) {
     super(Label.SAVE, receiver);
-    // TODO if no file opened
-    addStringField("fileName", Prompt.newSaveAs());
   }
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    try {
+      _receiver.save();
+    } catch (MissingFileAssociationException e) {
+      try {
+        _receiver.saveAs(Form.requestString(Prompt.newSaveAs()));
+      } catch (MissingFileAssociationException | IOException ex) {
+        // TODO ??
+        ex.printStackTrace();
+      }
+    } catch (IOException e) {
+      // TODO ??
+      e.printStackTrace();
+    }
   }
 
 }

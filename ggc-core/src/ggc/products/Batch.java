@@ -2,9 +2,14 @@ package ggc.products;
 
 import ggc.partners.Partner;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class Batch implements Comparable<Batch> {
+public class Batch implements Comparable<Batch>, Serializable {
+    /**
+     * Serial number for serialization.
+     */
+    private static final long serialVersionUID = 202110221420L;
 
     private int quantity;
     private double price;

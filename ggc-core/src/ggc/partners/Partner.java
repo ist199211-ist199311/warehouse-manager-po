@@ -1,6 +1,12 @@
 package ggc.partners;
 
-public class Partner implements Comparable<Partner> {
+import java.io.Serializable;
+
+public class Partner implements Comparable<Partner>, Serializable {
+    /**
+     * Serial number for serialization.
+     */
+    private static final long serialVersionUID = 202110221420L;
 
     // TODO
 
