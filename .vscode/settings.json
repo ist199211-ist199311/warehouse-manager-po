@@ -1,5 +1,10 @@
 {
-  "files.exclude": {
-    "**/*.class": true
-  }
+	"files.exclude": {
+		"**/*.class": true
+	},
+	"java.project.sourcePaths": ["ggc-core/src", "ggc-app/src"],
+	"java.project.referencedLibraries": [
+		"lib/**/*.jar",
+		"po-uilib/po-uilib.jar"
+	]
 }
