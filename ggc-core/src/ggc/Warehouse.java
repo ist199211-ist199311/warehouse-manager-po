@@ -1,7 +1,7 @@
 package ggc;
 
-import ggc.app.exceptions.UnknownPartnerKeyException;
-import ggc.app.exceptions.UnknownProductKeyException;
+import ggc.exceptions.UnknownPartnerKeyException;
+import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
