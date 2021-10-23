@@ -6,14 +6,19 @@ import ggc.exceptions.BadEntryException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
 import ggc.partners.Partner;
+import ggc.products.DerivedProduct;
 import ggc.products.Product;
+import ggc.products.Recipe;
+import ggc.products.RecipeProduct;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -99,21 +104,51 @@ public class Warehouse implements Serializable {
 
     private void importSimpleBatch(String[] fields) throws IllegalEntryException {
         try {
+            Partner partner = this.getPartner(fields[2]);
             Product product;
             try {
                 product = this.getProduct(fields[1]);
             } catch (UnknownProductKeyException e) {
-                product = this.registerProduct(fields[1]);
+                product = this.registerSimpleProduct(fields[1]);
             }
-            Partner partner = this.getPartner(fields[2]);
-            product.registerBatch(Integer.parseInt(fields[4]), Integer.parseInt(fields[3]), partner);
+            product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
         } catch (UnknownPartnerKeyException | NumberFormatException e) {
             throw new IllegalEntryException(fields);
         }
     }
 
     private void importMultiBatch(String[] fields) throws IllegalEntryException {
-        // TODO:
+        try {
+            Partner partner = this.getPartner(fields[2]);
+            Product product;
+            try {
+                product = this.getProduct(fields[1]);
+            } catch (UnknownProductKeyException e) {
+                Recipe recipe = this.importRecipe(fields[5], fields[6]);
+                product = this.registerDerivedProduct(fields[1], recipe);
+            }
+            product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
+        } catch (UnknownPartnerKeyException | NumberFormatException e) {
+            throw new IllegalEntryException(fields);
+        }
+    }
+
+    private Recipe importRecipe(String aggravatingFactor, String productsDescription) throws NumberFormatException {
+        List<RecipeProduct> products = new ArrayList<RecipeProduct>();
+        String[] productDescriptors = productsDescription.split("#");
+        for (String desc : productDescriptors) {
+            String[] fields = desc.split(":");
+            String prodKey = fields[0];
+            int quantity = Integer.parseInt(fields[1]);
+            Product prod;
+            try {
+                prod = this.getProduct(prodKey);
+            } catch (UnknownProductKeyException e) {
+                prod = this.registerSimpleProduct(prodKey);
+            }
+            products.add(new RecipeProduct(quantity, prod));
+        }
+        return new Recipe(Double.parseDouble(aggravatingFactor), products);
     }
 
     private Partner registerPartner(String id, String name, String address) {
@@ -122,8 +157,14 @@ public class Warehouse implements Serializable {
         return p;
     }
 
-    private Product registerProduct(String id) {
+    private Product registerSimpleProduct(String id) {
         Product p = new Product(id);
+        this.products.put(p.getId(), p);
+        return p;
+    }
+
+    private DerivedProduct registerDerivedProduct(String id, Recipe recipe) {
+        DerivedProduct p = new DerivedProduct(id, recipe);
         this.products.put(p.getId(), p);
         return p;
     }
