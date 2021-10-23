@@ -5,24 +5,24 @@ package ggc.exceptions;
  */
 public class UnavailableFileException extends Exception {
 
-	/** Serial number for serialization. */
-	private static final long serialVersionUID = 202009192006L;
+  /** Serial number for serialization. */
+  private static final long serialVersionUID = 202009192006L;
 
-	/** The requested filename. */
-	String _filename;
+  /** The requested filename. */
+  String _filename;
 
-	/**
-	 * @param filename 
-	 */
-	public UnavailableFileException(String filename) {
-	  _filename = filename;
-	}
+  /**
+   * @param filename
+   */
+  public UnavailableFileException(String filename) {
+    _filename = filename;
+  }
 
-	/**
-	 * @return the requested filename
-	 */
-	public String getFilename() {
-		return _filename;
-	}
+  /**
+   * @return the requested filename
+   */
+  public String getFilename() {
+    return _filename;
+  }
 
 }

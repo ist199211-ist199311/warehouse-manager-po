@@ -2,13 +2,13 @@ package ggc.exceptions;
 
 public class InvalidDateException extends Exception {
 
-    private int date;
+  private int date;
 
-    public InvalidDateException(int date) {
-        this.date = date;
-    }
+  public InvalidDateException(int date) {
+    this.date = date;
+  }
 
-    public int getDate() {
-        return date;
-    }
+  public int getDate() {
+    return date;
+  }
 }

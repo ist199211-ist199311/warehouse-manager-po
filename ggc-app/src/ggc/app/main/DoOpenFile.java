@@ -19,12 +19,9 @@ class DoOpenFile extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     /*
-    try {
-      //FIXME implement command
-    } catch (UnavailableFileException ufe) {
-      throw new FileOpenFailedException(ufe.getFilename());
-    }
-    */
+     * try { //FIXME implement command } catch (UnavailableFileException ufe) {
+     * throw new FileOpenFailedException(ufe.getFilename()); }
+     */
   }
 
 }
