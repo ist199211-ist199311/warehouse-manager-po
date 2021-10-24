@@ -1,5 +1,7 @@
 package ggc.partners;
 
+import java.util.StringJoiner;
+
 public class Partner implements Comparable<Partner> {
 
   // TODO: not complete
@@ -43,4 +45,17 @@ public class Partner implements Comparable<Partner> {
     return 0;
   }
 
+  @Override
+  public String toString() {
+    return new StringJoiner("|")
+            .add(this.getId())
+            .add(this.getName())
+            .add(this.getAddress())
+            .add("NORMAL") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .toString();
+  }
 }

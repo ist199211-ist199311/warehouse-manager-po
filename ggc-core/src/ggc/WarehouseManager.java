@@ -1,11 +1,14 @@
 package ggc;
 
 import ggc.exceptions.BadEntryException;
+import ggc.exceptions.DuplicatePartnerKeyException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.ImportFileException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
+import ggc.exceptions.UnknownPartnerKeyException;
+import ggc.partners.Partner;
 import ggc.products.Product;
 
 import java.io.FileNotFoundException;
@@ -41,6 +44,18 @@ public class WarehouseManager {
 
   public Collection<Product> getAllProducts() {
     return this._warehouse.getAllProducts();
+  }
+
+  public Collection<Partner> getAllPartners() {
+    return this._warehouse.getAllPartners();
+  }
+
+  public Partner getPartner(String key) throws UnknownPartnerKeyException {
+    return this._warehouse.getPartner(key);
+  }
+
+  public void registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
+    this._warehouse.registerPartner(id, name, address);
   }
 
   /**

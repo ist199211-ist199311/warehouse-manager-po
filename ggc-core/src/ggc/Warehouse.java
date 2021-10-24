@@ -1,6 +1,7 @@
 package ggc;
 
 import ggc.exceptions.BadEntryException;
+import ggc.exceptions.DuplicatePartnerKeyException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.UnknownPartnerKeyException;
@@ -21,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * Class Warehouse implements a warehouse.
@@ -34,9 +34,9 @@ public class Warehouse implements Serializable {
   @Serial
   private static final long serialVersionUID = 202109192006L;
 
-  private int date = 0;
   private final Map<String, Product> products = new TreeMap<>();
   private final Map<String, Partner> partners = new TreeMap<>();
+  private int date = 0;
 
   // FIXME define attributes
   // FIXME define constructor(s)
@@ -54,7 +54,11 @@ public class Warehouse implements Serializable {
   }
 
   public Collection<Product> getAllProducts() {
-    return this.products.values().stream().sorted().collect(Collectors.toList());
+    return this.products.values();
+  }
+
+  public Collection<Partner> getAllPartners() {
+    return this.partners.values();
   }
 
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
@@ -100,7 +104,11 @@ public class Warehouse implements Serializable {
     if (fields.length != 4) {
       throw new IllegalEntryException(fields);
     }
-    this.registerPartner(fields[1], fields[2], fields[3]);
+    try {
+      this.registerPartner(fields[1], fields[2], fields[3]);
+    } catch (DuplicatePartnerKeyException e) {
+      throw new IllegalEntryException(fields);
+    }
   }
 
   private void importSimpleBatch(String[] fields) throws IllegalEntryException {
@@ -152,7 +160,8 @@ public class Warehouse implements Serializable {
     return new Recipe(Double.parseDouble(aggravatingFactor), products);
   }
 
-  private Partner registerPartner(String id, String name, String address) {
+  public Partner registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
+    if (this.partners.containsKey(id)) throw new DuplicatePartnerKeyException(id);
     Partner p = new Partner(id, name, address);
     this.partners.put(p.getId(), p);
     return p;
