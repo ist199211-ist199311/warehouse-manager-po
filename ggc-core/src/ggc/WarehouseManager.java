@@ -11,8 +11,14 @@ import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.partners.Partner;
 import ggc.products.Product;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 
 /**
@@ -64,7 +70,11 @@ public class WarehouseManager {
    * @@throws MissingFileAssociationException
    */
   public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-    // FIXME implement serialization method
+    if (_filename == null || _filename.isBlank()) throw new MissingFileAssociationException();
+
+    try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)))) {
+      out.writeObject(_warehouse);
+    }
   }
 
   /**
@@ -83,7 +93,12 @@ public class WarehouseManager {
    * @@throws UnavailableFileException
    */
   public void load(String filename) throws UnavailableFileException {
-    // FIXME implement serialization method
+    try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+      _warehouse = (Warehouse) in.readObject();
+      this._filename = filename;
+    } catch (IOException | ClassNotFoundException e) {
+      throw new UnavailableFileException(filename);
+    }
   }
 
   /**
@@ -92,7 +107,7 @@ public class WarehouseManager {
    */
   public void importFile(String textfile) throws ImportFileException {
     try {
-      _warehouse.importFile(textfile);
+      this._warehouse.importFile(textfile);
     } catch (IOException | BadEntryException | IllegalEntryException e) {
       throw new ImportFileException(textfile);
     }

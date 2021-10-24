@@ -3,6 +3,7 @@ package ggc.products;
 import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -11,7 +12,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class Product implements Comparable<Product> {
+public class Product implements Comparable<Product>, Serializable {
+  /**
+   * Serial number for serialization.
+   */
+  private static final long serialVersionUID = 202110221420L;
 
   private final String id;
   private final List<Batch> batches = new ArrayList<>();

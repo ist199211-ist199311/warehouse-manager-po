@@ -3,7 +3,13 @@ package ggc.products;
 import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 
-public class DerivedProduct extends Product {
+import java.io.Serializable;
+
+public class DerivedProduct extends Product implements Serializable {
+  /**
+   * Serial number for serialization.
+   */
+  private static final long serialVersionUID = 202110221420L;
 
   private final Recipe recipe;
 
