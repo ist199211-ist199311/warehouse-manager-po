@@ -10,7 +10,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.BinaryOperator;
 
 public class Product implements Comparable<Product>, Serializable {
   /**
@@ -74,7 +77,8 @@ public class Product implements Comparable<Product>, Serializable {
   public double getMostExpensivePrice() {
     // TODO get all time most expensive price (from transactions)
     // TODO is it all time or from existing batches?
-    return 0;
+    // TODO assuming existing batches right now
+    return this.batches.stream().map(Batch::getPrice).reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
   }
 
   public void subscribe(Partner partner) {
@@ -108,6 +112,10 @@ public class Product implements Comparable<Product>, Serializable {
 
   @Override
   public String toString() {
-    return this.id + "|" + getMostExpensivePrice() + "|" + getQuantityInBatches();
+    return new StringJoiner("|")
+            .add(this.getId())
+            .add(Objects.toString(Math.round(this.getMostExpensivePrice())))
+            .add(Objects.toString(this.getQuantityInBatches()))
+            .toString();
   }
 }
