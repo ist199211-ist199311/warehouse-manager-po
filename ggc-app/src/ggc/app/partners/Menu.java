@@ -12,7 +12,7 @@ public class Menu extends pt.tecnico.uilib.menus.Menu {
         new DoShowAllPartners(receiver), //
         new DoRegisterPartner(receiver), //
         new DoToggleProductNotifications(receiver), //
-        new DoShowPartnerAcquisitions(receiver), //      
+        new DoShowPartnerAcquisitions(receiver), //
         new DoShowPartnerSales(receiver) //
     );
   }

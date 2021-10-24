@@ -1,5 +1,13 @@
 {
-  "files.exclude": {
-    "**/*.class": true
-  }
+	"editor.insertSpaces": true,
+	"editor.tabSize": 2,
+	"editor.detectIndentation": false,
+	"files.exclude": {
+		"**/*.class": true
+	},
+	"java.project.sourcePaths": ["ggc-core/src", "ggc-app/src"],
+	"java.project.referencedLibraries": [
+		"lib/**/*.jar",
+		"po-uilib/po-uilib.jar"
+	]
 }

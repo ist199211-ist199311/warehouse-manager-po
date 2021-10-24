@@ -8,24 +8,24 @@ public class RecipeProduct implements Serializable {
      */
     private static final long serialVersionUID = 202110221420L;
 
-    private int quantity;
-    private Product product;
+  private int quantity;
+  private Product product;
 
-    public RecipeProduct(int quantity, Product product) {
-        this.quantity = quantity;
-        this.product = product;
-    }
+  public RecipeProduct(int quantity, Product product) {
+    this.quantity = quantity;
+    this.product = product;
+  }
 
-    public int getQuantity() {
-        return quantity;
-    }
+  public int getQuantity() {
+    return quantity;
+  }
 
-    public Product getProduct() {
-        return product;
-    }
+  public Product getProduct() {
+    return product;
+  }
 
-    @Override
-    public String toString() {
-        return this.getProduct().getId() + ":" + this.getQuantity();
-    }
+  @Override
+  public String toString() {
+    return this.getProduct().getId() + ":" + this.getQuantity();
+  }
 }

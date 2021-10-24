@@ -18,7 +18,7 @@ class DoToggleProductNotifications extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
+    // FIXME implement command
   }
 
 }

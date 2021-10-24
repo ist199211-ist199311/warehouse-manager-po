@@ -11,25 +11,25 @@ public class Recipe implements Serializable {
      */
     private static final long serialVersionUID = 202110221420L;
 
-    private final List<RecipeProduct> recipeProducts = new ArrayList<>();
-    private double aggravatingFactor;
+  private final List<RecipeProduct> recipeProducts = new ArrayList<>();
+  private double aggravatingFactor;
 
-    public Recipe(double aggravatingFactor, List<RecipeProduct> products) {
-        this.aggravatingFactor = aggravatingFactor;
-        recipeProducts.addAll(products);
-    }
+  public Recipe(double aggravatingFactor, List<RecipeProduct> products) {
+    this.aggravatingFactor = aggravatingFactor;
+    recipeProducts.addAll(products);
+  }
 
-    public double getAggravatingFactor() {
-        return aggravatingFactor;
-    }
+  public double getAggravatingFactor() {
+    return aggravatingFactor;
+  }
 
-    public List<RecipeProduct> getRecipeProducts() {
-        return recipeProducts;
-    }
+  public List<RecipeProduct> getRecipeProducts() {
+    return recipeProducts;
+  }
 
-    @Override
-    public String toString() {
-        return this.getAggravatingFactor() + "|" +
-                this.getRecipeProducts().stream().map(RecipeProduct::toString).collect(Collectors.joining("#"));
-    }
+  @Override
+  public String toString() {
+    return this.getAggravatingFactor() + "|"
+        + this.getRecipeProducts().stream().map(RecipeProduct::toString).collect(Collectors.joining("#"));
+  }
 }

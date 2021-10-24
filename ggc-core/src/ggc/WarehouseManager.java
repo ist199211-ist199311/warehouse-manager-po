@@ -1,10 +1,14 @@
 package ggc;
 
 import ggc.exceptions.BadEntryException;
+import ggc.exceptions.DuplicatePartnerKeyException;
+import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.ImportFileException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
+import ggc.exceptions.UnknownPartnerKeyException;
+import ggc.partners.Partner;
 import ggc.products.Product;
 
 import java.io.BufferedInputStream;
@@ -32,9 +36,9 @@ public class WarehouseManager {
    */
   private Warehouse _warehouse = new Warehouse();
 
-  //FIXME define other attributes
-  //FIXME define constructor(s)
-  //FIXME define other methods
+  // FIXME define other attributes
+  // FIXME define constructor(s)
+  // FIXME define other methods
 
   public void advanceDate(int days) throws InvalidDateException {
     this._warehouse.advanceDate(days);
@@ -46,6 +50,18 @@ public class WarehouseManager {
 
   public Collection<Product> getAllProducts() {
     return this._warehouse.getAllProducts();
+  }
+
+  public Collection<Partner> getAllPartners() {
+    return this._warehouse.getAllPartners();
+  }
+
+  public Partner getPartner(String key) throws UnknownPartnerKeyException {
+    return this._warehouse.getPartner(key);
+  }
+
+  public void registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
+    this._warehouse.registerPartner(id, name, address);
   }
 
   /**
@@ -91,9 +107,9 @@ public class WarehouseManager {
    */
   public void importFile(String textfile) throws ImportFileException {
     try {
-	    _warehouse.importFile(textfile);
-    } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ e) {
-	    throw new ImportFileException(textfile);
+      this._warehouse.importFile(textfile);
+    } catch (IOException | BadEntryException | IllegalEntryException e) {
+      throw new ImportFileException(textfile);
     }
   }
 
