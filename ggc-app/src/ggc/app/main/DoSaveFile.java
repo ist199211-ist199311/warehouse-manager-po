@@ -7,14 +7,15 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
 import java.io.IOException;
-//FIXME import classes
 
 /**
  * Save current state to file under current name (if unnamed, query for name).
  */
 class DoSaveFile extends Command<WarehouseManager> {
 
-  /** @param receiver */
+  /**
+   * @param receiver
+   */
   DoSaveFile(WarehouseManager receiver) {
     super(Label.SAVE, receiver);
   }

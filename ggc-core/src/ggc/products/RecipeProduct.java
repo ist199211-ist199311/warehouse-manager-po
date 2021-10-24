@@ -3,10 +3,10 @@ package ggc.products;
 import java.io.Serializable;
 
 public class RecipeProduct implements Serializable {
-    /**
-     * Serial number for serialization.
-     */
-    private static final long serialVersionUID = 202110221420L;
+  /**
+   * Serial number for serialization.
+   */
+  private static final long serialVersionUID = 202110221420L;
 
   private int quantity;
   private Product product;

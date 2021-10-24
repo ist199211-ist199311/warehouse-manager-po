@@ -2,14 +2,16 @@ package ggc.products;
 
 import ggc.partners.Partner;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
 
 public class Batch implements Comparable<Batch>, Serializable {
-    /**
-     * Serial number for serialization.
-     */
-    private static final long serialVersionUID = 202110221420L;
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
+  private static final long serialVersionUID = 202110221420L;
 
   private int quantity;
   private double price;
@@ -46,7 +48,10 @@ public class Batch implements Comparable<Batch>, Serializable {
   @Override
   public int compareTo(Batch batch) {
     // TODO review
-    return Comparator.comparing(Batch::getProduct).thenComparing(Batch::getPartner).thenComparingDouble(Batch::getPrice)
-        .thenComparingInt(Batch::getQuantity).compare(this, batch);
+    return Comparator.comparing(Batch::getProduct)
+            .thenComparing(Batch::getPartner)
+            .thenComparingDouble(Batch::getPrice)
+            .thenComparingInt(Batch::getQuantity)
+            .compare(this, batch);
   }
 }

@@ -1,13 +1,15 @@
 package ggc.partners;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
 public class Partner implements Comparable<Partner>, Serializable {
-    /**
-     * Serial number for serialization.
-     */
-    private static final long serialVersionUID = 202110221420L;
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
+  private static final long serialVersionUID = 202110221420L;
 
   // TODO: not complete
   private String id;

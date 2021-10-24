@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Recipe implements Serializable {
-    /**
-     * Serial number for serialization.
-     */
-    private static final long serialVersionUID = 202110221420L;
+  /**
+   * Serial number for serialization.
+   */
+  private static final long serialVersionUID = 202110221420L;
 
   private final List<RecipeProduct> recipeProducts = new ArrayList<>();
   private double aggravatingFactor;
@@ -30,6 +30,6 @@ public class Recipe implements Serializable {
   @Override
   public String toString() {
     return this.getAggravatingFactor() + "|"
-        + this.getRecipeProducts().stream().map(RecipeProduct::toString).collect(Collectors.joining("#"));
+            + this.getRecipeProducts().stream().map(RecipeProduct::toString).collect(Collectors.joining("#"));
   }
 }

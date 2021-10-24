@@ -11,7 +11,9 @@ import pt.tecnico.uilib.menus.CommandException;
  */
 class DoOpenFile extends Command<WarehouseManager> {
 
-  /** @param receiver */
+  /**
+   * @param receiver
+   */
   DoOpenFile(WarehouseManager receiver) {
     super(Label.OPEN, receiver);
     addStringField("fileName", Prompt.openFile());
