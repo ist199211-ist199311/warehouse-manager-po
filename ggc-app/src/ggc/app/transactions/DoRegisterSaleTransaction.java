@@ -20,7 +20,7 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    // FIXME implement command
   }
 
 }

@@ -1,25 +1,40 @@
 package ggc.app.main;
 
+import ggc.WarehouseManager;
+import ggc.exceptions.MissingFileAssociationException;
+import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
-//FIXME import classes
+
+import java.io.IOException;
 
 /**
  * Save current state to file under current name (if unnamed, query for name).
  */
 class DoSaveFile extends Command<WarehouseManager> {
 
-  /** @param receiver */
+  /**
+   * @param receiver
+   */
   DoSaveFile(WarehouseManager receiver) {
     super(Label.SAVE, receiver);
-    // TODO if no file opened
-    addStringField("fileName", Prompt.newSaveAs());
   }
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    try {
+      _receiver.save();
+    } catch (MissingFileAssociationException e) {
+      try {
+        _receiver.saveAs(Form.requestString(Prompt.newSaveAs()));
+      } catch (MissingFileAssociationException | IOException ex) {
+        // TODO ??
+        ex.printStackTrace();
+      }
+    } catch (IOException e) {
+      // TODO ??
+      e.printStackTrace();
+    }
   }
 
 }

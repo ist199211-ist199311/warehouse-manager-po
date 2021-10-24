@@ -1,25 +1,31 @@
 package ggc.products;
 
-public class RecipeProduct {
+import java.io.Serializable;
 
-    private int quantity;
-    private Product product;
+public class RecipeProduct implements Serializable {
+  /**
+   * Serial number for serialization.
+   */
+  private static final long serialVersionUID = 202110221420L;
 
-    public RecipeProduct(int quantity, Product product) {
-        this.quantity = quantity;
-        this.product = product;
-    }
+  private int quantity;
+  private Product product;
 
-    public int getQuantity() {
-        return quantity;
-    }
+  public RecipeProduct(int quantity, Product product) {
+    this.quantity = quantity;
+    this.product = product;
+  }
 
-    public Product getProduct() {
-        return product;
-    }
+  public int getQuantity() {
+    return quantity;
+  }
 
-    @Override
-    public String toString() {
-        return this.getProduct().getId() + ":" + this.getQuantity();
-    }
+  public Product getProduct() {
+    return product;
+  }
+
+  @Override
+  public String toString() {
+    return this.getProduct().getId() + ":" + this.getQuantity();
+  }
 }
