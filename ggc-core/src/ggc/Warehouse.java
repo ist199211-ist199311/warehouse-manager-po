@@ -62,7 +62,7 @@ public class Warehouse implements Serializable {
   }
 
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
-    Partner p = this.partners.get(key);
+    Partner p = this.partners.get(normalizeKey(key));
     if (p == null) {
       throw new UnknownPartnerKeyException(key);
     }
@@ -70,7 +70,7 @@ public class Warehouse implements Serializable {
   }
 
   public Product getProduct(String key) throws UnknownProductKeyException {
-    Product p = this.products.get(key);
+    Product p = this.products.get(normalizeKey(key));
     if (p == null) {
       throw new UnknownProductKeyException(key);
     }
@@ -161,21 +161,35 @@ public class Warehouse implements Serializable {
   }
 
   public Partner registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
-    if (this.partners.containsKey(id)) throw new DuplicatePartnerKeyException(id);
+    String normalizedKey = normalizeKey(id);
+    if (this.partners.containsKey(normalizedKey)) throw new DuplicatePartnerKeyException(id);
     Partner p = new Partner(id, name, address);
-    this.partners.put(p.getId(), p);
+    this.partners.put(normalizedKey, p);
     return p;
   }
 
   private Product registerSimpleProduct(String id) {
+    String normalizedKey = normalizeKey(id);
     Product p = new Product(id);
-    this.products.put(p.getId(), p);
+    this.products.put(normalizedKey, p);
     return p;
   }
 
   private DerivedProduct registerDerivedProduct(String id, Recipe recipe) {
+    String normalizedKey = normalizeKey(id);
     DerivedProduct p = new DerivedProduct(id, recipe);
-    this.products.put(p.getId(), p);
+    this.products.put(normalizedKey, p);
     return p;
   }
+
+  /**
+   * Normalizes a key by converting it to upper case.
+   *
+   * @param key The key to be normalized.
+   * @return The result of normalizing a key, that is, converting it to upper case.
+   */
+  private String normalizeKey(String key) {
+    return key.toUpperCase();
+  }
+
 }
