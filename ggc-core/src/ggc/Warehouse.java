@@ -1,10 +1,10 @@
 package ggc;
 
-import ggc.exceptions.UnknownPartnerKeyException;
-import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
+import ggc.exceptions.UnknownPartnerKeyException;
+import ggc.exceptions.UnknownProductKeyException;
 import ggc.partners.Partner;
 import ggc.products.DerivedProduct;
 import ggc.products.Product;
@@ -14,12 +14,13 @@ import ggc.products.RecipeProduct;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -30,14 +31,15 @@ public class Warehouse implements Serializable {
   /**
    * Serial number for serialization.
    */
+  @Serial
   private static final long serialVersionUID = 202109192006L;
 
   private int date = 0;
-  private Map<String, Product> products = new HashMap<>();
-  private Map<String, Partner> partners = new HashMap<>();
+  private final Map<String, Product> products = new TreeMap<>();
+  private final Map<String, Partner> partners = new TreeMap<>();
 
   // FIXME define attributes
-  // FIXME define contructor(s)
+  // FIXME define constructor(s)
   // FIXME define methods
 
   public int displayDate() {
@@ -72,34 +74,33 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * @param txtfile filename to be loaded.
+   * @param txtFile filename to be loaded.
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile) throws IOException, BadEntryException, IllegalEntryException {
-    try (BufferedReader s = new BufferedReader(new FileReader(txtfile))) {
+  void importFile(String txtFile) throws IOException, BadEntryException, IllegalEntryException {
+    try (BufferedReader s = new BufferedReader(new FileReader(txtFile))) {
       String line;
       while ((line = s.readLine()) != null) {
-        importFromFields(line.split("|"));
+        importFromFields(line.split("\\|"));
       }
     }
   }
 
   private void importFromFields(String[] fields) throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
-    case "PARTNER" -> this.importPartner(fields);
-    case "BATCH_S" -> this.importSimpleBatch(fields);
-    case "BATCH_M" -> this.importMultiBatch(fields);
-    default -> throw new BadEntryException(String.join("|", fields));
+      case "PARTNER" -> this.importPartner(fields);
+      case "BATCH_S" -> this.importSimpleBatch(fields);
+      case "BATCH_M" -> this.importMultiBatch(fields);
+      default -> throw new BadEntryException(String.join("|", fields));
     }
   }
 
   private void importPartner(String[] fields) throws IllegalEntryException {
-    if (fields.length == 4) {
-      this.registerPartner(fields[1], fields[2], fields[3]);
-    } else {
+    if (fields.length != 4) {
       throw new IllegalEntryException(fields);
     }
+    this.registerPartner(fields[1], fields[2], fields[3]);
   }
 
   private void importSimpleBatch(String[] fields) throws IllegalEntryException {
@@ -134,7 +135,7 @@ public class Warehouse implements Serializable {
   }
 
   private Recipe importRecipe(String aggravatingFactor, String productsDescription) throws NumberFormatException {
-    List<RecipeProduct> products = new ArrayList<RecipeProduct>();
+    List<RecipeProduct> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
       String[] fields = desc.split(":");
