@@ -1,5 +1,6 @@
 package ggc.app.products;
 
+import pt.tecnico.uilib.Display;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
@@ -16,7 +17,7 @@ class DoShowAvailableBatches extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    // FIXME implement command
+    _receiver.getAllBatches().forEach(_display::popup);
   }
 
 }

@@ -9,6 +9,7 @@ import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.partners.Partner;
+import ggc.products.Batch;
 import ggc.products.Product;
 
 import java.io.BufferedInputStream;
@@ -54,6 +55,10 @@ public class WarehouseManager {
 
   public Collection<Partner> getAllPartners() {
     return this._warehouse.getAllPartners();
+  }
+
+  public Collection<Batch> getAllBatches() {
+    return this._warehouse.getAllBatches();
   }
 
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
