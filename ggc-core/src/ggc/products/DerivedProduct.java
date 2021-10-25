@@ -3,9 +3,7 @@ package ggc.products;
 import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 
-import java.io.Serializable;
-
-public class DerivedProduct extends Product implements Serializable {
+public class DerivedProduct extends Product {
   /**
    * Serial number for serialization.
    */
