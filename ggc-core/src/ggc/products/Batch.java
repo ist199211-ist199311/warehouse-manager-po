@@ -5,6 +5,7 @@ import ggc.partners.Partner;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.StringJoiner;
 
 public class Batch implements Comparable<Batch>, Serializable {
   /**
@@ -49,9 +50,19 @@ public class Batch implements Comparable<Batch>, Serializable {
   public int compareTo(Batch batch) {
     // TODO review
     return Comparator.comparing(Batch::getProduct)
-            .thenComparing(Batch::getPartner)
-            .thenComparingDouble(Batch::getPrice)
-            .thenComparingInt(Batch::getQuantity)
-            .compare(this, batch);
+        .thenComparing(Batch::getPartner)
+        .thenComparingDouble(Batch::getPrice)
+        .thenComparingInt(Batch::getQuantity)
+        .compare(this, batch);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner("|")
+        .add(this.getProduct().getId())
+        .add(this.getPartner().getId())
+        .add(Long.toString(Math.round(this.getPrice())))
+        .add(Integer.toString(this.getQuantity()))
+        .toString();
   }
 }
