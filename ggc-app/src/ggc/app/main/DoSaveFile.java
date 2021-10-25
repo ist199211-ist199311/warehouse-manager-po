@@ -23,17 +23,22 @@ class DoSaveFile extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     try {
-      _receiver.save();
-    } catch (MissingFileAssociationException e) {
       try {
-        _receiver.saveAs(Form.requestString(Prompt.newSaveAs()));
-      } catch (MissingFileAssociationException | IOException ex) {
-        // TODO ??
-        ex.printStackTrace();
+        _receiver.save();
+      } catch (MissingFileAssociationException ex) {
+        saveAs();
       }
     } catch (IOException e) {
       // TODO ??
       e.printStackTrace();
+    }
+  }
+
+  private void saveAs() throws IOException {
+    try {
+      _receiver.saveAs(Form.requestString(Prompt.newSaveAs()));
+    } catch (MissingFileAssociationException e) {
+      saveAs();
     }
   }
 
