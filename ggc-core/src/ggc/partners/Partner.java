@@ -2,6 +2,8 @@ package ggc.partners;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.text.Collator;
+import java.util.Locale;
 import java.util.StringJoiner;
 
 public class Partner implements Comparable<Partner>, Serializable {
@@ -48,21 +50,23 @@ public class Partner implements Comparable<Partner>, Serializable {
 
   @Override
   public int compareTo(Partner partner) {
-    // TODO
-    return 0;
+    Collator collator = Collator.getInstance(Locale.getDefault());
+    collator.setStrength(Collator.PRIMARY);
+    // ^ dangerous! this sets strength for singleton used everywhere
+    return collator.compare(this.getId(), partner.getId());
   }
 
   @Override
   public String toString() {
     return new StringJoiner("|")
-            .add(this.getId())
-            .add(this.getName())
-            .add(this.getAddress())
-            .add("NORMAL") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .toString();
+        .add(this.getId())
+        .add(this.getName())
+        .add(this.getAddress())
+        .add("NORMAL") // TODO
+        .add("0") // TODO
+        .add("0") // TODO
+        .add("0") // TODO
+        .add("0") // TODO
+        .toString();
   }
 }

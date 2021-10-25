@@ -4,12 +4,14 @@ import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -45,7 +47,8 @@ public class Product implements Comparable<Product>, Serializable {
   }
 
   public int getQuantityInBatches() {
-    return this.batches.stream().map(Batch::getQuantity).reduce((i1, i2) -> i1 + i2).orElse(0);
+    return this.batches.stream().map(Batch::getQuantity)
+        .reduce((i1, i2) -> i1 + i2).orElse(0);
   }
 
   public int getTotalQuantity() {
@@ -78,7 +81,8 @@ public class Product implements Comparable<Product>, Serializable {
     // TODO get all time most expensive price (from transactions)
     // TODO is it all time or from existing batches?
     // TODO assuming existing batches right now
-    return this.batches.stream().map(Batch::getPrice).reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
+    return this.batches.stream().map(Batch::getPrice)
+        .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
   }
 
   public void subscribe(Partner partner) {
@@ -102,20 +106,24 @@ public class Product implements Comparable<Product>, Serializable {
   }
 
   private void ensureBatchesSorted() {
-    this.batches.sort(Comparator.comparingDouble(Batch::getPrice).thenComparingInt(Batch::getQuantity));
+    this.batches.sort(Comparator.comparingDouble(Batch::getPrice)
+        .thenComparingInt(Batch::getQuantity));
   }
 
   @Override
   public int compareTo(Product product) {
-    return this.id.compareTo(product.getId());
+    Collator collator = Collator.getInstance(Locale.getDefault());
+    collator.setStrength(Collator.PRIMARY);
+    // ^ dangerous! this sets strength for singleton used everywhere
+    return collator.compare(this.getId(), product.getId());
   }
 
   @Override
   public String toString() {
     return new StringJoiner("|")
-            .add(this.getId())
-            .add(Objects.toString(Math.round(this.getMostExpensivePrice())))
-            .add(Objects.toString(this.getQuantityInBatches()))
-            .toString();
+        .add(this.getId())
+        .add(Long.toString(Math.round(this.getMostExpensivePrice())))
+        .add(Integer.toString(this.getQuantityInBatches()))
+        .toString();
   }
 }

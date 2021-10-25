@@ -30,6 +30,9 @@ public class Recipe implements Serializable {
   @Override
   public String toString() {
     return this.getAggravatingFactor() + "|"
-            + this.getRecipeProducts().stream().map(RecipeProduct::toString).collect(Collectors.joining("#"));
+        + this.getRecipeProducts()
+            .stream()
+            .map(RecipeProduct::toString)
+            .collect(Collectors.joining("#"));
   }
 }
