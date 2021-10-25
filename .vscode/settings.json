@@ -9,5 +9,6 @@
 	"java.project.referencedLibraries": [
 		"lib/**/*.jar",
 		"po-uilib/po-uilib.jar"
-	]
+	],
+	"java.format.settings.url": ".vscode/java-formatter.xml"
 }
