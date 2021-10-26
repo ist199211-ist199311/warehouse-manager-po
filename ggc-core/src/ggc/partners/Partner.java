@@ -69,4 +69,15 @@ public class Partner implements Comparable<Partner>, Serializable {
         .add("0") // TODO
         .toString();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Partner) {
+      Partner p = (Partner) o;
+      return this.getId().equals(p.getId())
+          && this.getName().equals(p.getName())
+          && this.getAddress().equals(p.getAddress());
+    }
+    return false;
+  }
 }
