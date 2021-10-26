@@ -2,16 +2,16 @@ package ggc.products;
 
 import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
+import ggc.util.NaturalTextComparator;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.BinaryOperator;
@@ -20,7 +20,10 @@ public class Product implements Comparable<Product>, Serializable {
   /**
    * Serial number for serialization.
    */
+  @Serial
   private static final long serialVersionUID = 202110221420L;
+
+  private final Comparator<String> idComparator = new NaturalTextComparator();
 
   private final String id;
   private final List<Batch> batches = new ArrayList<>();
@@ -111,10 +114,7 @@ public class Product implements Comparable<Product>, Serializable {
 
   @Override
   public int compareTo(Product product) {
-    Collator collator = Collator.getInstance(Locale.getDefault());
-    collator.setStrength(Collator.PRIMARY);
-    // ^ dangerous! this sets strength for singleton used everywhere
-    return collator.compare(this.getId(), product.getId());
+    return idComparator.compare(this.getId(), product.getId());
   }
 
   @Override

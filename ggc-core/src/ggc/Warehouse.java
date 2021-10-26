@@ -12,6 +12,7 @@ import ggc.products.DerivedProduct;
 import ggc.products.Product;
 import ggc.products.Recipe;
 import ggc.products.RecipeProduct;
+import ggc.util.NaturalTextComparator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -36,8 +37,8 @@ public class Warehouse implements Serializable {
   @Serial
   private static final long serialVersionUID = 202109192006L;
 
-  private final Map<String, Product> products = new TreeMap<>();
-  private final Map<String, Partner> partners = new TreeMap<>();
+  private final Map<String, Product> products = new TreeMap<>(new NaturalTextComparator());
+  private final Map<String, Partner> partners = new TreeMap<>(new NaturalTextComparator());
   private int date = 0;
 
   /**

@@ -15,9 +15,9 @@ public class Batch implements Comparable<Batch>, Serializable {
   private static final long serialVersionUID = 202110221420L;
 
   private int quantity;
-  private double price;
-  private Product product;
-  private Partner partner;
+  private final double price;
+  private final Product product;
+  private final Partner partner;
 
   public Batch(int quantity, double price, Product product, Partner partner) {
     this.quantity = quantity;

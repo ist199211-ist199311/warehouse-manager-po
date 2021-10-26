@@ -1,9 +1,10 @@
 package ggc.partners;
 
+import ggc.util.NaturalTextComparator;
+
 import java.io.Serial;
 import java.io.Serializable;
-import java.text.Collator;
-import java.util.Locale;
+import java.util.Comparator;
 import java.util.StringJoiner;
 
 public class Partner implements Comparable<Partner>, Serializable {
@@ -12,6 +13,8 @@ public class Partner implements Comparable<Partner>, Serializable {
    */
   @Serial
   private static final long serialVersionUID = 202110221420L;
+
+  private final Comparator<String> idComparator = new NaturalTextComparator();
 
   // TODO: not complete
   private String id;
@@ -50,10 +53,7 @@ public class Partner implements Comparable<Partner>, Serializable {
 
   @Override
   public int compareTo(Partner partner) {
-    Collator collator = Collator.getInstance(Locale.getDefault());
-    collator.setStrength(Collator.PRIMARY);
-    // ^ dangerous! this sets strength for singleton used everywhere
-    return collator.compare(this.getId(), partner.getId());
+    return idComparator.compare(this.getId(), partner.getId());
   }
 
   @Override
