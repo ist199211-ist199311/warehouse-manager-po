@@ -32,11 +32,15 @@ public class Product implements Comparable<Product>, Serializable {
   }
 
   public String getId() {
-    return id;
+    return this.id;
   }
 
   public List<Batch> getBatches() {
-    return batches;
+    return this.batches;
+  }
+
+  public Set<Partner> getSubscribers() {
+    return this.subscribers;
   }
 
   public Batch registerBatch(int quantity, double price, Partner partner) {
@@ -71,9 +75,9 @@ public class Product implements Comparable<Product>, Serializable {
 
   public double getCheapestPrice() throws OutOfStockException {
     ensureBatchesSorted();
-    if (batches.size() == 0)
+    if (this.batches.size() == 0)
       throw new OutOfStockException();
-    return batches.get(0).getPrice();
+    return this.batches.get(0).getPrice();
   }
 
   public double getMostExpensivePrice() {
@@ -124,5 +128,16 @@ public class Product implements Comparable<Product>, Serializable {
         .add(Long.toString(Math.round(this.getMostExpensivePrice())))
         .add(Integer.toString(this.getQuantityInBatches()))
         .toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Product) {
+      Product p = (Product) o;
+      return this.getId().equals(p.getId())
+          && this.getBatches().equals(p.getBatches())
+          && this.getSubscribers().equals(p.getSubscribers());
+    }
+    return false;
   }
 }
