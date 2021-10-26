@@ -73,8 +73,8 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Get all partners known to the warehouse, sorted by their normalized key, that
-   * is, their key ignoring case.
+   * Get all partners known to the warehouse, sorted by their normalized key,
+   * that is, their key ignoring case.
    *
    * @return A sorted {@link Collection} of partners
    */
@@ -88,13 +88,14 @@ public class Warehouse implements Serializable {
    * @return A sorted {@link Collection} of batches
    */
   public Collection<Batch> getAllBatches() {
-    return this.products.values().stream().flatMap(product -> product.getBatches().stream()).sorted()
+    return this.products.values().stream()
+        .flatMap(product -> product.getBatches().stream()).sorted()
         .collect(Collectors.toList());
   }
 
   /**
-   * Get a partner by its key. Two partners are the same if their normalized keys
-   * are the same, that is, their keys are the same ignoring case.
+   * Get a partner by its key. Two partners are the same if their normalized
+   * keys are the same, that is, their keys are the same ignoring case.
    *
    * @param key The (non-normalized) key of the partner to get
    * @return The {@link Partner} associated with the given key
@@ -110,8 +111,8 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Get a product by its key. Two products are the same if their normalized keys
-   * are the same, that is, their keys are the same ignoring case.
+   * Get a product by its key. Two products are the same if their normalized
+   * keys are the same, that is, their keys are the same ignoring case.
    *
    * @param key The (non-normalized) key of the product to get
    * @return The {@link Product} associated with the given key
@@ -134,10 +135,11 @@ public class Warehouse implements Serializable {
    *                               file not existing, or is a directory
    * @throws BadEntryException     if an entry (line) in the file has an unknown
    *                               type
-   * @throws IllegalEntryException if an entry (line) in the file is not correctly
-   *                               formatted for its type
+   * @throws IllegalEntryException if an entry (line) in the file is not
+   *                               correctly formatted for its type
    */
-  void importFile(String textFile) throws IOException, BadEntryException, IllegalEntryException {
+  void importFile(String textFile)
+      throws IOException, BadEntryException, IllegalEntryException {
     try (BufferedReader s = new BufferedReader(new FileReader(textFile))) {
       String line;
       while ((line = s.readLine()) != null) {
@@ -151,12 +153,13 @@ public class Warehouse implements Serializable {
    *
    * @param fields The fields of the entry to import, that were split by the
    *               separator
-   * @throws BadEntryException     if the entry type is unknown and not supported
-   *                               by the program
+   * @throws BadEntryException     if the entry type is unknown and not
+   *                               supported by the program
    * @throws IllegalEntryException if the entry does not have the correct fields
    *                               for its type
    */
-  private void importFromFields(String[] fields) throws BadEntryException, IllegalEntryException {
+  private void importFromFields(String[] fields)
+      throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
     case "PARTNER" -> this.importPartner(fields);
     case "BATCH_S" -> this.importSimpleBatch(fields);
@@ -208,21 +211,22 @@ public class Warehouse implements Serializable {
       } catch (UnknownProductKeyException e) {
         product = this.registerSimpleProduct(fields[1]);
       }
-      product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
+      product.registerBatch(Integer.parseInt(fields[4]),
+          Double.parseDouble(fields[3]), partner);
     } catch (UnknownPartnerKeyException | NumberFormatException e) {
       throw new IllegalEntryException(fields);
     }
   }
 
   /**
-   * Parse and import a multi batch entry from a plain text file. Also imports the
-   * associated product if it does not exist.
+   * Parse and import a multi batch entry from a plain text file. Also imports
+   * the associated product if it does not exist.
    * <p>
    * A correct multi batch entry has the following format:
    * {@code BATCH_M|productId|partnerId|price|current-stock|aggravating-factor|component-1:quantity-1#...#component-n:quantity-n}
    *
-   * @param fields The fields of the multi batch to import, that were split by the
-   *               separator
+   * @param fields The fields of the multi batch to import, that were split by
+   *               the separator
    * @throws IllegalEntryException if the entry does not have the correct fields
    *                               for its type
    */
@@ -236,16 +240,17 @@ public class Warehouse implements Serializable {
         Recipe recipe = this.importRecipe(fields[5], fields[6]);
         product = this.registerDerivedProduct(fields[1], recipe);
       }
-      product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
+      product.registerBatch(Integer.parseInt(fields[4]),
+          Double.parseDouble(fields[3]), partner);
     } catch (UnknownPartnerKeyException | NumberFormatException e) {
       throw new IllegalEntryException(fields);
     }
   }
 
   /**
-   * Parse a recipe from its plain text format, to be used when importing a batch
-   * of a derived product. If any of the products referenced by the recipe don't
-   * exist, a simple product is created in its place.
+   * Parse a recipe from its plain text format, to be used when importing a
+   * batch of a derived product. If any of the products referenced by the recipe
+   * don't exist, a simple product is created in its place.
    *
    * @param aggravatingFactor   The aggravating factor of the recipe, which will
    *                            be converted to a double
@@ -253,10 +258,11 @@ public class Warehouse implements Serializable {
    *                            the format
    *                            {@code component-1:quantity-1#...#component-n:quantity-n}
    * @return The {@link Recipe} created from the given parameters
-   * @throws NumberFormatException if the aggravating factor or one of the product
-   *                               quantities is not a number
+   * @throws NumberFormatException if the aggravating factor or one of the
+   *                               product quantities is not a number
    */
-  private Recipe importRecipe(String aggravatingFactor, String productsDescription) throws NumberFormatException {
+  private Recipe importRecipe(String aggravatingFactor,
+      String productsDescription) throws NumberFormatException {
     List<RecipeProduct> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
@@ -285,7 +291,8 @@ public class Warehouse implements Serializable {
    * @throws DuplicatePartnerKeyException if a partner with the given key (after
    *                                      being normalized) already exists
    */
-  public Partner registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
+  public Partner registerPartner(String id, String name, String address)
+      throws DuplicatePartnerKeyException {
     String normalizedKey = normalizeKey(id);
     if (this.partners.containsKey(normalizedKey)) {
       throw new DuplicatePartnerKeyException(id);
@@ -311,8 +318,8 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Register a new derived product in this warehouse, which will be created from
-   * the given parameters.
+   * Register a new derived product in this warehouse, which will be created
+   * from the given parameters.
    *
    * @param id     The key of the product
    * @param recipe The {@link Recipe} of the derived product
@@ -334,6 +341,22 @@ public class Warehouse implements Serializable {
    */
   private String normalizeKey(String key) {
     return key.toUpperCase();
+  }
+
+  /**
+   * Determines if the warehouse is equal to another one
+   * 
+   * @return Whether this object equals another one
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Warehouse) {
+      Warehouse w = (Warehouse) o;
+      return this.displayDate() == w.displayDate()
+          && this.getAllPartners().equals(w.getAllPartners())
+          && this.getAllProducts().equals(w.getAllProducts());
+    }
+    return false;
   }
 
 }
