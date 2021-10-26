@@ -61,53 +61,63 @@ public class WarehouseManager {
     return this._warehouse.getPartner(key);
   }
 
-  public void registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
+  public void registerPartner(String id, String name, String address)
+      throws DuplicatePartnerKeyException {
     this._warehouse.registerPartner(id, name, address);
   }
 
   /**
-   * Saves the current application state to the current file (either that was previously saved
-   * to, or loaded from) as binary data. Nothing is written to disk if the application state
-   * has not changed since the last save.
+   * Saves the current application state to the current file (either that was
+   * previously saved to, or loaded from) as binary data. Nothing is written to
+   * disk if the application state has not changed since the last save.
    *
    * @throws IOException
    * @throws FileNotFoundException
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
-  public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
+  public void save() throws IOException, FileNotFoundException,
+      MissingFileAssociationException {
     if (_filename == null || _filename.isBlank())
       throw new MissingFileAssociationException();
 
-    try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)))) {
-      out.writeObject(_warehouse);
+    if (_warehouse.isDirty()) {
+      try (ObjectOutputStream out = new ObjectOutputStream(
+          new BufferedOutputStream(new FileOutputStream(_filename)))) {
+        out.writeObject(_warehouse);
+      }
+      _warehouse.clean();
     }
   }
 
   /**
    * Saves the current application state to the specified file as binary data.
-   * Nothing is written if the application state has not changed since
-   * the last save.
+   * Nothing is written if the application state has not changed since the last
+   * save.
    *
    * @param fileName the name or path of the file to save to
    * @throws MissingFileAssociationException if the file to save to is unknown
    * @throws IOException
    * @throws FileNotFoundException
    */
-  public void saveAs(String fileName) throws MissingFileAssociationException, FileNotFoundException, IOException {
+  public void saveAs(String fileName) throws MissingFileAssociationException,
+      FileNotFoundException, IOException {
     _filename = fileName;
     save();
   }
 
   /**
-   * Loads the application state from the specified file, containing binary data saved previously by the application.
-   * Additionally, stores the file name/path for future saves using {@link WarehouseManager#save()}.
+   * Loads the application state from the specified file, containing binary data
+   * saved previously by the application. Additionally, stores the file
+   * name/path for future saves using {@link WarehouseManager#save()}.
    *
    * @param fileName the name or path of the file to load from
-   * @throws UnavailableFileException if an input/output error occurs, such as the file not existing or not having
-   *                                  valid binary data
+   * @throws UnavailableFileException if an input/output error occurs, such as
+   *                                  the file not existing or not having valid
+   *                                  binary data
    */
   public void load(String fileName) throws UnavailableFileException {
-    try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fileName)))) {
+    try (ObjectInputStream in = new ObjectInputStream(
+        new BufferedInputStream(new FileInputStream(fileName)))) {
       _warehouse = (Warehouse) in.readObject();
       this._filename = fileName;
     } catch (IOException | ClassNotFoundException e) {
@@ -116,11 +126,13 @@ public class WarehouseManager {
   }
 
   /**
-   * Imports data from a plaintext file where each line represents a single object.
+   * Imports data from a plaintext file where each line represents a single
+   * object.
    *
    * @param textFile the name or path of the text file to import data from
-   * @throws ImportFileException if any I/O error occurs, such as the file not existing, or if the file
-   *                             contains malformed data
+   * @throws ImportFileException if any I/O error occurs, such as the file not
+   *                             existing, or if the file contains malformed
+   *                             data
    */
   public void importFile(String textFile) throws ImportFileException {
     try {
