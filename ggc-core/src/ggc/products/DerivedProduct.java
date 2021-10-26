@@ -47,4 +47,13 @@ public class DerivedProduct extends Product {
   public String toString() {
     return super.toString() + "|" + this.recipe.toString();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof DerivedProduct) {
+      DerivedProduct p = (DerivedProduct) o;
+      return super.equals(p) && this.getRecipe().equals(p.getRecipe());
+    }
+    return false;
+  }
 }
