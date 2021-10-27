@@ -65,7 +65,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Get all products known to the warehouse, simple or derived, sorted by their
-   * normalized key, that is, their key ignoring case.
+   * case-insensitive key, that is, their key ignoring case.
    *
    * @return A sorted {@link Collection} of products
    */
@@ -74,7 +74,7 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Get all partners known to the warehouse, sorted by their normalized key, that
+   * Get all partners known to the warehouse, sorted by their case-insensitive key, that
    * is, their key ignoring case.
    *
    * @return A sorted {@link Collection} of partners
@@ -94,16 +94,16 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Get a partner by its key. Two partners are the same if their normalized keys
-   * are the same, that is, their keys are the same ignoring case.
+   * Get a partner by its key. Two partners are the same if their keys
+   * are the same (or only differ by case).
    *
-   * @param key The (non-normalized) key of the partner to get
+   * @param key The key of the partner to get
    * @return The {@link Partner} associated with the given key
    * @throws UnknownPartnerKeyException if there is no {@link Partner} with the
    *                                    given key
    */
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
-    Partner p = this.partners.get(normalizeKey(key));
+    Partner p = this.partners.get(key);
     if (p == null) {
       throw new UnknownPartnerKeyException(key);
     }
@@ -111,16 +111,16 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Get a product by its key. Two products are the same if their normalized keys
-   * are the same, that is, their keys are the same ignoring case.
+   * Get a product by its key. Two products are the same if their keys
+   * are the same (or only differ by case).
    *
-   * @param key The (non-normalized) key of the product to get
+   * @param key The key of the product to get
    * @return The {@link Product} associated with the given key
    * @throws UnknownProductKeyException if there is no {@link Product} with the
    *                                    given key
    */
   public Product getProduct(String key) throws UnknownProductKeyException {
-    Product p = this.products.get(normalizeKey(key));
+    Product p = this.products.get(key);
     if (p == null) {
       throw new UnknownProductKeyException(key);
     }
@@ -283,17 +283,15 @@ public class Warehouse implements Serializable {
    * @param name    The name of the partner
    * @param address The address of the partner
    * @return The {@link Partner} that was just created
-   * @throws DuplicatePartnerKeyException if a partner with the given key (after
-   *                                      being normalized) already exists
+   * @throws DuplicatePartnerKeyException if a partner with the given key (case-insensitive) already exists
    */
   public Partner registerPartner(String id, String name, String address) throws DuplicatePartnerKeyException {
-    String normalizedKey = normalizeKey(id);
-    if (this.partners.containsKey(normalizedKey)) {
+    if (this.partners.containsKey(id)) {
       throw new DuplicatePartnerKeyException(id);
     }
 
     Partner p = new Partner(id, name, address);
-    this.partners.put(normalizedKey, p);
+    this.partners.put(id, p);
     return p;
   }
 
@@ -305,9 +303,8 @@ public class Warehouse implements Serializable {
    * @return The {@link Product} that was just created
    */
   private Product registerSimpleProduct(String id) {
-    String normalizedKey = normalizeKey(id);
     Product p = new Product(id);
-    this.products.put(normalizedKey, p);
+    this.products.put(id, p);
     return p;
   }
 
@@ -320,21 +317,9 @@ public class Warehouse implements Serializable {
    * @return The {@link DerivedProduct} that was just created
    */
   private DerivedProduct registerDerivedProduct(String id, Recipe recipe) {
-    String normalizedKey = normalizeKey(id);
     DerivedProduct p = new DerivedProduct(id, recipe);
-    this.products.put(normalizedKey, p);
+    this.products.put(id, p);
     return p;
-  }
-
-  /**
-   * Normalizes a key by converting it to upper case.
-   *
-   * @param key The key to be normalized.
-   * @return The result of normalizing a key, that is, converting it to upper
-   * case.
-   */
-  private String normalizeKey(String key) {
-    return key.toUpperCase();
   }
 
 }
