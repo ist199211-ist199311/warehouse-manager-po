@@ -2,6 +2,7 @@ package ggc;
 
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.DuplicatePartnerKeyException;
+import ggc.exceptions.DuplicateProductKeyException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.UnknownPartnerKeyException;
@@ -210,7 +211,7 @@ public class Warehouse implements Serializable {
         product = this.registerSimpleProduct(fields[1]);
       }
       product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
-    } catch (UnknownPartnerKeyException | NumberFormatException e) {
+    } catch (UnknownPartnerKeyException | NumberFormatException | DuplicateProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -238,7 +239,7 @@ public class Warehouse implements Serializable {
         product = this.registerDerivedProduct(fields[1], recipe);
       }
       product.registerBatch(Integer.parseInt(fields[4]), Double.parseDouble(fields[3]), partner);
-    } catch (UnknownPartnerKeyException | NumberFormatException e) {
+    } catch (UnknownPartnerKeyException | NumberFormatException | DuplicateProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -268,7 +269,9 @@ public class Warehouse implements Serializable {
       try {
         prod = this.getProduct(prodKey);
       } catch (UnknownProductKeyException e) {
-        prod = this.registerSimpleProduct(prodKey);
+        //prod = this.registerSimpleProduct(prodKey);
+        // TODO throw error UnknownProductKeyException instead?
+        prod = null;
       }
       products.add(new RecipeProduct(quantity, prod));
     }
@@ -301,8 +304,13 @@ public class Warehouse implements Serializable {
    *
    * @param id The key of the product
    * @return The {@link Product} that was just created
+   * @throws DuplicateProductKeyException if a product with the given key (case-insensitive) already exists
    */
-  private Product registerSimpleProduct(String id) {
+  private Product registerSimpleProduct(String id) throws DuplicateProductKeyException {
+    if (this.products.containsKey(id)) {
+      throw new DuplicateProductKeyException(id);
+    }
+
     Product p = new Product(id);
     this.products.put(id, p);
     return p;
@@ -315,8 +323,13 @@ public class Warehouse implements Serializable {
    * @param id     The key of the product
    * @param recipe The {@link Recipe} of the derived product
    * @return The {@link DerivedProduct} that was just created
+   * @throws DuplicateProductKeyException if a product with the given key (case-insensitive) already exists
    */
-  private DerivedProduct registerDerivedProduct(String id, Recipe recipe) {
+  private DerivedProduct registerDerivedProduct(String id, Recipe recipe) throws DuplicateProductKeyException {
+    if (this.products.containsKey(id)) {
+      throw new DuplicateProductKeyException(id);
+    }
+
     DerivedProduct p = new DerivedProduct(id, recipe);
     this.products.put(id, p);
     return p;
