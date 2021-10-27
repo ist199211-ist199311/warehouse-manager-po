@@ -9,26 +9,25 @@ import java.util.Comparator;
 import java.util.Locale;
 
 public class NaturalTextComparator implements Comparator<String>, Serializable {
-    @Serial
-    private static final long serialVersionUID = 202110261408L;
+  @Serial
+  private static final long serialVersionUID = 202110261408L;
 
-    private transient Collator _collator;
+  private transient Collator _collator;
 
-    public NaturalTextComparator() {
-        _collator = Collator.getInstance(Locale.getDefault());
-        _collator.setStrength(Collator.PRIMARY);
-    }
+  public NaturalTextComparator() {
+    _collator = Collator.getInstance(Locale.getDefault());
+    _collator.setStrength(Collator.PRIMARY);
+  }
 
-    @Serial
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ois.defaultReadObject();
-        _collator = Collator.getInstance(Locale.getDefault());
-        _collator.setStrength(Collator.PRIMARY);
-        // TODO ^ dangerous! this sets strength for singleton used everywhere (?)
-    }
+  @Serial
+  private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    ois.defaultReadObject();
+    _collator = Collator.getInstance(Locale.getDefault());
+    _collator.setStrength(Collator.PRIMARY);
+  }
 
-    @Override
-    public int compare(String s1, String s2) {
-        return _collator.compare(s1, s2);
-    }
+  @Override
+  public int compare(String s1, String s2) {
+    return _collator.compare(s1, s2);
+  }
 }

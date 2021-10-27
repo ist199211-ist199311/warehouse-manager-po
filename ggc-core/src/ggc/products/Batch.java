@@ -13,11 +13,10 @@ public class Batch implements Comparable<Batch>, Serializable {
    */
   @Serial
   private static final long serialVersionUID = 202110221420L;
-
-  private int quantity;
   private final double price;
   private final Product product;
   private final Partner partner;
+  private int quantity;
 
   public Batch(int quantity, double price, Product product, Partner partner) {
     this.quantity = quantity;
@@ -48,21 +47,20 @@ public class Batch implements Comparable<Batch>, Serializable {
 
   @Override
   public int compareTo(Batch batch) {
-    // TODO review
     return Comparator.comparing(Batch::getProduct)
-        .thenComparing(Batch::getPartner)
-        .thenComparingDouble(Batch::getPrice)
-        .thenComparingInt(Batch::getQuantity)
-        .compare(this, batch);
+            .thenComparing(Batch::getPartner)
+            .thenComparingDouble(Batch::getPrice)
+            .thenComparingInt(Batch::getQuantity)
+            .compare(this, batch);
   }
 
   @Override
   public String toString() {
     return new StringJoiner("|")
-        .add(this.getProduct().getId())
-        .add(this.getPartner().getId())
-        .add(Long.toString(Math.round(this.getPrice())))
-        .add(Integer.toString(this.getQuantity()))
-        .toString();
+            .add(this.getProduct().getId())
+            .add(this.getPartner().getId())
+            .add(Long.toString(Math.round(this.getPrice())))
+            .add(Integer.toString(this.getQuantity()))
+            .toString();
   }
 }

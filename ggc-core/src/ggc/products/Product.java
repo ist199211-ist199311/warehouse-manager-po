@@ -50,7 +50,7 @@ public class Product implements Comparable<Product>, Serializable {
 
   public int getQuantityInBatches() {
     return this.batches.stream().map(Batch::getQuantity)
-        .reduce((i1, i2) -> i1 + i2).orElse(0);
+            .reduce(Integer::sum).orElse(0);
   }
 
   public int getTotalQuantity() {
@@ -84,7 +84,7 @@ public class Product implements Comparable<Product>, Serializable {
     // TODO is it all time or from existing batches?
     // TODO assuming existing batches right now
     return this.batches.stream().map(Batch::getPrice)
-        .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
+            .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
   }
 
   public void subscribe(Partner partner) {
@@ -109,7 +109,7 @@ public class Product implements Comparable<Product>, Serializable {
 
   private void ensureBatchesSorted() {
     this.batches.sort(Comparator.comparingDouble(Batch::getPrice)
-        .thenComparingInt(Batch::getQuantity));
+            .thenComparingInt(Batch::getQuantity));
   }
 
   @Override
@@ -120,9 +120,9 @@ public class Product implements Comparable<Product>, Serializable {
   @Override
   public String toString() {
     return new StringJoiner("|")
-        .add(this.getId())
-        .add(Long.toString(Math.round(this.getMostExpensivePrice())))
-        .add(Integer.toString(this.getQuantityInBatches()))
-        .toString();
+            .add(this.getId())
+            .add(Long.toString(Math.round(this.getMostExpensivePrice())))
+            .add(Integer.toString(this.getQuantityInBatches()))
+            .toString();
   }
 }

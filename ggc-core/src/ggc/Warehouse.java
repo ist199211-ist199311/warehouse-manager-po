@@ -85,12 +85,12 @@ public class Warehouse implements Serializable {
 
   /**
    * Get all batches available to the warehouse
-   * 
+   *
    * @return A sorted {@link Collection} of batches
    */
   public Collection<Batch> getAllBatches() {
     return this.products.values().stream().flatMap(product -> product.getBatches().stream()).sorted()
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
   }
 
   /**
@@ -159,10 +159,10 @@ public class Warehouse implements Serializable {
    */
   private void importFromFields(String[] fields) throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
-    case "PARTNER" -> this.importPartner(fields);
-    case "BATCH_S" -> this.importSimpleBatch(fields);
-    case "BATCH_M" -> this.importMultiBatch(fields);
-    default -> throw new BadEntryException(String.join("|", fields));
+      case "PARTNER" -> this.importPartner(fields);
+      case "BATCH_S" -> this.importSimpleBatch(fields);
+      case "BATCH_M" -> this.importMultiBatch(fields);
+      default -> throw new BadEntryException(String.join("|", fields));
     }
   }
 
@@ -331,7 +331,7 @@ public class Warehouse implements Serializable {
    *
    * @param key The key to be normalized.
    * @return The result of normalizing a key, that is, converting it to upper
-   *         case.
+   * case.
    */
   private String normalizeKey(String key) {
     return key.toUpperCase();
