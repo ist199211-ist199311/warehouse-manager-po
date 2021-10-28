@@ -16,7 +16,7 @@ public class Partner implements Comparable<Partner>, Serializable {
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
 
-  // TODO: not complete
+  // TODO not complete
   private String id;
   private String name;
   private String address;

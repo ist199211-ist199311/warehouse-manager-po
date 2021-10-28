@@ -282,7 +282,7 @@ public class Warehouse implements Serializable {
           Double.parseDouble(fields[3]), partner);
       this.dirty();
     } catch (UnknownPartnerKeyException | NumberFormatException
-        | DuplicateProductKeyException e) {
+        | DuplicateProductKeyException | UnknownProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -298,11 +298,15 @@ public class Warehouse implements Serializable {
    *                            the format
    *                            {@code component-1:quantity-1#...#component-n:quantity-n}
    * @return The {@link Recipe} created from the given parameters
-   * @throws NumberFormatException if the aggravating factor or one of the
-   *                               product quantities is not a number
+   * @throws NumberFormatException      if the aggravating factor or one of the
+   *                                    product quantities is not a number
+   * @throws UnknownProductKeyException if the recipe contains any product that
+   *                                    does not exist
    */
+
   private Recipe importRecipe(String aggravatingFactor,
-      String productsDescription) throws NumberFormatException {
+      String productsDescription)
+      throws NumberFormatException, UnknownProductKeyException {
     List<RecipeProduct> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
@@ -310,13 +314,7 @@ public class Warehouse implements Serializable {
       String prodKey = fields[0];
       int quantity = Integer.parseInt(fields[1]);
       Product prod;
-      try {
-        prod = this.getProduct(prodKey);
-      } catch (UnknownProductKeyException e) {
-        // prod = this.registerSimpleProduct(prodKey);
-        // TODO throw error UnknownProductKeyException instead?
-        prod = null;
-      }
+      prod = this.getProduct(prodKey);
       products.add(new RecipeProduct(quantity, prod));
     }
     return new Recipe(Double.parseDouble(aggravatingFactor), products);
