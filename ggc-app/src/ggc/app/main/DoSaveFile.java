@@ -29,7 +29,6 @@ class DoSaveFile extends Command<WarehouseManager> {
         saveAs();
       }
     } catch (IOException e) {
-      // TODO ??
       e.printStackTrace();
     }
   }
