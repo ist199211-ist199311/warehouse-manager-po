@@ -202,6 +202,9 @@ public class Warehouse implements Serializable {
    *                               for its type
    */
   private void importSimpleBatch(String[] fields) throws IllegalEntryException {
+    if (fields.length != 5) {
+      throw new IllegalEntryException(fields);
+    }
     try {
       Partner partner = this.getPartner(fields[2]);
       Product product;
@@ -229,6 +232,9 @@ public class Warehouse implements Serializable {
    *                               for its type
    */
   private void importMultiBatch(String[] fields) throws IllegalEntryException {
+    if (fields.length != 7) {
+      throw new IllegalEntryException(fields);
+    }
     try {
       Partner partner = this.getPartner(fields[2]);
       Product product;
