@@ -191,10 +191,10 @@ public class Warehouse implements Serializable {
   private void importFromFields(String[] fields)
       throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
-    case "PARTNER" -> this.importPartner(fields);
-    case "BATCH_S" -> this.importSimpleBatch(fields);
-    case "BATCH_M" -> this.importMultiBatch(fields);
-    default -> throw new BadEntryException(String.join("|", fields));
+      case "PARTNER" -> this.importPartner(fields);
+      case "BATCH_S" -> this.importSimpleBatch(fields);
+      case "BATCH_M" -> this.importMultiBatch(fields);
+      default -> throw new BadEntryException(String.join("|", fields));
     }
   }
 
