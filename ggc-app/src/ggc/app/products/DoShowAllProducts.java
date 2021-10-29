@@ -3,7 +3,6 @@ package ggc.app.products;
 import ggc.WarehouseManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME import classes
 
 /**
  * Show all products.
