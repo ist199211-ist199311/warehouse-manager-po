@@ -56,6 +56,11 @@ public class Warehouse implements Serializable {
   private int date = 0;
 
   /**
+   * The available balance, that is, the balance that can be spent
+   */
+  private double availableBalance = 0;
+
+  /**
    * Whether the warehouse is in a dirty state, that is, if it was modified
    * since the last time it was saved (or created).
    */
@@ -406,11 +411,35 @@ public class Warehouse implements Serializable {
   /**
    * Lookup all the batches under a given price, ordered by their natural order.
    *
-   * @param priceLimit the upper price limit, that is, all batches must have a price lower than this
-   * @return a sorted collection of batches with a lower price than the given price
+   * @param priceLimit the upper price limit, that is, all batches must have a
+   *                   price lower than this
+   * @return a sorted collection of batches with a lower price than the given
+   * price
    */
   public Collection<Batch> lookupProductBatchesUnderGivenPrice(double priceLimit) {
-    return this.getAllBatches().stream().filter(batch -> batch.getPrice() < priceLimit).collect(Collectors.toList());
+    return this.getAllBatches().stream()
+            .filter(batch -> batch.getPrice() < priceLimit)
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the balance available to spend.
+   *
+   * @return the available balance
+   */
+  public double getAvailableBalance() {
+    return this.availableBalance;
+  }
+
+  /**
+   * Calculate the accounting balance, that is, the sum of the available
+   * balance with the cost of the pending sale transactions.
+   *
+   * @return the accounting balance
+   */
+  public double getAccountingBalance() {
+    // TODO sum with pending sale transactions
+    return this.getAvailableBalance();
   }
 
 }

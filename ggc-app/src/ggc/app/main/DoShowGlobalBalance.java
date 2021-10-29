@@ -1,8 +1,8 @@
 package ggc.app.main;
 
+import ggc.WarehouseManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
 
 /**
  * Show global balance.
@@ -15,7 +15,10 @@ class DoShowGlobalBalance extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    _display.popup(Message.currentBalance(
+            _receiver.getAvailableBalance(),
+            _receiver.getAccountingBalance()
+    ));
   }
   
 }

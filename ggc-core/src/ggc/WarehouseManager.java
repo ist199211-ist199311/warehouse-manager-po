@@ -95,6 +95,20 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#getAvailableBalance()
+   */
+  public double getAvailableBalance() {
+    return this._warehouse.getAvailableBalance();
+  }
+
+  /**
+   * @see Warehouse#getAccountingBalance()
+   */
+  public double getAccountingBalance() {
+    return this._warehouse.getAccountingBalance();
+  }
+
+  /**
    * Saves the current application state to the current file (either that was
    * previously saved to, or loaded from) as binary data. Nothing is written to
    * disk if the application state has not changed since the last save.
