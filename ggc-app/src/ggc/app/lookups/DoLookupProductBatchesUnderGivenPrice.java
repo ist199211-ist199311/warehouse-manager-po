@@ -1,9 +1,8 @@
 package ggc.app.lookups;
 
+import ggc.WarehouseManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
-//FIXME import classes
 
 /**
  * Lookup products cheaper than a given price.
@@ -17,7 +16,7 @@ public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseMana
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
+    _receiver.lookupProductBatchesUnderGivenPrice(realField("priceLimit")).forEach(_display::popup);
   }
 
 }

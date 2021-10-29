@@ -403,4 +403,14 @@ public class Warehouse implements Serializable {
     return p;
   }
 
+  /**
+   * Lookup all the batches under a given price, ordered by their natural order.
+   *
+   * @param priceLimit the upper price limit, that is, all batches must have a price lower than this
+   * @return a sorted collection of batches with a lower price than the given price
+   */
+  public Collection<Batch> lookupProductBatchesUnderGivenPrice(double priceLimit) {
+    return this.getAllBatches().stream().filter(batch -> batch.getPrice() < priceLimit).collect(Collectors.toList());
+  }
+
 }

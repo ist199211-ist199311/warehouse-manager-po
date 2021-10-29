@@ -73,6 +73,13 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#lookupProductBatchesUnderGivenPrice(double)
+   */
+  public Collection<Batch> lookupProductBatchesUnderGivenPrice(double priceLimit) {
+    return this._warehouse.lookupProductBatchesUnderGivenPrice(priceLimit);
+  }
+
+  /**
    * @see Warehouse#getPartner(String)
    */
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
