@@ -37,32 +37,53 @@ public class WarehouseManager {
    */
   private Warehouse _warehouse = new Warehouse();
 
+  /**
+   * @see Warehouse#advanceDate(int)
+   */
   public void advanceDate(int days) throws InvalidDateException {
     this._warehouse.advanceDate(days);
   }
 
+  /**
+   * @see Warehouse#displayDate()
+   */
   public int displayDate() {
     return this._warehouse.displayDate();
   }
 
+  /**
+   * @see Warehouse#getAllProducts()
+   */
   public Collection<Product> getAllProducts() {
     return this._warehouse.getAllProducts();
   }
 
+  /**
+   * @see Warehouse#getAllPartners()
+   */
   public Collection<Partner> getAllPartners() {
     return this._warehouse.getAllPartners();
   }
 
+  /**
+   * @see Warehouse#getAllBatches()
+   */
   public Collection<Batch> getAllBatches() {
     return this._warehouse.getAllBatches();
   }
 
+  /**
+   * @see Warehouse#getPartner(String)
+   */
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
     return this._warehouse.getPartner(key);
   }
 
+  /**
+   * @see Warehouse#registerPartner(String, String, String)
+   */
   public void registerPartner(String id, String name, String address)
-      throws DuplicatePartnerKeyException {
+          throws DuplicatePartnerKeyException {
     this._warehouse.registerPartner(id, name, address);
   }
 
@@ -71,18 +92,20 @@ public class WarehouseManager {
    * previously saved to, or loaded from) as binary data. Nothing is written to
    * disk if the application state has not changed since the last save.
    *
-   * @throws IOException
-   * @throws FileNotFoundException
+   * @throws IOException                     if any kind of I/O error occurs
+   * @throws FileNotFoundException           if the parent folders of the file
+   *                                         to be saved do not exist or the
+   *                                         file path is invalid
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
   public void save() throws IOException, FileNotFoundException,
-      MissingFileAssociationException {
+          MissingFileAssociationException {
     if (_filename == null || _filename.isBlank())
       throw new MissingFileAssociationException();
 
     if (_warehouse.isDirty()) {
       try (ObjectOutputStream out = new ObjectOutputStream(
-          new BufferedOutputStream(new FileOutputStream(_filename)))) {
+              new BufferedOutputStream(new FileOutputStream(_filename)))) {
         out.writeObject(_warehouse);
       }
       _warehouse.clean();
@@ -95,12 +118,14 @@ public class WarehouseManager {
    * save.
    *
    * @param fileName the name or path of the file to save to
+   * @throws IOException                     if any kind of I/O error occurs
+   * @throws FileNotFoundException           if the parent folders of the file
+   *                                         to be saved do not exist or the
+   *                                         file path is invalid
    * @throws MissingFileAssociationException if the file to save to is unknown
-   * @throws IOException
-   * @throws FileNotFoundException
    */
   public void saveAs(String fileName) throws MissingFileAssociationException,
-      FileNotFoundException, IOException {
+          FileNotFoundException, IOException {
     _filename = fileName;
     save();
   }
@@ -117,7 +142,7 @@ public class WarehouseManager {
    */
   public void load(String fileName) throws UnavailableFileException {
     try (ObjectInputStream in = new ObjectInputStream(
-        new BufferedInputStream(new FileInputStream(fileName)))) {
+            new BufferedInputStream(new FileInputStream(fileName)))) {
       _warehouse = (Warehouse) in.readObject();
       this._filename = fileName;
     } catch (IOException | ClassNotFoundException e) {

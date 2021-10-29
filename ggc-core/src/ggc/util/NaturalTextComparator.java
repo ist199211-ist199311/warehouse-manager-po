@@ -16,6 +16,8 @@ public class NaturalTextComparator implements Comparator<String>, Serializable {
 
   public NaturalTextComparator() {
     _collator = Collator.getInstance(Locale.getDefault());
+    // use strength PRIMARY to ignore case and accentuated characters
+    // in latin-based languages
     _collator.setStrength(Collator.PRIMARY);
   }
 

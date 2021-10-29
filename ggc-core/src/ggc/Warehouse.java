@@ -38,11 +38,27 @@ public class Warehouse implements Serializable {
   @Serial
   private static final long serialVersionUID = 202109192006L;
 
+  /**
+   * Stores the warehouse's products, sorted by their key.
+   */
   private final Map<String, Product> products = new TreeMap<>(
-      new NaturalTextComparator());
+          new NaturalTextComparator());
+
+  /**
+   * Stores the warehouse's partners, sorted by their key.
+   */
   private final Map<String, Partner> partners = new TreeMap<>(
-      new NaturalTextComparator());
+          new NaturalTextComparator());
+
+  /**
+   * The date, in days, relative to the creation of the warehouse.
+   */
   private int date = 0;
+
+  /**
+   * Whether the warehouse is in a dirty state, that is, if it was modified
+   * since the last time it was saved (or created).
+   */
   private boolean dirty = false;
 
   /**
@@ -70,23 +86,24 @@ public class Warehouse implements Serializable {
 
   /**
    * Get whether the warehouse has been modified since it was last cleaned.
-   * 
-   * @return Dirty flag
+   * The warehouse is cleaned when it is saved to disk.
+   *
+   * @return the value of the dirty flag
    */
   public boolean isDirty() {
     return this.dirty;
   }
 
   /**
-   * Turn the dirty flag off so only new modifications are counted.
+   * Turn the dirty flag off to indicate the warehouse state has been saved.
    */
   public void clean() {
     this.dirty = false;
   }
 
   /**
-   * Turn the dirty flag on to indicate a modification has ocurred since last
-   * clean-up.
+   * Turn the dirty flag on to indicate a modification has occurred since last
+   * clean-up (i.e. saved).
    */
   private void dirty() {
     this.dirty = true;
@@ -119,8 +136,8 @@ public class Warehouse implements Serializable {
    */
   public Collection<Batch> getAllBatches() {
     return this.products.values().stream()
-        .flatMap(product -> product.getBatches().stream()).sorted()
-        .collect(Collectors.toList());
+            .flatMap(product -> product.getBatches().stream()).sorted()
+            .collect(Collectors.toList());
   }
 
   /**
@@ -169,7 +186,7 @@ public class Warehouse implements Serializable {
    *                               correctly formatted for its type
    */
   void importFile(String textFile)
-      throws IOException, BadEntryException, IllegalEntryException {
+          throws IOException, BadEntryException, IllegalEntryException {
     try (BufferedReader s = new BufferedReader(new FileReader(textFile))) {
       String line;
       while ((line = s.readLine()) != null) {
@@ -189,7 +206,7 @@ public class Warehouse implements Serializable {
    *                               for its type
    */
   private void importFromFields(String[] fields)
-      throws BadEntryException, IllegalEntryException {
+          throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
       case "PARTNER" -> this.importPartner(fields);
       case "BATCH_S" -> this.importSimpleBatch(fields);
@@ -225,7 +242,7 @@ public class Warehouse implements Serializable {
    * the associated product if it does not exist.
    * <p>
    * A correct simple batch entry has the following format:
-   * {@code BATCH_S|productId|partnerId|price|current-stock}
+   * {@code BATCH_S|product-id|partner-id|price|current-stock}
    *
    * @param fields The fields of the simple batch to import, that were split by
    *               the separator
@@ -245,10 +262,10 @@ public class Warehouse implements Serializable {
         product = this.registerSimpleProduct(fields[1]);
       }
       product.registerBatch(Integer.parseInt(fields[4]),
-          Double.parseDouble(fields[3]), partner);
+              Double.parseDouble(fields[3]), partner);
       this.dirty();
     } catch (UnknownPartnerKeyException | NumberFormatException
-        | DuplicateProductKeyException e) {
+            | DuplicateProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -258,7 +275,7 @@ public class Warehouse implements Serializable {
    * the associated product if it does not exist.
    * <p>
    * A correct multi batch entry has the following format:
-   * {@code BATCH_M|productId|partnerId|price|current-stock|aggravating-factor|component-1:quantity-1#...#component-n:quantity-n}
+   * {@code BATCH_M|product-id|partner-id|price|current-stock|aggravating-factor|component-1:quantity-1#...#component-n:quantity-n}
    *
    * @param fields The fields of the multi batch to import, that were split by
    *               the separator
@@ -279,10 +296,10 @@ public class Warehouse implements Serializable {
         product = this.registerDerivedProduct(fields[1], recipe);
       }
       product.registerBatch(Integer.parseInt(fields[4]),
-          Double.parseDouble(fields[3]), partner);
+              Double.parseDouble(fields[3]), partner);
       this.dirty();
     } catch (UnknownPartnerKeyException | NumberFormatException
-        | DuplicateProductKeyException | UnknownProductKeyException e) {
+            | DuplicateProductKeyException | UnknownProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -305,8 +322,8 @@ public class Warehouse implements Serializable {
    */
 
   private Recipe importRecipe(String aggravatingFactor,
-      String productsDescription)
-      throws NumberFormatException, UnknownProductKeyException {
+                              String productsDescription)
+          throws NumberFormatException, UnknownProductKeyException {
     List<RecipeProduct> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
@@ -332,7 +349,7 @@ public class Warehouse implements Serializable {
    *                                      (case-insensitive) already exists
    */
   public Partner registerPartner(String id, String name, String address)
-      throws DuplicatePartnerKeyException {
+          throws DuplicatePartnerKeyException {
     if (this.partners.containsKey(id)) {
       throw new DuplicatePartnerKeyException(id);
     }
@@ -352,8 +369,8 @@ public class Warehouse implements Serializable {
    * @throws DuplicateProductKeyException if a product with the given key
    *                                      (case-insensitive) already exists
    */
-  private Product registerSimpleProduct(String id)
-      throws DuplicateProductKeyException {
+  public Product registerSimpleProduct(String id)
+          throws DuplicateProductKeyException {
     if (this.products.containsKey(id)) {
       throw new DuplicateProductKeyException(id);
     }
@@ -374,8 +391,8 @@ public class Warehouse implements Serializable {
    * @throws DuplicateProductKeyException if a product with the given key
    *                                      (case-insensitive) already exists
    */
-  private DerivedProduct registerDerivedProduct(String id, Recipe recipe)
-      throws DuplicateProductKeyException {
+  public DerivedProduct registerDerivedProduct(String id, Recipe recipe)
+          throws DuplicateProductKeyException {
     if (this.products.containsKey(id)) {
       throw new DuplicateProductKeyException(id);
     }

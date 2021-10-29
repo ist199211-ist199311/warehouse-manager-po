@@ -1,6 +1,5 @@
 package ggc.products;
 
-import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 
 import java.io.Serial;
@@ -19,25 +18,32 @@ public class DerivedProduct extends Product {
     this.recipe = recipe;
   }
 
+  /**
+   * @return the sum of the in-stock quantity and the
+   * {@link DerivedProduct#getBuildableQuantity() buildable quantity}
+   */
   @Override
   public int getTotalQuantity() {
     return super.getTotalQuantity() + this.getBuildableQuantity();
   }
 
+  /**
+   * Calculate the quantity of the product that can be built using the recipe.
+   *
+   * @return the quantity of the product that can be built using the recipe
+   */
   public int getBuildableQuantity() {
     // TODO
     return 0;
   }
 
-  public double getPriceForBreakdown() {
-    try {
-      return this.getCheapestPrice();
-    } catch (OutOfStockException e) {
-      // TODO find highest price on transactions
-      return 0;
-    }
-  }
-
+  /**
+   * Use this product's recipe to create a new batch, consuming the recipe
+   * products.
+   *
+   * @param quantity The quantity to be built
+   * @param partner  The partner that wants the product to be built
+   */
   public void buildFromRecipe(int quantity, Partner partner) {
     // TODO
   }

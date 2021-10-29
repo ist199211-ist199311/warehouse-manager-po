@@ -16,8 +16,8 @@ public class Partner implements Comparable<Partner>, Serializable {
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
 
-  // TODO not complete
-  private String id;
+  // TODO add statute, notifications
+  private final String id;
   private String name;
   private String address;
 
@@ -29,10 +29,6 @@ public class Partner implements Comparable<Partner>, Serializable {
 
   public String getId() {
     return this.id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getName() {
@@ -59,14 +55,14 @@ public class Partner implements Comparable<Partner>, Serializable {
   @Override
   public String toString() {
     return new StringJoiner("|")
-        .add(this.getId())
-        .add(this.getName())
-        .add(this.getAddress())
-        .add("NORMAL") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
-        .toString();
+            .add(this.getId())
+            .add(this.getName())
+            .add(this.getAddress())
+            .add("NORMAL") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .add("0") // TODO
+            .toString();
   }
 }

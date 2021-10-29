@@ -42,12 +42,24 @@ public class Product implements Comparable<Product>, Serializable {
     return batches;
   }
 
+  /**
+   * Creates a new batch for this product with the given parameters.
+   * Stores the batch in this product.
+   *
+   * @param quantity the quantity in the batch
+   * @param price    the price of the batch
+   * @param partner  the partner supplying the batch
+   * @return the batch that was just created
+   */
   public Batch registerBatch(int quantity, double price, Partner partner) {
     Batch b = new Batch(quantity, price, this, partner);
     this.batches.add(b);
     return b;
   }
 
+  /**
+   * @return the available quantity in batches
+   */
   public int getQuantityInBatches() {
     return this.batches.stream().map(Batch::getQuantity)
             .reduce(Integer::sum).orElse(0);
@@ -57,7 +69,16 @@ public class Product implements Comparable<Product>, Serializable {
     return this.getQuantityInBatches();
   }
 
+  /**
+   * Calculates the batches needed to reach to acquire a given quantity of
+   * this product, minimizing the cost, that is, choosing the cheaper batches
+   * first.
+   *
+   * @param quantity the quantity of product to acquire
+   * @return the batches required for acquisition
+   */
   public Collection<Batch> getBatchesForAcquisition(int quantity) {
+    // TODO maybe make batches immutable (?)
     this.ensureBatchesSorted();
     List<Batch> batchesForAcquisition = new ArrayList<>();
     int addedQuantity = 0;
@@ -72,6 +93,11 @@ public class Product implements Comparable<Product>, Serializable {
     return batchesForAcquisition;
   }
 
+  /**
+   * @return the price of the cheapest batch
+   * @throws OutOfStockException if there are no batches for this product
+   *                             (i.e. no product in stock)
+   */
   public double getCheapestPrice() throws OutOfStockException {
     ensureBatchesSorted();
     if (batches.size() == 0)
@@ -79,12 +105,30 @@ public class Product implements Comparable<Product>, Serializable {
     return batches.get(0).getPrice();
   }
 
+  /**
+   * Calculate the all-time highest price for this product from previous
+   * transactions or current batches.
+   *
+   * @return the all-time highest price for this product
+   */
   public double getMostExpensivePrice() {
     // TODO get all time most expensive price (from transactions)
-    // TODO is it all time or from existing batches?
-    // TODO assuming existing batches right now
     return this.batches.stream().map(Batch::getPrice)
             .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
+  }
+
+  /**
+   * Get the price of the product when adding a batch creating from a
+   * derived product breakdown.
+   *
+   * @return the price of the batch
+   */
+  public double getPriceForBreakdown() {
+    try {
+      return this.getCheapestPrice();
+    } catch (OutOfStockException e) {
+      return this.getMostExpensivePrice();
+    }
   }
 
   public void subscribe(Partner partner) {
