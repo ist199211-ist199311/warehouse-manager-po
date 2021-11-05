@@ -3,7 +3,7 @@ package ggc.products;
 import java.io.Serial;
 import java.io.Serializable;
 
-public class RecipeProduct implements Serializable {
+public class RecipeComponent implements Serializable {
   /**
    * Serial number for serialization.
    */
@@ -13,7 +13,7 @@ public class RecipeProduct implements Serializable {
   private final int quantity;
   private final Product product;
 
-  public RecipeProduct(int quantity, Product product) {
+  public RecipeComponent(int quantity, Product product) {
     this.quantity = quantity;
     this.product = product;
   }

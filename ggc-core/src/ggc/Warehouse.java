@@ -12,7 +12,7 @@ import ggc.products.Batch;
 import ggc.products.DerivedProduct;
 import ggc.products.Product;
 import ggc.products.Recipe;
-import ggc.products.RecipeProduct;
+import ggc.products.RecipeComponent;
 import ggc.util.NaturalTextComparator;
 
 import java.io.BufferedReader;
@@ -329,7 +329,7 @@ public class Warehouse implements Serializable {
   private Recipe importRecipe(String aggravatingFactor,
                               String productsDescription)
           throws NumberFormatException, UnknownProductKeyException {
-    List<RecipeProduct> products = new ArrayList<>();
+    List<RecipeComponent> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
       String[] fields = desc.split(":");
@@ -337,7 +337,7 @@ public class Warehouse implements Serializable {
       int quantity = Integer.parseInt(fields[1]);
       Product prod;
       prod = this.getProduct(prodKey);
-      products.add(new RecipeProduct(quantity, prod));
+      products.add(new RecipeComponent(quantity, prod));
     }
     return new Recipe(Double.parseDouble(aggravatingFactor), products);
   }
