@@ -154,7 +154,7 @@ public class Warehouse implements Serializable {
    */
   public Collection<Batch> getAllBatches() {
     return this.products.values().stream()
-            .flatMap(product -> product.getBatches().stream()).sorted()
+            .flatMap(Product::getBatches)
             .collect(Collectors.toList());
   }
 
@@ -503,7 +503,7 @@ public class Warehouse implements Serializable {
    */
   public Collection<Batch> lookupProductBatchesUnderGivenPrice(double priceLimit) {
     return this.getAllBatches().stream()
-            .filter(batch -> batch.getPrice() < priceLimit)
+            .filter(batch -> batch.price() < priceLimit)
             .collect(Collectors.toList());
   }
 

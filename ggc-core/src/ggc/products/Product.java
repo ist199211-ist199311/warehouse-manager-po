@@ -2,19 +2,25 @@ package ggc.products;
 
 import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
+import ggc.util.BatchPriceComparator;
 import ggc.util.NaturalTextComparator;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.BinaryOperator;
+import java.util.stream.Stream;
 
 public class Product implements Comparable<Product>, Serializable {
   /**
@@ -24,9 +30,13 @@ public class Product implements Comparable<Product>, Serializable {
   private static final long serialVersionUID = 202110221420L;
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
+  private final Comparator<Batch> batchComparator = new BatchPriceComparator();
 
   private final String id;
-  private final List<Batch> batches = new ArrayList<>();
+  private final Map<String, Set<Batch>> batchesByPartner =
+          new TreeMap<>(idComparator);
+  private final PriorityQueue<Batch> batches =
+          new PriorityQueue<>(batchComparator);
   private final Set<Partner> subscribers = new HashSet<>();
 
   public Product(String id) {
@@ -38,8 +48,8 @@ public class Product implements Comparable<Product>, Serializable {
     return id;
   }
 
-  public List<Batch> getBatches() {
-    return batches;
+  public Stream<Batch> getBatches() {
+    return batchesByPartner.values().stream().flatMap(Collection::stream);
   }
 
   /**
@@ -52,16 +62,27 @@ public class Product implements Comparable<Product>, Serializable {
    * @return the batch that was just created
    */
   public Batch registerBatch(int quantity, double price, Partner partner) {
-    Batch b = new Batch(quantity, price, this, partner);
-    this.batches.add(b);
-    return b;
+    Batch batch = new Batch(quantity, price, this, partner);
+    this.insertBatch(batch);
+    return batch;
+  }
+
+  private void insertBatch(Batch batch) {
+    this.batches.add(batch);
+    this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
+            (v) -> new TreeSet<>()).add(batch);
+  }
+
+  private void removeBatchFromPartnerMap(Batch batch) {
+    Optional.ofNullable(this.batchesByPartner.get(batch.partner().getId()))
+            .ifPresent(set -> set.remove(batch));
   }
 
   /**
    * @return the available quantity in batches
    */
   public int getQuantityInBatches() {
-    return this.batches.stream().map(Batch::getQuantity)
+    return this.batches.stream().map(Batch::quantity)
             .reduce(Integer::sum).orElse(0);
   }
 
@@ -73,21 +94,36 @@ public class Product implements Comparable<Product>, Serializable {
    * Calculates the batches needed to reach to acquire a given quantity of
    * this product, minimizing the cost, that is, choosing the cheaper batches
    * first.
+   * It is guaranteed that the total quantity in the returned batches is equals
+   * to the quantity parameter.
    *
    * @param quantity the quantity of product to acquire
    * @return the batches required for acquisition
+   * @throws OutOfStockException if there is not enough stock to satisfy the
+   *                             request
    */
-  public Collection<Batch> getBatchesForAcquisition(int quantity) {
+  public Collection<Batch> getBatchesForAcquisition(int quantity) throws OutOfStockException {
     // TODO maybe make batches immutable (?)
-    this.ensureBatchesSorted();
-    List<Batch> batchesForAcquisition = new ArrayList<>();
-    int addedQuantity = 0;
-    Iterator<Batch> iterator = this.batches.iterator();
+    if (getQuantityInBatches() < quantity)
+      throw new OutOfStockException(this, quantity);
 
-    while (addedQuantity < quantity && iterator.hasNext()) {
-      Batch batch = iterator.next();
+    List<Batch> batchesForAcquisition = new LinkedList<>();
+    int addedQuantity = 0;
+
+    Batch batch;
+    while (addedQuantity >= quantity && (batch = this.batches.poll()) != null) {
+      this.removeBatchFromPartnerMap(batch);
+
+      if (batch.quantity() + addedQuantity > quantity) {
+        int neededQuantity = quantity - addedQuantity;
+        Batch leftoverBatch =
+                batch.cloneWithQuantity(batch.quantity() - neededQuantity);
+        batch = batch.cloneWithQuantity(neededQuantity);
+        this.insertBatch(leftoverBatch);
+      }
+
       batchesForAcquisition.add(batch);
-      addedQuantity += batch.getQuantity();
+      addedQuantity += batch.quantity();
     }
 
     return batchesForAcquisition;
@@ -99,10 +135,9 @@ public class Product implements Comparable<Product>, Serializable {
    *                             (i.e. no product in stock)
    */
   public double getCheapestPrice() throws OutOfStockException {
-    ensureBatchesSorted();
     if (batches.size() == 0)
-      throw new OutOfStockException();
-    return batches.get(0).getPrice();
+      throw new OutOfStockException(this);
+    return batches.peek().price();
   }
 
   /**
@@ -113,7 +148,7 @@ public class Product implements Comparable<Product>, Serializable {
    */
   public double getMostExpensivePrice() {
     // TODO get all time most expensive price (from transactions)
-    return this.batches.stream().map(Batch::getPrice)
+    return this.batches.stream().map(Batch::price)
             .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
   }
 
@@ -149,11 +184,6 @@ public class Product implements Comparable<Product>, Serializable {
     } else {
       this.subscribe(partner);
     }
-  }
-
-  private void ensureBatchesSorted() {
-    this.batches.sort(Comparator.comparingDouble(Batch::getPrice)
-            .thenComparingInt(Batch::getQuantity));
   }
 
   @Override
