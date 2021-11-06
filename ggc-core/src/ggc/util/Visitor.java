@@ -9,7 +9,9 @@ import ggc.transactions.AcquisitionTransaction;
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
 
-public abstract class Visitor<T> {
+import java.io.Serializable;
+
+public abstract class Visitor<T> implements Serializable {
 
   public abstract T visit(AcquisitionTransaction transaction);
 

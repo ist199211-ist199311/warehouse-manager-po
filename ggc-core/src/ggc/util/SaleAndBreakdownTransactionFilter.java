@@ -1,0 +1,53 @@
+package ggc.util;
+
+import ggc.partners.Partner;
+import ggc.products.Batch;
+import ggc.products.DerivedProduct;
+import ggc.products.Product;
+import ggc.products.Recipe;
+import ggc.transactions.AcquisitionTransaction;
+import ggc.transactions.BreakdownTransaction;
+import ggc.transactions.SaleTransaction;
+
+public class SaleAndBreakdownTransactionFilter extends Visitor<Boolean> {
+
+  @Override
+  public Boolean visit(AcquisitionTransaction transaction) {
+    return false;
+  }
+
+  @Override
+  public Boolean visit(BreakdownTransaction transaction) {
+    return true;
+  }
+
+  @Override
+  public Boolean visit(SaleTransaction transaction) {
+    return true;
+  }
+
+  @Override
+  public Boolean visit(Batch batch) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(Recipe recipe) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(Product product) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(DerivedProduct product) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(Partner partner) {
+    throw new UnsupportedOperationException();
+  }
+}

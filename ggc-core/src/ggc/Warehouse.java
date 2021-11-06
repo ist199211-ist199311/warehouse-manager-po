@@ -16,7 +16,10 @@ import ggc.products.Recipe;
 import ggc.products.RecipeComponent;
 import ggc.transactions.AcquisitionTransaction;
 import ggc.transactions.Transaction;
+import ggc.util.AcquisitionTransactionFilter;
 import ggc.util.NaturalTextComparator;
+import ggc.util.SaleAndBreakdownTransactionFilter;
+import ggc.util.Visitor;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -41,6 +44,19 @@ public class Warehouse implements Serializable {
    */
   @Serial
   private static final long serialVersionUID = 202109192006L;
+
+  /**
+   * Filter for {@link AcquisitionTransaction}
+   */
+  private final Visitor<Boolean> acquisitionTransactionFilter =
+          new AcquisitionTransactionFilter();
+
+  /**
+   * Filter for {@link ggc.transactions.SaleTransaction} or
+   * {@link ggc.transactions.BreakdownTransaction}
+   */
+  private final Visitor<Boolean> saleAndBreakdownTransactionFilter =
+          new SaleAndBreakdownTransactionFilter();
 
   /**
    * Stores the warehouse's products, sorted by their key.
@@ -595,6 +611,44 @@ public class Warehouse implements Serializable {
     final Partner partner = getPartner(partnerId);
     final Product product = getProduct(productId);
     // TODO calculate breakdown stuff on product
+  }
+
+  /**
+   * Get all acquisition transactions from a partner given its key.
+   *
+   * @param partnerId The key of the partner
+   * @return A collection of acquisition transactions
+   * @throws UnknownPartnerKeyException if a partner with the given key does
+   *                                    not exist
+   */
+  public Collection<Transaction> getPartnerAcquisitions(String partnerId)
+          throws UnknownPartnerKeyException {
+    final Partner partner = getPartner(partnerId);
+
+    return this.transactions.values()
+            .stream()
+            .filter(t -> partner.equals(t.getPartner()))
+            .filter(t -> t.accept(acquisitionTransactionFilter))
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * Get all sale and breakdown transactions from a partner given its key.
+   *
+   * @param partnerId The key of the partner
+   * @return A collection of sale and breakdown transactions
+   * @throws UnknownPartnerKeyException if a partner with the given key does
+   *                                    not exist
+   */
+  public Collection<Transaction> getPartnerSalesAndBreakdowns(String partnerId)
+          throws UnknownPartnerKeyException {
+    final Partner partner = getPartner(partnerId);
+
+    return this.transactions.values()
+            .stream()
+            .filter(t -> partner.equals(t.getPartner()))
+            .filter(t -> t.accept(saleAndBreakdownTransactionFilter))
+            .collect(Collectors.toList());
   }
 
 }

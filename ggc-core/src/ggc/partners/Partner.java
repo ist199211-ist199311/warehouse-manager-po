@@ -54,6 +54,16 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o instanceof Partner) {
+      Partner partner = (Partner) o;
+      return compareTo(partner) == 0;
+    }
+    return false;
+  }
+
+  @Override
   public <T> T accept(Visitor<T> visitor) {
     return visitor.visit(this);
   }

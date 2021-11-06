@@ -147,6 +147,22 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#getPartnerAcquisitions(String)
+   */
+  public Collection<? extends Visitable> getPartnerAcquisitions(String partnerId)
+          throws UnknownPartnerKeyException {
+    return this._warehouse.getPartnerAcquisitions(partnerId);
+  }
+
+  /**
+   * @see Warehouse#getPartnerSalesAndBreakdowns(String)
+   */
+  public Collection<? extends Visitable> getPartnerSalesAndBreakdowns(String partnerId)
+          throws UnknownPartnerKeyException {
+    return this._warehouse.getPartnerSalesAndBreakdowns(partnerId);
+  }
+
+  /**
    * Saves the current application state to the current file (either that was
    * previously saved to, or loaded from) as binary data. Nothing is written to
    * disk if the application state has not changed since the last save.
