@@ -2,12 +2,14 @@ package ggc;
 
 import ggc.exceptions.BadEntryException;
 import ggc.exceptions.DuplicatePartnerKeyException;
+import ggc.exceptions.DuplicateProductKeyException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.ImportFileException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
 import ggc.exceptions.UnknownPartnerKeyException;
+import ggc.exceptions.UnknownProductKeyException;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.Product;
@@ -87,6 +89,25 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#registerSimpleProduct(String)
+   */
+  public void registerSimpleProduct(String id)
+          throws DuplicateProductKeyException {
+    this._warehouse.registerSimpleProduct(id);
+  }
+
+  /**
+   * @see Warehouse#registerDerivedProduct(String, double, String[], int[])
+   */
+  public void registerDerivedProduct(String id, double aggravatingFactor,
+                                     String[] recipeProducts,
+                                     int[] recipeQuantities)
+          throws UnknownProductKeyException, DuplicateProductKeyException {
+    this._warehouse.registerDerivedProduct(id, aggravatingFactor,
+            recipeProducts, recipeQuantities);
+  }
+
+  /**
    * @see Warehouse#registerPartner(String, String, String)
    */
   public void registerPartner(String id, String name, String address)
@@ -106,6 +127,17 @@ public class WarehouseManager {
    */
   public double getAccountingBalance() {
     return this._warehouse.getAccountingBalance();
+  }
+
+  /**
+   * @see Warehouse#registerAcquisitionTransaction(String, String, double, int)
+   */
+  public void registerAcquisitionTransaction(String partnerId,
+                                             String productId, double value,
+                                             int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
+    this._warehouse.registerAcquisitionTransaction(partnerId, productId,
+            value, quantity);
   }
 
   /**

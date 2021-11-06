@@ -13,6 +13,8 @@ import ggc.products.DerivedProduct;
 import ggc.products.Product;
 import ggc.products.Recipe;
 import ggc.products.RecipeComponent;
+import ggc.transactions.AcquisitionTransaction;
+import ggc.transactions.Transaction;
 import ggc.util.NaturalTextComparator;
 
 import java.io.BufferedReader;
@@ -22,6 +24,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,6 +52,16 @@ public class Warehouse implements Serializable {
    */
   private final Map<String, Partner> partners = new TreeMap<>(
           new NaturalTextComparator());
+
+  /**
+   * Stores the warehouse's transactions.
+   */
+  private final Map<Integer, Transaction> transactions = new HashMap<>();
+
+  /**
+   * Stores the transaction ID to be assigned on the next created transaction.
+   */
+  private int nextTransactionId = 0;
 
   /**
    * The date, in days, relative to the creation of the warehouse.
@@ -280,7 +293,8 @@ public class Warehouse implements Serializable {
    * the associated product if it does not exist.
    * <p>
    * A correct multi batch entry has the following format:
-   * {@code BATCH_M|product-id|partner-id|price|current-stock|aggravating-factor|component-1:quantity-1#...#component-n:quantity-n}
+   * {@code BATCH_M|product-id|partner-id|price|current-stock|aggravating
+   * -factor|component-1:quantity-1#...#component-n:quantity-n}
    *
    * @param fields The fields of the multi batch to import, that were split by
    *               the separator
@@ -318,7 +332,8 @@ public class Warehouse implements Serializable {
    *                            be converted to a double
    * @param productsDescription The plain text format of the recipe products, in
    *                            the format
-   *                            {@code component-1:quantity-1#...#component-n:quantity-n}
+   *                            {@code component-1:quantity-1#..
+   *                            .#component-n:quantity-n}
    * @return The {@link Recipe} created from the given parameters
    * @throws NumberFormatException      if the aggravating factor or one of the
    *                                    product quantities is not a number
@@ -387,6 +402,76 @@ public class Warehouse implements Serializable {
   }
 
   /**
+   * Creates a new derived product with the given key and with a recipe built
+   * from the given parameters.
+   * The arrays <code>recipeProducts</code> and <code>recipeQuantities</code>
+   * must have the same size.
+   *
+   * @param id                The key of the product
+   * @param aggravatingFactor The aggravating factor of the recipe
+   * @param recipeProducts    The key of the products to include in the recipe
+   * @param recipeQuantities  The quantities, matching the position in the
+   *                          products array, of the products
+   * @return The {@link DerivedProduct} that was just created
+   * @throws UnknownProductKeyException   if a product in the recipe does not
+   *                                      exist
+   * @throws DuplicateProductKeyException if a product with the given key
+   *                                      (case-insensitive) already exists
+   * @throws IllegalArgumentException     if recipeProducts and
+   *                                      recipeQuantities don't have the
+   *                                      same non-zero length
+   * @see Warehouse#registerDerivedProduct(String, Recipe)
+   * @see Warehouse#buildRecipe(double, String[], int[])
+   */
+  public DerivedProduct registerDerivedProduct(String id,
+                                               double aggravatingFactor,
+                                               String[] recipeProducts,
+                                               int[] recipeQuantities)
+          throws UnknownProductKeyException, DuplicateProductKeyException {
+    final Recipe recipe = buildRecipe(aggravatingFactor, recipeProducts,
+            recipeQuantities);
+    return registerDerivedProduct(id, recipe);
+  }
+
+  /**
+   * Builds a recipe from the given aggravating factor and product quantity
+   * pairs.
+   * The arrays <code>recipeProducts</code> and <code>recipeQuantities</code>
+   * must have the same size.
+   *
+   * @param aggravatingFactor The aggravating factor of the recipe
+   * @param recipeProducts    The key of the products to include in the recipe
+   * @param recipeQuantities  The quantities, matching the position in the
+   *                          products array, of the products
+   * @return The {@link Recipe} that was just created from the given arguments
+   * @throws UnknownProductKeyException if a product in the recipe does not
+   *                                    exist
+   * @throws IllegalArgumentException   if recipeProducts and
+   *                                    recipeQuantities don't have the same
+   *                                    non-zero length
+   */
+  private Recipe buildRecipe(double aggravatingFactor,
+                             String[] recipeProducts, int[] recipeQuantities)
+          throws UnknownProductKeyException {
+    if (recipeProducts.length != recipeQuantities.length || recipeProducts.length == 0) {
+      // TODO maybe use a custom exception (?) this should never happen
+      //  anyway tho if the interface is used correctly
+      throw new IllegalArgumentException("expected recipeProducts and " +
+              "recipeQuantities to have the same non-zero length");
+    }
+
+    final List<RecipeComponent> components = new ArrayList<>();
+    for (int i = 0; i < recipeProducts.length; ++i) {
+      final Product product = getProduct(recipeProducts[i]);
+      final int quantity = recipeQuantities[i];
+      final RecipeComponent component = new RecipeComponent(quantity, product);
+      components.add(component);
+    }
+
+    return new Recipe(aggravatingFactor, components);
+  }
+
+  /**
    * Register a new derived product in this warehouse, which will be created
    * from the given parameters.
    *
@@ -440,6 +525,57 @@ public class Warehouse implements Serializable {
   public double getAccountingBalance() {
     // TODO sum with pending sale transactions
     return this.getAvailableBalance();
+  }
+
+  /**
+   * Destructively get the next transaction ID and increase the value.
+   * Each call to this method will give a different value.
+   *
+   * @return the next transaction ID
+   */
+  private int getNextTransactionId() {
+    return this.nextTransactionId++;
+  }
+
+  /**
+   * Register an acquisition transaction, creating an associated batch
+   * automatically and updating the warehouse's available balance.
+   *
+   * @param partnerId The key of the partner to acquire the product from
+   * @param productId The key of the product to be acquired
+   * @param value     The unitary price to acquire at
+   * @param quantity  The product quantity to acquire
+   * @throws UnknownPartnerKeyException if the given partner does not exist
+   * @throws UnknownProductKeyException if the given product does not exist
+   */
+  public void registerAcquisitionTransaction(String partnerId,
+                                             String productId, double value,
+                                             int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
+    final Partner partner = getPartner(partnerId);
+    final Product product = getProduct(productId);
+
+    final Batch batch = product.registerBatch(quantity, value, partner);
+    final AcquisitionTransaction transaction =
+            new AcquisitionTransaction(getNextTransactionId(), batch);
+    transactions.put(transaction.getId(), transaction);
+    this.availableBalance -= transaction.totalValue();
+  }
+
+  public void registerSaleTransaction(String partnerId, String productId,
+                                      int paymentDeadline, int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
+    final Partner partner = getPartner(partnerId);
+    final Product product = getProduct(productId);
+    // TODO calculate price from product
+  }
+
+  public void registerBreakdownTransaction(String partnerId, String productId
+          , int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
+    final Partner partner = getPartner(partnerId);
+    final Product product = getProduct(productId);
+    // TODO calculate breakdown stuff on product
   }
 
 }
