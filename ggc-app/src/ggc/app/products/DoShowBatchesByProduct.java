@@ -21,7 +21,7 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     try {
-      _receiver.getBatchesByProduct(stringField("partnerId"))
+      _receiver.getBatchesByProduct(stringField("productId"))
               .stream()
               .map(v -> v.accept(stringifier))
               .forEach(_display::popup);
