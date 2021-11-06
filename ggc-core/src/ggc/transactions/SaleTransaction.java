@@ -2,6 +2,7 @@ package ggc.transactions;
 
 import ggc.partners.Partner;
 import ggc.products.Product;
+import ggc.util.Visitor;
 
 public class SaleTransaction extends Transaction {
 
@@ -26,4 +27,8 @@ public class SaleTransaction extends Transaction {
     // TODO this.partner.calculateSaleTransactionBenefits(this)
   }
 
+  @Override
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
+  }
 }

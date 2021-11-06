@@ -1,12 +1,15 @@
 package ggc.products;
 
+import ggc.util.Visitable;
+import ggc.util.Visitor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Recipe implements Serializable {
+public class Recipe implements Serializable, Visitable {
   /**
    * Serial number for serialization.
    */
@@ -36,5 +39,10 @@ public class Recipe implements Serializable {
             .stream()
             .map(RecipeComponent::toString)
             .collect(Collectors.joining("#"));
+  }
+
+  @Override
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }

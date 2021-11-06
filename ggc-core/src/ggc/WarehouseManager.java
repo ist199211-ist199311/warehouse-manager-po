@@ -11,10 +11,7 @@ import ggc.exceptions.UnavailableFileException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
-import ggc.partners.Partner;
-import ggc.products.Batch;
-import ggc.products.Product;
-import ggc.transactions.Transaction;
+import ggc.util.Visitable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -58,42 +55,42 @@ public class WarehouseManager {
   /**
    * @see Warehouse#getAllProducts()
    */
-  public Collection<Product> getAllProducts() {
+  public Collection<? extends Visitable> getAllProducts() {
     return this._warehouse.getAllProducts();
   }
 
   /**
    * @see Warehouse#getAllPartners()
    */
-  public Collection<Partner> getAllPartners() {
+  public Collection<? extends Visitable> getAllPartners() {
     return this._warehouse.getAllPartners();
   }
 
   /**
    * @see Warehouse#getAllBatches()
    */
-  public Collection<Batch> getAllBatches() {
+  public Collection<? extends Visitable> getAllBatches() {
     return this._warehouse.getAllBatches();
   }
 
   /**
    * @see Warehouse#lookupProductBatchesUnderGivenPrice(double)
    */
-  public Collection<Batch> lookupProductBatchesUnderGivenPrice(double priceLimit) {
+  public Collection<? extends Visitable> lookupProductBatchesUnderGivenPrice(double priceLimit) {
     return this._warehouse.lookupProductBatchesUnderGivenPrice(priceLimit);
   }
 
   /**
    * @see Warehouse#getPartner(String)
    */
-  public Partner getPartner(String key) throws UnknownPartnerKeyException {
+  public Visitable getPartner(String key) throws UnknownPartnerKeyException {
     return this._warehouse.getPartner(key);
   }
 
   /**
    * @see Warehouse#getTransaction(int)
    */
-  public Transaction getTransaction(int id) throws UnknownTransactionKeyException {
+  public Visitable getTransaction(int id) throws UnknownTransactionKeyException {
     return this._warehouse.getTransaction(id);
   }
 

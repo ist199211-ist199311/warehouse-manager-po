@@ -1,15 +1,16 @@
 package ggc.products;
 
 import ggc.partners.Partner;
+import ggc.util.Visitable;
+import ggc.util.Visitor;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.StringJoiner;
 
 public record Batch(int quantity, double price, Product product,
                     Partner partner) implements Comparable<Batch>,
-        Serializable {
+        Serializable, Visitable {
   /**
    * Serial number for serialization.
    */
@@ -30,12 +31,7 @@ public record Batch(int quantity, double price, Product product,
   }
 
   @Override
-  public String toString() {
-    return new StringJoiner("|")
-            .add(this.product().getId())
-            .add(this.partner().getId())
-            .add(Long.toString(Math.round(this.price())))
-            .add(Integer.toString(this.quantity()))
-            .toString();
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }

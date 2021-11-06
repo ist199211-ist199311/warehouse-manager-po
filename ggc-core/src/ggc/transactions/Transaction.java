@@ -2,10 +2,11 @@ package ggc.transactions;
 
 import ggc.partners.Partner;
 import ggc.products.Product;
+import ggc.util.Visitable;
 
 import java.util.Optional;
 
-public abstract class Transaction {
+public abstract class Transaction implements Visitable {
 
   private final int id;
   private final double value;

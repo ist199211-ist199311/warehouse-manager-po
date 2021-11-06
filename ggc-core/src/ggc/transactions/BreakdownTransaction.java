@@ -3,6 +3,7 @@ package ggc.transactions;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.Product;
+import ggc.util.Visitor;
 
 import java.util.Collection;
 import java.util.Set;
@@ -19,4 +20,8 @@ public class BreakdownTransaction extends Transaction {
     this.batches.addAll(batches);
   }
 
+  @Override
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
+  }
 }

@@ -1,6 +1,7 @@
 package ggc.app.lookups;
 
 import ggc.WarehouseManager;
+import ggc.app.Stringifier;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
@@ -9,6 +10,8 @@ import pt.tecnico.uilib.menus.CommandException;
  */
 public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseManager> {
 
+  private final Stringifier stringifier = new Stringifier();
+
   public DoLookupProductBatchesUnderGivenPrice(WarehouseManager receiver) {
     super(Label.PRODUCTS_UNDER_PRICE, receiver);
     addRealField("priceLimit", Prompt.priceLimit());
@@ -16,7 +19,10 @@ public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseMana
 
   @Override
   public void execute() throws CommandException {
-    _receiver.lookupProductBatchesUnderGivenPrice(realField("priceLimit")).forEach(_display::popup);
+    _receiver.lookupProductBatchesUnderGivenPrice(realField("priceLimit"))
+            .stream()
+            .map(v -> v.accept(stringifier))
+            .forEach(_display::popup);
   }
 
 }

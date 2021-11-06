@@ -1,8 +1,7 @@
 package ggc.transactions;
 
 import ggc.products.Batch;
-
-import java.util.StringJoiner;
+import ggc.util.Visitor;
 
 public class AcquisitionTransaction extends Transaction {
   public AcquisitionTransaction(int id, int date, Batch batch) {
@@ -17,15 +16,7 @@ public class AcquisitionTransaction extends Transaction {
   }
 
   @Override
-  public String toString() {
-    return new StringJoiner("|")
-            .add("COMPRA")
-            .add(Integer.toString(getId()))
-            .add(getPartner().getId())
-            .add(getProduct().getId())
-            .add(Integer.toString(getQuantity()))
-            .add(Long.toString(Math.round(totalValue())))
-            .add(Integer.toString(getPaymentDate().orElse(0)))
-            .toString();
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }

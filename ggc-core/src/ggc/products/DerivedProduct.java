@@ -1,6 +1,7 @@
 package ggc.products;
 
 import ggc.partners.Partner;
+import ggc.util.Visitor;
 
 import java.io.Serial;
 
@@ -55,5 +56,10 @@ public class DerivedProduct extends Product {
   @Override
   public String toString() {
     return super.toString() + "|" + this.recipe.toString();
+  }
+
+  @Override
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }

@@ -4,6 +4,8 @@ import ggc.exceptions.OutOfStockException;
 import ggc.partners.Partner;
 import ggc.util.BatchPriceComparator;
 import ggc.util.NaturalTextComparator;
+import ggc.util.Visitable;
+import ggc.util.Visitor;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,13 +18,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 
-public class Product implements Comparable<Product>, Serializable {
+public class Product implements Comparable<Product>, Serializable, Visitable {
   /**
    * Serial number for serialization.
    */
@@ -192,11 +193,7 @@ public class Product implements Comparable<Product>, Serializable {
   }
 
   @Override
-  public String toString() {
-    return new StringJoiner("|")
-            .add(this.getId())
-            .add(Long.toString(Math.round(this.getMostExpensivePrice())))
-            .add(Integer.toString(this.getQuantityInBatches()))
-            .toString();
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }

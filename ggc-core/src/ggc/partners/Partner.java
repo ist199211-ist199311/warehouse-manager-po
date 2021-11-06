@@ -1,13 +1,14 @@
 package ggc.partners;
 
 import ggc.util.NaturalTextComparator;
+import ggc.util.Visitable;
+import ggc.util.Visitor;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.StringJoiner;
 
-public class Partner implements Comparable<Partner>, Serializable {
+public class Partner implements Comparable<Partner>, Serializable, Visitable {
   /**
    * Serial number for serialization.
    */
@@ -53,16 +54,7 @@ public class Partner implements Comparable<Partner>, Serializable {
   }
 
   @Override
-  public String toString() {
-    return new StringJoiner("|")
-            .add(this.getId())
-            .add(this.getName())
-            .add(this.getAddress())
-            .add("NORMAL") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .add("0") // TODO
-            .toString();
+  public <T> T accept(Visitor<T> visitor) {
+    return visitor.visit(this);
   }
 }
