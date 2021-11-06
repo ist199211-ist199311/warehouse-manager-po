@@ -10,9 +10,11 @@ import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
+import ggc.exceptions.UnknownTransactionKeyException;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.Product;
+import ggc.transactions.Transaction;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -86,6 +88,13 @@ public class WarehouseManager {
    */
   public Partner getPartner(String key) throws UnknownPartnerKeyException {
     return this._warehouse.getPartner(key);
+  }
+
+  /**
+   * @see Warehouse#getTransaction(int)
+   */
+  public Transaction getTransaction(int id) throws UnknownTransactionKeyException {
+    return this._warehouse.getTransaction(id);
   }
 
   /**

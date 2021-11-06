@@ -2,26 +2,22 @@ package ggc.exceptions;
 
 import java.io.Serial;
 
-/**
- * Exception for unknown product keys.
- */
-public class UnknownProductKeyException extends Exception {
-
+public class UnknownTransactionKeyException extends Exception {
   /**
    * Serial number for serialization.
    */
   @Serial
-  private static final long serialVersionUID = 202110231557L;
+  private static final long serialVersionUID = 202111061536L;
 
   /**
    * The key that had an attempted access
    */
-  private String key;
+  private int key;
 
   /**
    * @param key Unknown key provided.
    */
-  public UnknownProductKeyException(String key) {
+  public UnknownTransactionKeyException(int key) {
     super();
     this.key = key;
   }
@@ -30,7 +26,7 @@ public class UnknownProductKeyException extends Exception {
    * @param key   Unknown key provided.
    * @param cause What exception caused this one.
    */
-  public UnknownProductKeyException(String key, Exception cause) {
+  public UnknownTransactionKeyException(int key, Exception cause) {
     super(cause);
     this.key = key;
   }
@@ -38,7 +34,7 @@ public class UnknownProductKeyException extends Exception {
   /**
    * @return the key
    */
-  public String getKey() {
+  public int getKey() {
     return this.key;
   }
 }

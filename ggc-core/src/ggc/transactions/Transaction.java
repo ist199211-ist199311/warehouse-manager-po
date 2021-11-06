@@ -46,4 +46,8 @@ public abstract class Transaction {
   public Optional<Integer> getPaymentDate() {
     return Optional.ofNullable(paymentDate);
   }
+
+  protected void setPaymentDate(int date) {
+    this.paymentDate = date;
+  }
 }

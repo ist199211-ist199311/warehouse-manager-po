@@ -7,6 +7,7 @@ import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
+import ggc.exceptions.UnknownTransactionKeyException;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
@@ -190,6 +191,23 @@ public class Warehouse implements Serializable {
       throw new UnknownProductKeyException(key);
     }
     return p;
+  }
+
+  /**
+   * Get a transaction by its ID. Two transactions are the same if numeric IDs
+   * are the same.
+   *
+   * @param id The ID of the product to get
+   * @return The {@link Transaction} with the given ID
+   * @throws UnknownTransactionKeyException if there is no {@link Transaction}
+   *                                        with the given ID
+   */
+  public Transaction getTransaction(int id) throws UnknownTransactionKeyException {
+    Transaction t = this.transactions.get(id);
+    if (t == null) {
+      throw new UnknownTransactionKeyException(id);
+    }
+    return t;
   }
 
   /**
@@ -557,7 +575,8 @@ public class Warehouse implements Serializable {
 
     final Batch batch = product.registerBatch(quantity, value, partner);
     final AcquisitionTransaction transaction =
-            new AcquisitionTransaction(getNextTransactionId(), batch);
+            new AcquisitionTransaction(getNextTransactionId(),
+                    this.displayDate(), batch);
     transactions.put(transaction.getId(), transaction);
     this.availableBalance -= transaction.totalValue();
   }
