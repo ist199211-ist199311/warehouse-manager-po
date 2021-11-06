@@ -176,6 +176,37 @@ public class Warehouse implements Serializable {
   }
 
   /**
+   * Get all batches by the given partner available to the warehouse
+   *
+   * @param partnerId The key of the partner that owns the batches
+   * @return A sorted {@link Collection} of the partner's batches
+   * @throws UnknownPartnerKeyException if the given partner is unknown
+   */
+  public Collection<Batch> getBatchesByPartner(String partnerId)
+          throws UnknownPartnerKeyException {
+    final Partner partner = getPartner(partnerId);
+
+    return this.products.values().stream()
+            .flatMap(Product::getBatches)
+            .filter(batch -> partner.equals(batch.partner()))
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * Get all batches of the given product available to the warehouse
+   *
+   * @param productId The key of the product whose batches belong to
+   * @return A sorted {@link Collection} of the products's batches
+   * @throws UnknownProductKeyException if the given product is unknown
+   */
+  public Collection<Batch> getBatchesByProduct(String productId)
+          throws UnknownProductKeyException {
+    final Product product = getProduct(productId);
+
+    return product.getBatches().collect(Collectors.toList());
+  }
+
+  /**
    * Get a partner by its key. Two partners are the same if their keys are the
    * same (or only differ by case).
    *

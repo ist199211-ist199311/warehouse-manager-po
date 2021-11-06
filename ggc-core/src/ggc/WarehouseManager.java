@@ -11,6 +11,7 @@ import ggc.exceptions.UnavailableFileException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
+import ggc.products.Batch;
 import ggc.util.Visitable;
 
 import java.io.BufferedInputStream;
@@ -71,6 +72,22 @@ public class WarehouseManager {
    */
   public Collection<? extends Visitable> getAllBatches() {
     return this._warehouse.getAllBatches();
+  }
+
+  /**
+   * @see Warehouse#getBatchesByPartner(String)
+   */
+  public Collection<? extends Visitable> getBatchesByPartner(String partnerId)
+          throws UnknownPartnerKeyException {
+    return this._warehouse.getBatchesByPartner(partnerId);
+  }
+
+  /**
+   * @see Warehouse#getBatchesByProduct(String)
+   */
+  public Collection<Batch> getBatchesByProduct(String productId)
+          throws UnknownProductKeyException {
+    return this._warehouse.getBatchesByProduct(productId);
   }
 
   /**
