@@ -94,7 +94,8 @@ public class DerivedProduct extends Product {
     }
     final double acquisitionValue = newBatches.stream()
         .map(b -> b.price())
-        .reduce(0D, (a, b) -> a + b);
+        .reduce(Float::sum)
+        .orElse(0);
     saveBreakdownTransaction.accept(new BreakdownTransaction(
         idSupplier.get(),
         saleValue.get() - acquisitionValue,
