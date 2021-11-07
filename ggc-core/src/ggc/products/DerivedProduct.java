@@ -1,6 +1,5 @@
 package ggc.products;
 
-import ggc.exceptions.OutOfStockException;
 import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
 import ggc.util.Visitor;
