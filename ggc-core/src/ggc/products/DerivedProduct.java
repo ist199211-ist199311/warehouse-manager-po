@@ -75,7 +75,7 @@ public class DerivedProduct extends Product {
         date,
         partner,
         quantity,
-        () -> 0,
+        () -> -1,
         t -> saleValue.set(t.baseValue()));
     List<Batch> newBatches = new ArrayList<Batch>();
     // TODO: v do this with streams maybe
@@ -91,7 +91,7 @@ public class DerivedProduct extends Product {
           partner,
           quantity * c.quantity(),
           price,
-          () -> 0,
+          () -> -1,
           t -> newBatches.add(new Batch(
               t.getQuantity(),
               t.baseValue(),
