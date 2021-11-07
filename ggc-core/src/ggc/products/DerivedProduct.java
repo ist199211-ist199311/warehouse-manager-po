@@ -54,11 +54,6 @@ public class DerivedProduct extends Product {
   }
 
   @Override
-  public String toString() {
-    return super.toString() + "|" + this.recipe.toString();
-  }
-
-  @Override
   public <T> T accept(Visitor<T> visitor) {
     return visitor.visit(this);
   }

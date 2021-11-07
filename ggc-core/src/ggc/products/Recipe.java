@@ -7,7 +7,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Recipe implements Serializable, Visitable {
   /**
@@ -30,15 +29,6 @@ public class Recipe implements Serializable, Visitable {
 
   public List<RecipeComponent> getRecipeProducts() {
     return this.recipeComponents;
-  }
-
-  @Override
-  public String toString() {
-    return this.getAggravatingFactor() + "|"
-        + this.getRecipeProducts()
-            .stream()
-            .map(RecipeComponent::toString)
-            .collect(Collectors.joining("#"));
   }
 
   @Override
