@@ -8,6 +8,7 @@ import ggc.exceptions.ImportFileException;
 import ggc.exceptions.InvalidDateException;
 import ggc.exceptions.MissingFileAssociationException;
 import ggc.exceptions.UnavailableFileException;
+import ggc.exceptions.UnavailableProductException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
@@ -161,6 +162,18 @@ public class WarehouseManager {
       throws UnknownPartnerKeyException, UnknownProductKeyException {
     this._warehouse.registerAcquisitionTransaction(partnerId, productId,
         value, quantity);
+  }
+
+  /**
+   * @see Warehouse#registerBreakdownTransaction(String, String, int)
+   */
+  public void registerBreakdownTransaction(String partnerId, String productId,
+      int quantity) throws UnknownProductKeyException,
+      UnknownPartnerKeyException, UnavailableProductException {
+    this._warehouse.registerBreakdownTransaction(
+        partnerId,
+        productId,
+        quantity);
   }
 
   /**

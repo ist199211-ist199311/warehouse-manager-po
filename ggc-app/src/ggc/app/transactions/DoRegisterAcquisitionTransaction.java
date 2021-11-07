@@ -25,7 +25,7 @@ public class DoRegisterAcquisitionTransaction
   @Override
   public final void execute() throws CommandException {
     try {
-      registerAcquisitionTransaction(
+      this.registerAcquisitionTransaction(
           stringField("partnerId"),
           stringField("productId"),
           realField("price"),

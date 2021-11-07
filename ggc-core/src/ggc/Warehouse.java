@@ -5,6 +5,7 @@ import ggc.exceptions.DuplicatePartnerKeyException;
 import ggc.exceptions.DuplicateProductKeyException;
 import ggc.exceptions.IllegalEntryException;
 import ggc.exceptions.InvalidDateException;
+import ggc.exceptions.UnavailableProductException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
@@ -619,19 +620,16 @@ public class Warehouse implements Serializable {
    * @throws UnknownProductKeyException if the given product does not exist
    */
   public void registerAcquisitionTransaction(String partnerId,
-      String productId, double value,
-      int quantity)
+      String productId, double value, int quantity)
       throws UnknownPartnerKeyException, UnknownProductKeyException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
-    final Batch batch = product.registerBatch(quantity, value, partner);
-    final AcquisitionTransaction transaction = new AcquisitionTransaction(
-        this.getNextTransactionId(),
-        this.displayDate(),
-        batch);
-    this.transactions.put(transaction.getId(), transaction);
-    this.availableBalance -= transaction.totalValue();
+    product.acquire(date, partner, quantity, value, this::getNextTransactionId,
+        transaction -> {
+          this.transactions.put(transaction.getId(), transaction);
+          this.availableBalance -= transaction.totalValue();
+        });
   }
 
   public void registerSaleTransaction(String partnerId, String productId,
@@ -639,15 +637,25 @@ public class Warehouse implements Serializable {
       throws UnknownPartnerKeyException, UnknownProductKeyException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
+
+    product.sell(date, partner, quantity, this::getNextTransactionId,
+        transaction -> this.transactions.put(transaction.getId(), transaction));
     // TODO calculate price from product
   }
 
   public void registerBreakdownTransaction(String partnerId, String productId,
       int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+      throws UnknownPartnerKeyException, UnknownProductKeyException,
+      UnavailableProductException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
-    // TODO calculate breakdown stuff on product
+
+    product.breakdown(
+        this.date,
+        partner,
+        quantity,
+        this::getNextTransactionId,
+        t -> transactions.put(t.getId(), t));
   }
 
   /**
