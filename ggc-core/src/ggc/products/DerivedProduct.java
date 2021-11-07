@@ -80,17 +80,11 @@ public class DerivedProduct extends Product {
     List<Batch> newBatches = new ArrayList<Batch>();
     // TODO: v do this with streams maybe
     for (RecipeComponent c : this.getRecipe().getRecipeProducts()) {
-      double price;
-      try {
-        price = c.product().getCheapestPrice();
-      } catch (OutOfStockException e) {
-        price = c.product().getMostExpensivePrice();
-      }
       c.product().acquire(
           date,
           partner,
           quantity * c.quantity(),
-          price,
+          c.product().getPriceForBreakdown(),
           () -> -1,
           t -> newBatches.add(new Batch(
               t.getQuantity(),
