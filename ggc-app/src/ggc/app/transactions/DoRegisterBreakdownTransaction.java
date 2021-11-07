@@ -23,22 +23,14 @@ public class DoRegisterBreakdownTransaction extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     try {
-      this.registerBreakdownTransaction(
-          stringField("partnerId"),
-          stringField("productId"),
-          integerField("quantity"));
+      String partnerId = stringField("partnerId");
+      String productId = stringField("productId");
+      int quantity = integerField("quantity");
+      _receiver.registerBreakdownTransaction(partnerId, productId, quantity);
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     } catch (ggc.exceptions.UnknownProductKeyException e) {
       throw new UnknownProductKeyException(e.getKey());
-    }
-  }
-
-  private void registerBreakdownTransaction(String partnerId, String productId,
-      Integer quantity) throws ggc.exceptions.UnknownPartnerKeyException,
-      ggc.exceptions.UnknownProductKeyException {
-    try {
-      _receiver.registerBreakdownTransaction(partnerId, productId, quantity);
     } catch (ggc.exceptions.UnavailableProductException e) {
       throw new UnavailableProductException(
           e.getKey(),
