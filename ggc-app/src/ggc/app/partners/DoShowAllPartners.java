@@ -19,9 +19,9 @@ class DoShowAllPartners extends Command<WarehouseManager> {
   @Override
   public void execute() throws CommandException {
     _receiver.getAllPartners()
-            .stream()
-            .map(v -> v.accept(stringifier))
-            .forEach(_display::popup);
+        .stream()
+        .map(v -> v.accept(stringifier))
+        .forEach(_display::popup);
   }
 
 }

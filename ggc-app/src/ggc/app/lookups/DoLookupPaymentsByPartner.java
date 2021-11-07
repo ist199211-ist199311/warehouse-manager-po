@@ -12,12 +12,12 @@ public class DoLookupPaymentsByPartner extends Command<WarehouseManager> {
 
   public DoLookupPaymentsByPartner(WarehouseManager receiver) {
     super(Label.PAID_BY_PARTNER, receiver);
-    addStringField("partnerId", Prompt.partnerKey());
+    this.addStringField("partnerId", Prompt.partnerKey());
   }
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
+    // FIXME implement command
   }
 
 }

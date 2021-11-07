@@ -78,7 +78,7 @@ public class WarehouseManager {
    * @see Warehouse#getBatchesByPartner(String)
    */
   public Collection<? extends Visitable> getBatchesByPartner(String partnerId)
-          throws UnknownPartnerKeyException {
+      throws UnknownPartnerKeyException {
     return this._warehouse.getBatchesByPartner(partnerId);
   }
 
@@ -86,14 +86,15 @@ public class WarehouseManager {
    * @see Warehouse#getBatchesByProduct(String)
    */
   public Collection<Batch> getBatchesByProduct(String productId)
-          throws UnknownProductKeyException {
+      throws UnknownProductKeyException {
     return this._warehouse.getBatchesByProduct(productId);
   }
 
   /**
    * @see Warehouse#lookupProductBatchesUnderGivenPrice(double)
    */
-  public Collection<? extends Visitable> lookupProductBatchesUnderGivenPrice(double priceLimit) {
+  public Collection<? extends Visitable> lookupProductBatchesUnderGivenPrice(
+      double priceLimit) {
     return this._warehouse.lookupProductBatchesUnderGivenPrice(priceLimit);
   }
 
@@ -107,7 +108,8 @@ public class WarehouseManager {
   /**
    * @see Warehouse#getTransaction(int)
    */
-  public Visitable getTransaction(int id) throws UnknownTransactionKeyException {
+  public Visitable getTransaction(int id)
+      throws UnknownTransactionKeyException {
     return this._warehouse.getTransaction(id);
   }
 
@@ -115,7 +117,7 @@ public class WarehouseManager {
    * @see Warehouse#registerSimpleProduct(String)
    */
   public void registerSimpleProduct(String id)
-          throws DuplicateProductKeyException {
+      throws DuplicateProductKeyException {
     this._warehouse.registerSimpleProduct(id);
   }
 
@@ -123,18 +125,17 @@ public class WarehouseManager {
    * @see Warehouse#registerDerivedProduct(String, double, String[], int[])
    */
   public void registerDerivedProduct(String id, double aggravatingFactor,
-                                     String[] recipeProducts,
-                                     int[] recipeQuantities)
-          throws UnknownProductKeyException, DuplicateProductKeyException {
+      String[] recipeProducts, int[] recipeQuantities)
+      throws UnknownProductKeyException, DuplicateProductKeyException {
     this._warehouse.registerDerivedProduct(id, aggravatingFactor,
-            recipeProducts, recipeQuantities);
+        recipeProducts, recipeQuantities);
   }
 
   /**
    * @see Warehouse#registerPartner(String, String, String)
    */
   public void registerPartner(String id, String name, String address)
-          throws DuplicatePartnerKeyException {
+      throws DuplicatePartnerKeyException {
     this._warehouse.registerPartner(id, name, address);
   }
 
@@ -156,26 +157,27 @@ public class WarehouseManager {
    * @see Warehouse#registerAcquisitionTransaction(String, String, double, int)
    */
   public void registerAcquisitionTransaction(String partnerId,
-                                             String productId, double value,
-                                             int quantity)
-          throws UnknownPartnerKeyException, UnknownProductKeyException {
+      String productId, double value, int quantity)
+      throws UnknownPartnerKeyException, UnknownProductKeyException {
     this._warehouse.registerAcquisitionTransaction(partnerId, productId,
-            value, quantity);
+        value, quantity);
   }
 
   /**
    * @see Warehouse#getPartnerAcquisitions(String)
    */
-  public Collection<? extends Visitable> getPartnerAcquisitions(String partnerId)
-          throws UnknownPartnerKeyException {
+  public Collection<? extends Visitable> getPartnerAcquisitions(
+      String partnerId)
+      throws UnknownPartnerKeyException {
     return this._warehouse.getPartnerAcquisitions(partnerId);
   }
 
   /**
    * @see Warehouse#getPartnerSalesAndBreakdowns(String)
    */
-  public Collection<? extends Visitable> getPartnerSalesAndBreakdowns(String partnerId)
-          throws UnknownPartnerKeyException {
+  public Collection<? extends Visitable> getPartnerSalesAndBreakdowns(
+      String partnerId)
+      throws UnknownPartnerKeyException {
     return this._warehouse.getPartnerSalesAndBreakdowns(partnerId);
   }
 
@@ -191,13 +193,13 @@ public class WarehouseManager {
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
   public void save() throws IOException, FileNotFoundException,
-          MissingFileAssociationException {
+      MissingFileAssociationException {
     if (_filename == null || _filename.isBlank())
       throw new MissingFileAssociationException();
 
     if (_warehouse.isDirty()) {
       try (ObjectOutputStream out = new ObjectOutputStream(
-              new BufferedOutputStream(new FileOutputStream(_filename)))) {
+          new BufferedOutputStream(new FileOutputStream(_filename)))) {
         out.writeObject(_warehouse);
       }
       _warehouse.clean();
@@ -217,7 +219,7 @@ public class WarehouseManager {
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
   public void saveAs(String fileName) throws MissingFileAssociationException,
-          FileNotFoundException, IOException {
+      FileNotFoundException, IOException {
     _filename = fileName;
     save();
   }
@@ -234,7 +236,7 @@ public class WarehouseManager {
    */
   public void load(String fileName) throws UnavailableFileException {
     try (ObjectInputStream in = new ObjectInputStream(
-            new BufferedInputStream(new FileInputStream(fileName)))) {
+        new BufferedInputStream(new FileInputStream(fileName)))) {
       _warehouse = (Warehouse) in.readObject();
       this._filename = fileName;
     } catch (IOException | ClassNotFoundException e) {

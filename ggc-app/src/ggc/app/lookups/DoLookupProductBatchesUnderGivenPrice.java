@@ -8,7 +8,8 @@ import pt.tecnico.uilib.menus.CommandException;
 /**
  * Lookup products cheaper than a given price.
  */
-public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseManager> {
+public class DoLookupProductBatchesUnderGivenPrice
+    extends Command<WarehouseManager> {
 
   private final Stringifier stringifier = new Stringifier();
 
@@ -20,9 +21,9 @@ public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseMana
   @Override
   public void execute() throws CommandException {
     _receiver.lookupProductBatchesUnderGivenPrice(realField("priceLimit"))
-            .stream()
-            .map(v -> v.accept(stringifier))
-            .forEach(_display::popup);
+        .stream()
+        .map(v -> v.accept(stringifier))
+        .forEach(_display::popup);
   }
 
 }

@@ -22,9 +22,9 @@ class DoShowPartnerSales extends Command<WarehouseManager> {
   public void execute() throws CommandException {
     try {
       _receiver.getPartnerSalesAndBreakdowns(stringField("partnerId"))
-              .stream()
-              .map(v -> v.accept(stringifier))
-              .forEach(_display::popup);
+          .stream()
+          .map(v -> v.accept(stringifier))
+          .forEach(_display::popup);
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     }

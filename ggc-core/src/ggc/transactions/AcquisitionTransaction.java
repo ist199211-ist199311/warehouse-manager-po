@@ -6,8 +6,11 @@ import ggc.util.Visitor;
 public class AcquisitionTransaction extends Transaction {
   public AcquisitionTransaction(int id, int date, Batch batch) {
     // TODO maybe store the batch itself?
-    super(id, batch.price(), batch.quantity(), batch.product(),
-            batch.partner());
+    super(id,
+        batch.price(),
+        batch.quantity(),
+        batch.product(),
+        batch.partner());
     this.setPaymentDate(date);
   }
 

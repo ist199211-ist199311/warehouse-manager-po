@@ -14,8 +14,7 @@ public class BreakdownTransaction extends Transaction {
   private final Set<Batch> batches = new TreeSet<>();
 
   public BreakdownTransaction(int id, double value, int quantity,
-                              Product product, Partner partner,
-                              Collection<Batch> batches) {
+      Product product, Partner partner, Collection<Batch> batches) {
     super(id, value, quantity, product, partner);
     this.batches.addAll(batches);
   }

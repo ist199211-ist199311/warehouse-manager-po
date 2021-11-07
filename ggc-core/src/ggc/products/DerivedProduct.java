@@ -21,7 +21,7 @@ public class DerivedProduct extends Product {
 
   /**
    * @return the sum of the in-stock quantity and the
-   * {@link DerivedProduct#getBuildableQuantity() buildable quantity}
+   *         {@link DerivedProduct#getBuildableQuantity() buildable quantity}
    */
   @Override
   public int getTotalQuantity() {
@@ -50,7 +50,7 @@ public class DerivedProduct extends Product {
   }
 
   public Recipe getRecipe() {
-    return recipe;
+    return this.recipe;
   }
 
   @Override

@@ -16,7 +16,7 @@ public abstract class Transaction implements Visitable {
   private Integer paymentDate = null;
 
   protected Transaction(int id, double value, int quantity, Product product,
-                        Partner partner) {
+      Partner partner) {
     this.id = id;
     this.value = value;
     this.quantity = quantity;
@@ -29,19 +29,19 @@ public abstract class Transaction implements Visitable {
   }
 
   public int getId() {
-    return id;
+    return this.id;
   }
 
   public int getQuantity() {
-    return quantity;
+    return this.quantity;
   }
 
   public Product getProduct() {
-    return product;
+    return this.product;
   }
 
   public Partner getPartner() {
-    return partner;
+    return this.partner;
   }
 
   public Optional<Integer> getPaymentDate() {

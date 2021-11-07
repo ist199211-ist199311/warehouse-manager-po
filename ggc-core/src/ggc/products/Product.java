@@ -34,10 +34,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   private final Comparator<Batch> batchComparator = new BatchPriceComparator();
 
   private final String id;
-  private final Map<String, Set<Batch>> batchesByPartner =
-          new TreeMap<>(idComparator);
-  private final PriorityQueue<Batch> batches =
-          new PriorityQueue<>(batchComparator);
+  private final Map<String, Set<Batch>> batchesByPartner = new TreeMap<>(
+      idComparator);
+  private final PriorityQueue<Batch> batches = new PriorityQueue<>(
+      batchComparator);
   private final Set<Partner> subscribers = new HashSet<>();
 
   public Product(String id) {
@@ -46,16 +46,18 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   public String getId() {
-    return id;
+    return this.id;
   }
 
   public Stream<Batch> getBatches() {
-    return batchesByPartner.values().stream().flatMap(Collection::stream);
+    return this.batchesByPartner.values()
+        .stream()
+        .flatMap(Collection::stream);
   }
 
   /**
-   * Creates a new batch for this product with the given parameters.
-   * Stores the batch in this product.
+   * Creates a new batch for this product with the given parameters. Stores the
+   * batch in this product.
    *
    * @param quantity the quantity in the batch
    * @param price    the price of the batch
@@ -71,20 +73,22 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   private void insertBatch(Batch batch) {
     this.batches.add(batch);
     this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
-            (v) -> new TreeSet<>()).add(batch);
+        (v) -> new TreeSet<>()).add(batch);
   }
 
   private void removeBatchFromPartnerMap(Batch batch) {
     Optional.ofNullable(this.batchesByPartner.get(batch.partner().getId()))
-            .ifPresent(set -> set.remove(batch));
+        .ifPresent(set -> set.remove(batch));
   }
 
   /**
    * @return the available quantity in batches
    */
   public int getQuantityInBatches() {
-    return this.batches.stream().map(Batch::quantity)
-            .reduce(Integer::sum).orElse(0);
+    return this.batches.stream()
+        .map(Batch::quantity)
+        .reduce(Integer::sum)
+        .orElse(0);
   }
 
   public int getTotalQuantity() {
@@ -92,9 +96,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * Calculates the batches needed to reach to acquire a given quantity of
-   * this product, minimizing the cost, that is, choosing the cheaper batches
-   * first.
+   * Calculates the batches needed to reach to acquire a given quantity of this
+   * product, minimizing the cost, that is, choosing the cheaper batches first.
    * It is guaranteed that the total quantity in the returned batches is equals
    * to the quantity parameter.
    *
@@ -103,9 +106,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    * @throws OutOfStockException if there is not enough stock to satisfy the
    *                             request
    */
-  public Collection<Batch> getBatchesForAcquisition(int quantity) throws OutOfStockException {
+  public Collection<Batch> getBatchesForAcquisition(int quantity)
+      throws OutOfStockException {
     // TODO maybe make batches immutable (?)
-    if (getQuantityInBatches() < quantity)
+    if (this.getQuantityInBatches() < quantity)
       throw new OutOfStockException(this, quantity);
 
     List<Batch> batchesForAcquisition = new LinkedList<>();
@@ -117,8 +121,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
       if (batch.quantity() + addedQuantity > quantity) {
         int neededQuantity = quantity - addedQuantity;
-        Batch leftoverBatch =
-                batch.cloneWithQuantity(batch.quantity() - neededQuantity);
+        Batch leftoverBatch = batch
+            .cloneWithQuantity(batch.quantity() - neededQuantity);
         batch = batch.cloneWithQuantity(neededQuantity);
         this.insertBatch(leftoverBatch);
       }
@@ -132,13 +136,13 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   /**
    * @return the price of the cheapest batch
-   * @throws OutOfStockException if there are no batches for this product
-   *                             (i.e. no product in stock)
+   * @throws OutOfStockException if there are no batches for this product (i.e.
+   *                             no product in stock)
    */
   public double getCheapestPrice() throws OutOfStockException {
-    if (batches.size() == 0)
+    if (this.batches.size() == 0)
       throw new OutOfStockException(this);
-    return batches.peek().price();
+    return this.batches.peek().price();
   }
 
   /**
@@ -149,13 +153,15 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    */
   public double getMostExpensivePrice() {
     // TODO get all time most expensive price (from transactions)
-    return this.batches.stream().map(Batch::price)
-            .reduce(BinaryOperator.maxBy(Double::compareTo)).orElse(0D);
+    return this.batches.stream()
+        .map(Batch::price)
+        .reduce(BinaryOperator.maxBy(Double::compareTo))
+        .orElse(0D);
   }
 
   /**
-   * Get the price of the product when adding a batch creating from a
-   * derived product breakdown.
+   * Get the price of the product when adding a batch creating from a derived
+   * product breakdown.
    *
    * @return the price of the batch
    */
@@ -189,7 +195,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   @Override
   public int compareTo(Product product) {
-    return idComparator.compare(this.getId(), product.getId());
+    return this.idComparator.compare(this.getId(), product.getId());
   }
 
   @Override

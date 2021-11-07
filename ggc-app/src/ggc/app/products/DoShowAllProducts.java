@@ -19,9 +19,9 @@ class DoShowAllProducts extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     _receiver.getAllProducts()
-            .stream()
-            .map(v -> v.accept(stringifier))
-            .forEach(_display::popup);
+        .stream()
+        .map(v -> v.accept(stringifier))
+        .forEach(_display::popup);
   }
 
 }

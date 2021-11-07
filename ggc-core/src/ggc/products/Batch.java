@@ -9,8 +9,9 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 public record Batch(int quantity, double price, Product product,
-                    Partner partner) implements Comparable<Batch>,
-        Serializable, Visitable {
+    Partner partner) implements Comparable<Batch>,
+    Serializable, Visitable {
+
   /**
    * Serial number for serialization.
    */
@@ -24,10 +25,10 @@ public record Batch(int quantity, double price, Product product,
   @Override
   public int compareTo(Batch batch) {
     return Comparator.comparing(Batch::product)
-            .thenComparing(Batch::partner)
-            .thenComparingDouble(Batch::price)
-            .thenComparingInt(Batch::quantity)
-            .compare(this, batch);
+        .thenComparing(Batch::partner)
+        .thenComparingDouble(Batch::price)
+        .thenComparingInt(Batch::quantity)
+        .compare(this, batch);
   }
 
   @Override

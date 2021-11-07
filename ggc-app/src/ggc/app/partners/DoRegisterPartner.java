@@ -20,7 +20,10 @@ class DoRegisterPartner extends Command<WarehouseManager> {
   @Override
   public void execute() throws CommandException {
     try {
-      _receiver.registerPartner(stringField("id"), stringField("name"), stringField("address"));
+      _receiver.registerPartner(
+          stringField("id"),
+          stringField("name"),
+          stringField("address"));
     } catch (ggc.exceptions.DuplicatePartnerKeyException e) {
       throw new DuplicatePartnerKeyException(e.getKey());
     }

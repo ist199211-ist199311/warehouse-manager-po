@@ -10,12 +10,12 @@ public class SaleTransaction extends Transaction {
   private boolean paid = false;
 
   public SaleTransaction(int id, double value, int quantity, Product product,
-                         Partner partner) {
+      Partner partner) {
     super(id, value, quantity, product, partner);
   }
 
   public boolean isPaid() {
-    return paid;
+    return this.paid;
   }
 
   public void pay() {

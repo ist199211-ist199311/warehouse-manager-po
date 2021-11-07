@@ -21,7 +21,8 @@ class DoShowPartner extends Command<WarehouseManager> {
   @Override
   public void execute() throws CommandException {
     try {
-      _display.popup(_receiver.getPartner(stringField("partnerId")).accept(stringifier));
+      _display.popup(_receiver.getPartner(stringField("partnerId"))
+          .accept(stringifier));
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     }

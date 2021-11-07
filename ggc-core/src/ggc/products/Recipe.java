@@ -21,21 +21,21 @@ public class Recipe implements Serializable, Visitable {
 
   public Recipe(double aggravatingFactor, List<RecipeComponent> products) {
     this.aggravatingFactor = aggravatingFactor;
-    recipeComponents.addAll(products);
+    this.recipeComponents.addAll(products);
   }
 
   public double getAggravatingFactor() {
-    return aggravatingFactor;
+    return this.aggravatingFactor;
   }
 
   public List<RecipeComponent> getRecipeProducts() {
-    return recipeComponents;
+    return this.recipeComponents;
   }
 
   @Override
   public String toString() {
     return this.getAggravatingFactor() + "|"
-            + this.getRecipeProducts()
+        + this.getRecipeProducts()
             .stream()
             .map(RecipeComponent::toString)
             .collect(Collectors.joining("#"));

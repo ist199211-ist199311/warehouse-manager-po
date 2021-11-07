@@ -4,7 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 public record RecipeComponent(int quantity,
-                              Product product) implements Serializable {
+    Product product) implements Serializable {
   /**
    * Serial number for serialization.
    */
