@@ -78,7 +78,6 @@ public class DerivedProduct extends Product {
         () -> -1,
         t -> saleValue.set(t.baseValue()));
     List<Batch> newBatches = new ArrayList<Batch>();
-    // TODO: v do this with streams maybe
     for (RecipeComponent c : this.getRecipe().getRecipeProducts()) {
       c.product().acquire(
           date,
