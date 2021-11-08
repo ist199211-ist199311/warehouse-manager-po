@@ -655,7 +655,10 @@ public class Warehouse implements Serializable {
         partner,
         quantity,
         this::getNextTransactionId,
-        t -> transactions.put(t.getId(), t));
+        transaction -> {
+          transactions.put(transaction.getId(), transaction);
+          this.availableBalance += Math.max(0, transaction.baseValue());
+        });
   }
 
   /**
