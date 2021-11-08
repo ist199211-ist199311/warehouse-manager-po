@@ -17,7 +17,7 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
     addStringField("partnerId", Prompt.partnerKey());
     addIntegerField("deadline", Prompt.paymentDeadline());
     addStringField("productId", Prompt.productKey());
-    addStringField("quantity", Prompt.amount());
+    addIntegerField("quantity", Prompt.amount());
   }
 
   @Override
