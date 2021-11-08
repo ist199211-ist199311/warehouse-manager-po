@@ -165,6 +165,16 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#registerSaleTransaction(String, String, int, int)
+   */
+  public void registerSaleTransaction(String partnerId, String productId,
+      int paymentDeadline, int quantity)
+      throws UnknownPartnerKeyException, UnknownProductKeyException {
+    this._warehouse.registerSaleTransaction(partnerId, productId,
+        paymentDeadline, quantity);
+  }
+
+  /**
    * @see Warehouse#registerBreakdownTransaction(String, String, int)
    */
   public void registerBreakdownTransaction(String partnerId, String productId,
