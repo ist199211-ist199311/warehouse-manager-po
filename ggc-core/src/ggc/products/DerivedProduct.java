@@ -1,6 +1,5 @@
 package ggc.products;
 
-import ggc.exceptions.OutOfStockException;
 import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
 import ggc.util.Visitor;
@@ -51,12 +50,13 @@ public class DerivedProduct extends Product {
    * through building (for derived products), recursively checking recipe
    * components.
    * 
-   * @throws OutOfStockException if there is not enough of a component, if a
-   *                             build would be necessary (this exception
-   *                             references the first missing component)
+   * @throws UnavailableProductException if there is not enough of a component,
+   *                                     if a build would be necessary (this
+   *                                     exception references the first missing
+   *                                     component)
    */
   @Override
-  public void assertAvailable(int quantity) throws OutOfStockException {
+  public void assertAvailable(int quantity) throws UnavailableProductException {
     // FIXME: vv would this look better with a for (int c = ...; c < q; c++)?
     int current = this.getQuantityInBatches();
     while (current < quantity) {
@@ -92,12 +92,16 @@ public class DerivedProduct extends Product {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
     AtomicReference<Double> saleValue = new AtomicReference<>(0D);
-    this.sell(
-        date,
-        partner,
-        quantity,
-        () -> -1,
-        t -> saleValue.set(t.baseValue()));
+    try {
+      this.sell(
+          date,
+          partner,
+          quantity,
+          () -> -1,
+          t -> saleValue.set(t.baseValue()));
+    } catch (UnavailableProductException e) {
+      e.printStackTrace(); // should never happen
+    }
     List<Batch> newBatches = new ArrayList<Batch>();
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
       c.product().acquire(

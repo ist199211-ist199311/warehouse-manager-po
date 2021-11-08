@@ -169,7 +169,8 @@ public class WarehouseManager {
    */
   public void registerSaleTransaction(String partnerId, String productId,
       int paymentDeadline, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+      throws UnknownPartnerKeyException, UnknownProductKeyException,
+      UnavailableProductException {
     this._warehouse.registerSaleTransaction(partnerId, productId,
         paymentDeadline, quantity);
   }

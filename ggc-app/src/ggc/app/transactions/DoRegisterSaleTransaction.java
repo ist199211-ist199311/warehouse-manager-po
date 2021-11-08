@@ -3,6 +3,7 @@ package ggc.app.transactions;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
+import ggc.app.exceptions.UnavailableProductException;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 import ggc.app.exceptions.UnknownProductKeyException;
 
@@ -31,6 +32,11 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
       throw new UnknownPartnerKeyException(e.getKey());
     } catch (ggc.exceptions.UnknownProductKeyException e) {
       throw new UnknownProductKeyException(e.getKey());
+    } catch (ggc.exceptions.UnavailableProductException e) {
+      throw new UnavailableProductException(
+          e.getKey(),
+          e.getRequested(),
+          e.getAvailable());
     }
   }
 

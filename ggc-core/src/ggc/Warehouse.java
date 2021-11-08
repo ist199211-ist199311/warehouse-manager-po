@@ -634,7 +634,8 @@ public class Warehouse implements Serializable {
 
   public void registerSaleTransaction(String partnerId, String productId,
       int paymentDeadline, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+      throws UnknownPartnerKeyException, UnknownProductKeyException,
+      UnavailableProductException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 

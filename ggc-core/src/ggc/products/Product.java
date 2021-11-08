@@ -104,11 +104,12 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   /**
    * Calculate whether this product is presently available.
    * 
-   * @throws OutOfStockException if there is not enough of this product
+   * @throws UnavailableProductException if there is not enough of this product
    */
-  public void assertAvailable(int quantity) throws OutOfStockException {
-    if (this.getQuantityInBatches() < quantity) {
-      throw new OutOfStockException(this, quantity);
+  public void assertAvailable(int quantity) throws UnavailableProductException {
+    final int available = this.getQuantityInBatches();
+    if (available < quantity) {
+      throw new UnavailableProductException(this.getId(), quantity, available);
     }
   }
 
@@ -202,8 +203,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   public void sell(int date, Partner partner, int quantity,
       Supplier<Integer> idSupplier,
-      Consumer<SaleTransaction> saveSaleTransaction) {
-    // TODO
+      Consumer<SaleTransaction> saveSaleTransaction)
+      throws UnavailableProductException {
+    this.assertAvailable(quantity);
+    // TODO continue
   }
 
   public void breakdown(int date, Partner partner, int quantity,
