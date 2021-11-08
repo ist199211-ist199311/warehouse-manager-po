@@ -77,7 +77,7 @@ public class DerivedProduct extends Product {
         () -> -1,
         t -> saleValue.set(t.baseValue()));
     List<Batch> newBatches = new ArrayList<Batch>();
-    for (RecipeComponent c : this.getRecipe().getRecipeProducts()) {
+    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
       c.product().acquire(
           date,
           partner,
