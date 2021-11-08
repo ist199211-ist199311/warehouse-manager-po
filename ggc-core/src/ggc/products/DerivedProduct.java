@@ -1,5 +1,6 @@
 package ggc.products;
 
+import ggc.exceptions.OutOfStockException;
 import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
 import ggc.util.Visitor;
@@ -43,6 +44,27 @@ public class DerivedProduct extends Product {
   public int getBuildableQuantity() {
     // TODO
     return 0;
+  }
+
+  /**
+   * Calculate whether this product is presently available, either directly or
+   * through building (for derived products), recursively checking recipe
+   * components.
+   * 
+   * @throws OutOfStockException if there is not enough of a component, if a
+   *                             build would be necessary (this exception
+   *                             references the first missing component)
+   */
+  @Override
+  public void assertAvailable(int quantity) throws OutOfStockException {
+    // FIXME: vv would this look better with a for (int c = ...; c < q; c++)?
+    int current = this.getQuantityInBatches();
+    while (current < quantity) {
+      for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
+        c.product().assertAvailable(c.quantity());
+      }
+      current++;
+    }
   }
 
   /**

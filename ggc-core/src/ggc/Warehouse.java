@@ -640,7 +640,6 @@ public class Warehouse implements Serializable {
 
     product.sell(date, partner, quantity, this::getNextTransactionId,
         transaction -> this.transactions.put(transaction.getId(), transaction));
-    // TODO calculate price from product
   }
 
   public void registerBreakdownTransaction(String partnerId, String productId,

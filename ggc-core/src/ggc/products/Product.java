@@ -102,6 +102,17 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
+   * Calculate whether this product is presently available.
+   * 
+   * @throws OutOfStockException if there is not enough of this product
+   */
+  public void assertAvailable(int quantity) throws OutOfStockException {
+    if (this.getQuantityInBatches() < quantity) {
+      throw new OutOfStockException(this, quantity);
+    }
+  }
+
+  /**
    * Calculates the batches needed to reach to acquire a given quantity of this
    * product, minimizing the cost, that is, choosing the cheaper batches first.
    * It is guaranteed that the total quantity in the returned batches is equal
