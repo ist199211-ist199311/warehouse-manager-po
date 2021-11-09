@@ -82,21 +82,17 @@ public class DerivedProduct extends Product {
       Supplier<Integer> idSupplier,
       Consumer<BreakdownTransaction> saveBreakdownTransaction)
       throws UnavailableProductException {
-    final int available = this.getTotalQuantity();
+    final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
     AtomicReference<Double> saleValue = new AtomicReference<>(0D);
-    try {
-      this.sell(
-          date,
-          partner,
-          quantity,
-          () -> -1,
-          t -> saleValue.set(t.baseValue()));
-    } catch (UnavailableProductException e) {
-      e.printStackTrace(); // should never happen
-    }
+    this.sell(
+        date,
+        partner,
+        quantity,
+        () -> -1,
+        t -> saleValue.set(t.baseValue()));
     List<Batch> newBatches = new ArrayList<Batch>();
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
       c.product().acquire(
