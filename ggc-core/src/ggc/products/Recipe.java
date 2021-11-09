@@ -27,7 +27,7 @@ public class Recipe implements Serializable, Visitable {
     return this.aggravatingFactor;
   }
 
-  public List<RecipeComponent> getRecipeProducts() {
+  public List<RecipeComponent> getRecipeComponents() {
     return this.recipeComponents;
   }
 

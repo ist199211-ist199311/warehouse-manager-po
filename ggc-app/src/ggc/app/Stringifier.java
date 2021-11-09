@@ -53,7 +53,7 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(Recipe recipe) {
     return recipe.getAggravatingFactor() + "|"
-        + recipe.getRecipeProducts()
+        + recipe.getRecipeComponents()
             .stream()
             .map(comp -> comp.product().getId() + ":" + comp.quantity())
             .collect(Collectors.joining("#"));

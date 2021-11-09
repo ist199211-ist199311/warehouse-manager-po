@@ -1,10 +1,17 @@
 package ggc.transactions;
 
+import java.io.Serial;
+
 import ggc.partners.Partner;
 import ggc.products.Product;
 import ggc.util.Visitor;
 
 public class SaleTransaction extends Transaction {
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
+  private static final long serialVersionUID = 202111092050L;
 
   private Double adjustedValue = null;
   private boolean paid = false;

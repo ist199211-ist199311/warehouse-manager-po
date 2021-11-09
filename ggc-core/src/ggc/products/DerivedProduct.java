@@ -1,9 +1,16 @@
 package ggc.products;
 
+import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
 import ggc.util.Visitor;
+import ggc.transactions.BreakdownTransaction;
 
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class DerivedProduct extends Product {
   /**
@@ -39,6 +46,23 @@ public class DerivedProduct extends Product {
   }
 
   /**
+   * Calculate whether this product is presently available, either directly or
+   * through building (for derived products), recursively checking recipe
+   * components.
+   * 
+   * @throws UnavailableProductException if there is not enough of a component,
+   *                                     if a build would be necessary (this
+   *                                     exception references the first missing
+   *                                     component)
+   */
+  @Override
+  public void assertAvailable(int quantity) throws UnavailableProductException {
+    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
+      c.product().assertAvailable(c.quantity() * quantity);
+    }
+  }
+
+  /**
    * Use this product's recipe to create a new batch, consuming the recipe
    * products.
    *
@@ -51,6 +75,45 @@ public class DerivedProduct extends Product {
 
   public Recipe getRecipe() {
     return this.recipe;
+  }
+
+  @Override
+  public void breakdown(int date, Partner partner, int quantity,
+      Supplier<Integer> idSupplier,
+      Consumer<BreakdownTransaction> saveBreakdownTransaction)
+      throws UnavailableProductException {
+    final int available = this.getQuantityInBatches();
+    if (available < quantity) {
+      throw new UnavailableProductException(this.getId(), quantity, available);
+    }
+    AtomicReference<Double> saleValue = new AtomicReference<>(0D);
+    this.sell(
+        date,
+        partner,
+        quantity,
+        () -> -1,
+        t -> saleValue.set(t.baseValue()));
+    List<Batch> newBatches = new ArrayList<Batch>();
+    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
+      c.product().acquire(
+          date,
+          partner,
+          quantity * c.quantity(),
+          c.product().getPriceForBreakdown(),
+          () -> -1,
+          t -> newBatches.add(t.asBatch()));
+    }
+    final double acquisitionValue = newBatches.stream()
+        .map(b -> b.price())
+        .reduce(Double::sum)
+        .orElse(0D);
+    saveBreakdownTransaction.accept(new BreakdownTransaction(
+        idSupplier.get(),
+        saleValue.get() - acquisitionValue,
+        quantity,
+        this,
+        partner,
+        newBatches));
   }
 
   @Override

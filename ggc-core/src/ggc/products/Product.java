@@ -1,7 +1,11 @@
 package ggc.products;
 
 import ggc.exceptions.OutOfStockException;
+import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
+import ggc.transactions.AcquisitionTransaction;
+import ggc.transactions.BreakdownTransaction;
+import ggc.transactions.SaleTransaction;
 import ggc.util.BatchPriceComparator;
 import ggc.util.NaturalTextComparator;
 import ggc.util.Visitable;
@@ -21,6 +25,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class Product implements Comparable<Product>, Serializable, Visitable {
@@ -96,9 +102,21 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
+   * Calculate whether this product is presently available.
+   * 
+   * @throws UnavailableProductException if there is not enough of this product
+   */
+  public void assertAvailable(int quantity) throws UnavailableProductException {
+    final int available = this.getQuantityInBatches();
+    if (available < quantity) {
+      throw new UnavailableProductException(this.getId(), quantity, available);
+    }
+  }
+
+  /**
    * Calculates the batches needed to reach to acquire a given quantity of this
    * product, minimizing the cost, that is, choosing the cheaper batches first.
-   * It is guaranteed that the total quantity in the returned batches is equals
+   * It is guaranteed that the total quantity in the returned batches is equal
    * to the quantity parameter.
    *
    * @param quantity the quantity of product to acquire
@@ -116,7 +134,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     int addedQuantity = 0;
 
     Batch batch;
-    while (addedQuantity >= quantity && (batch = this.batches.poll()) != null) {
+    while (addedQuantity < quantity && (batch = this.batches.poll()) != null) {
       this.removeBatchFromPartnerMap(batch);
 
       if (batch.quantity() + addedQuantity > quantity) {
@@ -171,6 +189,35 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     } catch (OutOfStockException e) {
       return this.getMostExpensivePrice();
     }
+  }
+
+  public void acquire(int date, Partner partner, int quantity, double price,
+      Supplier<Integer> idSupplier,
+      Consumer<AcquisitionTransaction> saveAcquisitionTransaction) {
+    final Batch batch = this.registerBatch(quantity, price, partner);
+    saveAcquisitionTransaction.accept(new AcquisitionTransaction(
+        idSupplier.get(),
+        date,
+        batch));
+  }
+
+  public void sell(int date, Partner partner, int quantity,
+      Supplier<Integer> idSupplier,
+      Consumer<SaleTransaction> saveSaleTransaction)
+      throws UnavailableProductException {
+    this.assertAvailable(quantity);
+    // TODO continue
+  }
+
+  public void breakdown(int date, Partner partner, int quantity,
+      Supplier<Integer> idSupplier,
+      Consumer<BreakdownTransaction> saveBreakdownTransaction)
+      throws UnavailableProductException {
+    final int available = this.getTotalQuantity();
+    if (available < quantity) {
+      throw new UnavailableProductException(this.getId(), quantity, available);
+    }
+    // do nothing for simple products
   }
 
   public void subscribe(Partner partner) {

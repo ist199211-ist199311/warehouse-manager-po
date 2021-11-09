@@ -5,11 +5,17 @@ import ggc.products.Batch;
 import ggc.products.Product;
 import ggc.util.Visitor;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class BreakdownTransaction extends Transaction {
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
+  private static final long serialVersionUID = 202111092051L;
 
   private final Set<Batch> batches = new TreeSet<>();
 
