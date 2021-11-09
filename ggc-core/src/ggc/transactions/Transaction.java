@@ -5,9 +5,16 @@ import ggc.products.Batch;
 import ggc.products.Product;
 import ggc.util.Visitable;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Optional;
 
-public abstract class Transaction implements Visitable {
+public abstract class Transaction implements Serializable, Visitable {
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
+  private static final long serialVersionUID = 202111092049L;
 
   private final int id;
   private final double value;
