@@ -102,7 +102,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * Calculate whether this product is presently available.
+   * Calculate whether this product is presently available, directly OR
+   * INDIRECTLY (if applicable).
    * 
    * @throws UnavailableProductException if there is not enough of this product
    */
@@ -114,23 +115,24 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * Calculates the batches needed to reach to acquire a given quantity of this
+   * Calculates the batches needed to reach to sell a given quantity of this
    * product, minimizing the cost, that is, choosing the cheaper batches first.
    * It is guaranteed that the total quantity in the returned batches is equal
    * to the quantity parameter.
    *
-   * @param quantity the quantity of product to acquire
-   * @return the batches required for acquisition
-   * @throws OutOfStockException if there is not enough stock to satisfy the
-   *                             request
+   * @param quantity the quantity of product to sell
+   * @return the batches required for sale
+   * @throws UnavailableProductException if there is not enough stock to satisfy
+   *                                     the request
    */
-  public Collection<Batch> getBatchesForAcquisition(int quantity)
-      throws OutOfStockException {
+  public Collection<Batch> getBatchesForSale(int quantity)
+      throws UnavailableProductException {
     // TODO maybe make batches immutable (?)
-    if (this.getQuantityInBatches() < quantity)
-      throw new OutOfStockException(this, quantity);
+    final int available = this.getQuantityInBatches();
+    if (available < quantity)
+      throw new UnavailableProductException(this.getId(), quantity, available);
 
-    List<Batch> batchesForAcquisition = new LinkedList<>();
+    List<Batch> batchesForSale = new LinkedList<>();
     int addedQuantity = 0;
 
     Batch batch;
@@ -145,11 +147,11 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
         this.insertBatch(leftoverBatch);
       }
 
-      batchesForAcquisition.add(batch);
+      batchesForSale.add(batch);
       addedQuantity += batch.quantity();
     }
 
-    return batchesForAcquisition;
+    return batchesForSale;
   }
 
   /**
@@ -206,7 +208,14 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
       Consumer<SaleTransaction> saveSaleTransaction)
       throws UnavailableProductException {
     this.assertAvailable(quantity);
-    // TODO continue
+    final Collection<Batch> batchesForSale = this.getBatchesForSale(quantity);
+    saveSaleTransaction.accept(new SaleTransaction(idSupplier.get(),
+        batchesForSale.stream()
+            .map(b -> b.price())
+            .reduce(0D, Double::sum),
+        quantity,
+        this,
+        partner));
   }
 
   public void breakdown(int date, Partner partner, int quantity,

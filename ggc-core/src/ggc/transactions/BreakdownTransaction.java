@@ -19,10 +19,11 @@ public class BreakdownTransaction extends Transaction {
 
   private final Set<Batch> batches = new TreeSet<>();
 
-  public BreakdownTransaction(int id, double value, int quantity,
+  public BreakdownTransaction(int id, int date, double value, int quantity,
       Product product, Partner partner, Collection<Batch> batches) {
     super(id, value, quantity, product, partner);
     this.batches.addAll(batches);
+    this.setPaymentDate(date);
   }
 
   @Override

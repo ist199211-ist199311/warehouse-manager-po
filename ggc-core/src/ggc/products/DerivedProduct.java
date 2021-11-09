@@ -109,6 +109,7 @@ public class DerivedProduct extends Product {
         .orElse(0D);
     saveBreakdownTransaction.accept(new BreakdownTransaction(
         idSupplier.get(),
+        date,
         saleValue.get() - acquisitionValue,
         quantity,
         this,
