@@ -57,13 +57,8 @@ public class DerivedProduct extends Product {
    */
   @Override
   public void assertAvailable(int quantity) throws UnavailableProductException {
-    // FIXME: vv would this look better with a for (int c = ...; c < q; c++)?
-    int current = this.getQuantityInBatches();
-    while (current < quantity) {
-      for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-        c.product().assertAvailable(c.quantity());
-      }
-      current++;
+    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
+      c.product().assertAvailable(c.quantity() * quantity);
     }
   }
 
