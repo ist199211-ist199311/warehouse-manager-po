@@ -101,11 +101,7 @@ public class DerivedProduct extends Product {
           quantity * c.quantity(),
           c.product().getPriceForBreakdown(),
           () -> -1,
-          t -> newBatches.add(new Batch(
-              t.getQuantity(),
-              t.baseValue(),
-              t.getProduct(),
-              t.getPartner())));
+          t -> newBatches.add(t.asBatch()));
     }
     final double acquisitionValue = newBatches.stream()
         .map(b -> b.price())

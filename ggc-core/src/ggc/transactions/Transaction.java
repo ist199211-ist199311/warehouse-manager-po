@@ -1,6 +1,7 @@
 package ggc.transactions;
 
 import ggc.partners.Partner;
+import ggc.products.Batch;
 import ggc.products.Product;
 import ggc.util.Visitable;
 
@@ -26,6 +27,14 @@ public abstract class Transaction implements Visitable {
 
   public double baseValue() {
     return this.value;
+  }
+
+  public Batch asBatch() {
+    return new Batch(
+        this.quantity,
+        this.baseValue(),
+        this.product,
+        this.partner);
   }
 
   public int getId() {
