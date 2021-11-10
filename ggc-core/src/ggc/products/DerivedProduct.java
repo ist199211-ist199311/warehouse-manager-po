@@ -49,7 +49,7 @@ public class DerivedProduct extends Product {
    * to achieve a given quantity.
    */
   private int getMissingQuantity(int totalNeeded) {
-    return Math.max(0, this.getQuantityInBatches() - totalNeeded);
+    return Math.max(0, totalNeeded - this.getQuantityInBatches());
   }
 
   /**
@@ -107,6 +107,7 @@ public class DerivedProduct extends Product {
             .reduce(Double::sum)
             .orElse(0D);
       }
+      batchPrice += batchPrice * this.getRecipe().getAggravatingFactor();
       this.registerBatch(1, batchPrice, partner);
     }
   }
