@@ -1,5 +1,7 @@
 package ggc.partners;
 
+import ggc.transactions.BreakdownTransaction;
+import ggc.transactions.SaleTransaction;
 import ggc.util.NaturalTextComparator;
 import ggc.util.Visitable;
 import ggc.util.Visitor;
@@ -17,15 +19,17 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
 
-  // TODO add statute, notifications
+  // TODO add notifications
   private final String id;
   private String name;
   private String address;
+  private Statute statute;
 
   public Partner(String id, String name, String address) {
     this.id = id;
     this.name = name;
     this.address = address;
+    this.statute = new NormalPartnerStatute(this, 0);
   }
 
   public String getId() {
@@ -67,5 +71,35 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   @Override
   public <T> T accept(Visitor<T> visitor) {
     return visitor.visit(this);
+  }
+
+  public abstract class Statute implements Serializable {
+    private int points = 0;
+
+    public Statute(int points) {
+      this.points = points;
+    }
+
+    public int getPoints() {
+      return this.points;
+    }
+
+    public Partner getPartner() {
+      return Partner.this;
+    }
+
+    protected void setStatute(Statute statute) {
+      Partner.this.statute = statute;
+    }
+
+    public abstract void calculateSaleBenefits(SaleTransaction saleTransaction,
+        int date);
+
+    public abstract void applySaleBenefits(SaleTransaction saleTransaction,
+        int date);
+
+    public abstract void applyBreakdownBenefits(
+        BreakdownTransaction breakdownTransaction, int date);
+
   }
 }
