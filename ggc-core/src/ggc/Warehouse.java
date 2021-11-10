@@ -16,6 +16,7 @@ import ggc.products.Product;
 import ggc.products.Recipe;
 import ggc.products.RecipeComponent;
 import ggc.transactions.AcquisitionTransaction;
+import ggc.transactions.SaleTransaction;
 import ggc.transactions.Transaction;
 import ggc.util.AcquisitionTransactionFilter;
 import ggc.util.NaturalTextComparator;
@@ -625,11 +626,10 @@ public class Warehouse implements Serializable {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
-    product.acquire(date, partner, quantity, value, this::getNextTransactionId,
-        transaction -> {
-          this.transactions.put(transaction.getId(), transaction);
-          this.availableBalance -= transaction.totalValue();
-        });
+    AcquisitionTransaction transaction = product.acquire(date, partner,
+            quantity, value, this::getNextTransactionId);
+    this.transactions.put(transaction.getId(), transaction);
+    this.availableBalance -= transaction.totalValue();
   }
 
   public void registerSaleTransaction(String partnerId, String productId,
@@ -639,8 +639,9 @@ public class Warehouse implements Serializable {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
-    product.sell(paymentDeadline, partner, quantity, this::getNextTransactionId,
-        transaction -> this.transactions.put(transaction.getId(), transaction));
+    SaleTransaction transaction = product.sell(paymentDeadline, partner,
+            quantity, this::getNextTransactionId);
+    this.transactions.put(transaction.getId(), transaction);
   }
 
   public void registerBreakdownTransaction(String partnerId, String productId,
@@ -651,14 +652,14 @@ public class Warehouse implements Serializable {
     final Product product = this.getProduct(productId);
 
     product.breakdown(
-        this.date,
-        partner,
-        quantity,
-        this::getNextTransactionId,
-        transaction -> {
-          transactions.put(transaction.getId(), transaction);
-          this.availableBalance += Math.max(0, transaction.baseValue());
-        });
+            this.date,
+            partner,
+            quantity,
+            this::getNextTransactionId
+    ).ifPresent(transaction -> {
+      transactions.put(transaction.getId(), transaction);
+      this.availableBalance += Math.max(0, transaction.baseValue());
+    });
   }
 
   /**

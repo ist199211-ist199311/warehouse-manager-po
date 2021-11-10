@@ -2,15 +2,14 @@ package ggc.products;
 
 import ggc.exceptions.UnavailableProductException;
 import ggc.partners.Partner;
-import ggc.util.Visitor;
 import ggc.transactions.BreakdownTransaction;
+import ggc.util.Visitor;
 
 import java.io.Serial;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DerivedProduct extends Product {
   /**
@@ -78,43 +77,41 @@ public class DerivedProduct extends Product {
   }
 
   @Override
-  public void breakdown(int date, Partner partner, int quantity,
-      Supplier<Integer> idSupplier,
-      Consumer<BreakdownTransaction> saveBreakdownTransaction)
-      throws UnavailableProductException {
+  public Optional<BreakdownTransaction> breakdown(int date, Partner partner,
+                                                  int quantity,
+                                                  Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
-    AtomicReference<Double> saleValue = new AtomicReference<>(0D);
-    this.sell(
-        date,
-        partner,
-        quantity,
-        () -> -1,
-        t -> saleValue.set(t.baseValue()));
-    List<Batch> newBatches = new ArrayList<Batch>();
-    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-      c.product().acquire(
-          date,
-          partner,
-          quantity * c.quantity(),
-          c.product().getPriceForBreakdown(),
-          () -> -1,
-          t -> newBatches.add(t.asBatch()));
-    }
+    double saleValue = this.sell(
+            date,
+            partner,
+            quantity,
+            () -> -1).baseValue();
+    final List<Batch> newBatches = this.getRecipe().getRecipeComponents()
+            .stream()
+            .map(component -> component.product().acquire(
+                    date,
+                    partner,
+                    quantity * component.quantity(),
+                    component.product().getPriceForBreakdown(),
+                    () -> -1).asBatch())
+            .collect(Collectors.toList());
     final double acquisitionValue = newBatches.stream()
-        .map(b -> b.price())
-        .reduce(Double::sum)
-        .orElse(0D);
-    saveBreakdownTransaction.accept(new BreakdownTransaction(
-        idSupplier.get(),
-        date,
-        saleValue.get() - acquisitionValue,
-        quantity,
-        this,
-        partner,
-        newBatches));
+            .map(Batch::price)
+            .reduce(Double::sum)
+            .orElse(0D);
+    return Optional.of(new BreakdownTransaction(
+            idSupplier.get(),
+            date,
+            saleValue - acquisitionValue,
+            quantity,
+            this,
+            partner,
+            newBatches)
+    );
   }
 
   @Override

@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -104,7 +103,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   /**
    * Calculate whether this product is presently available, directly OR
    * INDIRECTLY (if applicable).
-   * 
+   *
    * @throws UnavailableProductException if there is not enough of this product
    */
   public void assertAvailable(int quantity) throws UnavailableProductException {
@@ -193,42 +192,45 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     }
   }
 
-  public void acquire(int date, Partner partner, int quantity, double price,
-      Supplier<Integer> idSupplier,
-      Consumer<AcquisitionTransaction> saveAcquisitionTransaction) {
+  public AcquisitionTransaction acquire(int date, Partner partner, int quantity,
+                                        double price,
+                                        Supplier<Integer> idSupplier) {
     final Batch batch = this.registerBatch(quantity, price, partner);
-    saveAcquisitionTransaction.accept(new AcquisitionTransaction(
-        idSupplier.get(),
-        date,
-        batch));
+    return new AcquisitionTransaction(
+            idSupplier.get(),
+            date,
+            batch
+    );
   }
 
-  public void sell(int paymentDeadline, Partner partner, int quantity,
-      Supplier<Integer> idSupplier,
-      Consumer<SaleTransaction> saveSaleTransaction)
-      throws UnavailableProductException {
+  public SaleTransaction sell(int paymentDeadline, Partner partner,
+                              int quantity, Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     this.assertAvailable(quantity);
     final Collection<Batch> batchesForSale = this.getBatchesForSale(quantity);
-    saveSaleTransaction.accept(new SaleTransaction(idSupplier.get(),
-        batchesForSale.stream()
+    final double saleValue = batchesForSale.stream()
             .map(Batch::price)
             .reduce(Double::sum)
-            .orElse(0D),
-        quantity,
-        this,
-        partner,
-        paymentDeadline));
+            .orElse(0D);
+    return new SaleTransaction(idSupplier.get(),
+            saleValue,
+            quantity,
+            this,
+            partner,
+            paymentDeadline
+    );
   }
 
-  public void breakdown(int date, Partner partner, int quantity,
-      Supplier<Integer> idSupplier,
-      Consumer<BreakdownTransaction> saveBreakdownTransaction)
-      throws UnavailableProductException {
+  public Optional<BreakdownTransaction> breakdown(int date, Partner partner,
+                                                  int quantity,
+                                                  Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     final int available = this.getTotalQuantity();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
     // do nothing for simple products
+    return Optional.empty();
   }
 
   public void subscribe(Partner partner) {
