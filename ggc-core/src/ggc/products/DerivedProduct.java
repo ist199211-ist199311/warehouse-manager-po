@@ -6,7 +6,6 @@ import ggc.transactions.BreakdownTransaction;
 import ggc.util.Visitor;
 
 import java.io.Serial;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
