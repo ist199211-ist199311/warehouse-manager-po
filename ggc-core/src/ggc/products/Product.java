@@ -209,7 +209,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     this.assertAvailable(quantity);
     final Collection<Batch> batchesForSale = this.getBatchesForSale(quantity);
     final double saleValue = batchesForSale.stream()
-            .map(Batch::price)
+            .map(batch -> batch.price() * batch.quantity())
             .reduce(Double::sum)
             .orElse(0D);
     return new SaleTransaction(idSupplier.get(),
