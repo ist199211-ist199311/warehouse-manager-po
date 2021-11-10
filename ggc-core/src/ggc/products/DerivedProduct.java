@@ -48,7 +48,7 @@ public class DerivedProduct extends Product {
    * Calculates how many units of this product need to be built from its recipe
    * to achieve a given quantity.
    */
-  public int getMissingQuantity(int totalNeeded) {
+  private int getMissingQuantity(int totalNeeded) {
     return Math.max(0, this.getQuantityInBatches() - totalNeeded);
   }
 
