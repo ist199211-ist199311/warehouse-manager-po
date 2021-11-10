@@ -24,7 +24,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -44,6 +43,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   private final PriorityQueue<Batch> batches = new PriorityQueue<>(
       batchComparator);
   private final Set<Partner> subscribers = new HashSet<>();
+  private double allTimeMaxPrice = 0D;
 
   public Product(String id) {
     // TODO subscribe all existing
@@ -76,6 +76,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   private void insertBatch(Batch batch) {
+    this.allTimeMaxPrice = Math.max(this.allTimeMaxPrice, batch.price());
     this.batches.add(batch);
     this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
         (v) -> new TreeSet<>()).add(batch);
@@ -139,7 +140,6 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    */
   public Collection<Batch> pollBatchesForSale(int quantity)
       throws UnavailableProductException {
-    // TODO maybe make batches immutable (?)
     final int available = this.getQuantityInBatches();
     if (available < quantity)
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -183,12 +183,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    *
    * @return the all-time highest price for this product
    */
-  public double getMostExpensivePrice() {
-    // TODO get all time most expensive price (from transactions)
-    return this.batches.stream()
-        .map(Batch::price)
-        .reduce(BinaryOperator.maxBy(Double::compareTo))
-        .orElse(0D);
+  public double getAllTimeMaxPrice() {
+    return this.allTimeMaxPrice;
   }
 
   /**
@@ -201,7 +197,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     try {
       return this.getCheapestPrice();
     } catch (OutOfStockException e) {
-      return this.getMostExpensivePrice();
+      return this.getAllTimeMaxPrice();
     }
   }
 

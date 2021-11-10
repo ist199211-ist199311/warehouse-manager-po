@@ -87,8 +87,8 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(Product product) {
     return new StringJoiner("|")
-        .add(product.getId())
-        .add(Long.toString(Math.round(product.getMostExpensivePrice())))
+            .add(product.getId())
+            .add(Long.toString(Math.round(product.getAllTimeMaxPrice())))
         .add(Integer.toString(product.getQuantityInBatches()))
         .toString();
   }
