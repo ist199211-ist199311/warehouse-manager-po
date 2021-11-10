@@ -56,8 +56,11 @@ public class DerivedProduct extends Product {
    */
   @Override
   public void assertAvailable(int quantity) throws UnavailableProductException {
+    final int neededQuantity = Math.max(
+        0,
+        quantity - this.getQuantityInBatches());
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-      c.product().assertAvailable(c.quantity() * quantity);
+      c.product().assertAvailable(c.quantity() * neededQuantity);
     }
   }
 
