@@ -1,11 +1,11 @@
 package ggc.app.transactions;
 
-import pt.tecnico.uilib.menus.Command;
-import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
 import ggc.app.exceptions.UnavailableProductException;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 import ggc.app.exceptions.UnknownProductKeyException;
+import pt.tecnico.uilib.menus.Command;
+import pt.tecnico.uilib.menus.CommandException;
 
 /**
  * 

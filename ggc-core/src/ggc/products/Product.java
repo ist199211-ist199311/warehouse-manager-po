@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -102,11 +101,13 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * Calculate whether this product is presently available.
-   * 
+   * Calculates whether this product is presently available, directly OR
+   * INDIRECTLY (if applicable).
+   *
    * @throws UnavailableProductException if there is not enough of this product
    */
-  public void assertAvailable(int quantity) throws UnavailableProductException {
+  public void assertPossibleAvailability(int quantity)
+      throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -114,23 +115,36 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * Calculates the batches needed to reach to acquire a given quantity of this
+   * Tries to guarantee real availability in product stock of the given
+   * quantity. Note that it is impossible for this to accomplish anything for
+   * simple products.
+   * 
+   * @throws UnavailableProductException if unsucessful
+   */
+  public void ensureAvailableInBatches(int quantity, Partner partner)
+      throws UnavailableProductException {
+    this.assertPossibleAvailability(quantity);
+  }
+
+  /**
+   * Calculates the batches needed to reach to sell a given quantity of this
    * product, minimizing the cost, that is, choosing the cheaper batches first.
    * It is guaranteed that the total quantity in the returned batches is equal
    * to the quantity parameter.
    *
-   * @param quantity the quantity of product to acquire
-   * @return the batches required for acquisition
-   * @throws OutOfStockException if there is not enough stock to satisfy the
-   *                             request
+   * @param quantity the quantity of product to sell
+   * @return the batches required for sale
+   * @throws UnavailableProductException if there is not enough stock to satisfy
+   *                                     the request
    */
-  public Collection<Batch> getBatchesForAcquisition(int quantity)
-      throws OutOfStockException {
+  public Collection<Batch> pollBatchesForSale(int quantity)
+      throws UnavailableProductException {
     // TODO maybe make batches immutable (?)
-    if (this.getQuantityInBatches() < quantity)
-      throw new OutOfStockException(this, quantity);
+    final int available = this.getQuantityInBatches();
+    if (available < quantity)
+      throw new UnavailableProductException(this.getId(), quantity, available);
 
-    List<Batch> batchesForAcquisition = new LinkedList<>();
+    List<Batch> batchesForSale = new LinkedList<>();
     int addedQuantity = 0;
 
     Batch batch;
@@ -145,11 +159,11 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
         this.insertBatch(leftoverBatch);
       }
 
-      batchesForAcquisition.add(batch);
+      batchesForSale.add(batch);
       addedQuantity += batch.quantity();
     }
 
-    return batchesForAcquisition;
+    return batchesForSale;
   }
 
   /**
@@ -191,33 +205,44 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     }
   }
 
-  public void acquire(int date, Partner partner, int quantity, double price,
-      Supplier<Integer> idSupplier,
-      Consumer<AcquisitionTransaction> saveAcquisitionTransaction) {
+  public AcquisitionTransaction acquire(int date, Partner partner, int quantity,
+      double price,
+      Supplier<Integer> idSupplier) {
     final Batch batch = this.registerBatch(quantity, price, partner);
-    saveAcquisitionTransaction.accept(new AcquisitionTransaction(
+    return new AcquisitionTransaction(
         idSupplier.get(),
         date,
-        batch));
+        batch);
   }
 
-  public void sell(int date, Partner partner, int quantity,
-      Supplier<Integer> idSupplier,
-      Consumer<SaleTransaction> saveSaleTransaction)
+  public SaleTransaction sell(int paymentDeadline, Partner partner,
+      int quantity, Supplier<Integer> idSupplier)
       throws UnavailableProductException {
-    this.assertAvailable(quantity);
-    // TODO continue
+    this.assertPossibleAvailability(quantity);
+    this.ensureAvailableInBatches(quantity, partner);
+    final Collection<Batch> batchesForSale = this.pollBatchesForSale(quantity);
+    final double saleValue = batchesForSale.stream()
+        .map(Batch::totalPrice)
+        .reduce(Double::sum)
+        .orElse(0D);
+    return new SaleTransaction(idSupplier.get(),
+        saleValue,
+        quantity,
+        this,
+        partner,
+        paymentDeadline);
   }
 
-  public void breakdown(int date, Partner partner, int quantity,
-      Supplier<Integer> idSupplier,
-      Consumer<BreakdownTransaction> saveBreakdownTransaction)
+  public Optional<BreakdownTransaction> breakdown(int date, Partner partner,
+      int quantity,
+      Supplier<Integer> idSupplier)
       throws UnavailableProductException {
     final int available = this.getTotalQuantity();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
     // do nothing for simple products
+    return Optional.empty();
   }
 
   public void subscribe(Partner partner) {

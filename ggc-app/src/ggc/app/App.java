@@ -1,9 +1,9 @@
 package ggc.app;
 
-import pt.tecnico.uilib.Dialog;
-import pt.tecnico.uilib.menus.Menu;
 import ggc.WarehouseManager;
 import ggc.exceptions.ImportFileException;
+import pt.tecnico.uilib.Dialog;
+import pt.tecnico.uilib.menus.Menu;
 
 /** Main driver for the management application. */
 public class App {
