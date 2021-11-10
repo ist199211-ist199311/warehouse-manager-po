@@ -7,6 +7,7 @@ import ggc.util.Visitor;
 
 import java.io.Serial;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,6 +25,14 @@ public class BreakdownTransaction extends Transaction {
     super(id, value, quantity, product, partner);
     this.resultingBatches.addAll(resultingBatches);
     this.setPaymentDate(date);
+  }
+
+  public double paidValue() {
+    return Math.max(0, this.baseValue());
+  }
+
+  public Collection<Batch> getResultingBatches() {
+    return Collections.unmodifiableSet(this.resultingBatches);
   }
 
   @Override

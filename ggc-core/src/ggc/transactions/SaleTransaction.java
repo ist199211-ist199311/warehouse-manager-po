@@ -31,6 +31,14 @@ public class SaleTransaction extends Transaction {
     // TODO this.partner.calculateSaleTransactionBenefits(this)
   }
 
+  public double adjustedValue() {
+    return adjustedValue == null ? this.baseValue() : adjustedValue;
+  }
+
+  public int getPaymentDeadline() {
+    return paymentDeadline;
+  }
+
   @Override
   public <T> T accept(Visitor<T> visitor) {
     return visitor.visit(this);

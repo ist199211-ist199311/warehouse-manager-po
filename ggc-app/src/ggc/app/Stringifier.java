@@ -30,14 +30,39 @@ public class Stringifier extends Visitor<String> {
 
   @Override
   public String visit(BreakdownTransaction transaction) {
-    // TODO
-    return "";
+    return new StringJoiner("|")
+        .add("DESAGREGAÇÃO")
+        .add(Integer.toString(transaction.getId()))
+        .add(transaction.getPartner().getId())
+        .add(transaction.getProduct().getId())
+        .add(Integer.toString(transaction.getQuantity()))
+        .add(Long.toString(Math.round(transaction.baseValue())))
+        .add(Long.toString(Math.round(transaction.paidValue())))
+        .add(Integer.toString(transaction.getPaymentDate().orElse(0)))
+        .add(transaction.getResultingBatches()
+            .stream()
+            .map(batch ->
+                batch.product().getId() + ":" +
+                batch.quantity() + ":" +
+                Math.round(batch.price() * batch.quantity()))
+            .collect(Collectors.joining("#")))
+        .toString();
   }
 
   @Override
   public String visit(SaleTransaction transaction) {
-    // TODO
-    return "";
+    StringJoiner joiner = new StringJoiner("|")
+            .add("VENDA")
+            .add(Integer.toString(transaction.getId()))
+            .add(transaction.getPartner().getId())
+            .add(transaction.getProduct().getId())
+            .add(Integer.toString(transaction.getQuantity()))
+            .add(Long.toString(Math.round(transaction.baseValue())))
+            .add(Long.toString(Math.round(transaction.adjustedValue())))
+            .add(Integer.toString(transaction.getPaymentDeadline()));
+    transaction.getPaymentDate()
+            .ifPresent(date -> joiner.add(Integer.toString(date)));
+    return joiner.toString();
   }
 
   @Override
@@ -70,7 +95,6 @@ public class Stringifier extends Visitor<String> {
 
   @Override
   public String visit(DerivedProduct product) {
-    // TODO is there another way to do this?
     return this.visit((Product) product) + "|"
         + product.getRecipe().accept(this);
   }
