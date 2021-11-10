@@ -94,17 +94,17 @@ public class DerivedProduct extends Product {
    * @param partner  The partner that wants the product to be built
    * @throws UnavailableProductException if it cannot be built
    */
-  public void buildFromRecipe(int quantity, Partner partner)
-      throws UnavailableProductException {
+  private void buildFromRecipe(int quantity, Partner partner)
+          throws UnavailableProductException {
     for (int i = 0; i < quantity; i++) {
       double batchPrice = 0D;
       for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
         c.product().ensureAvailableInBatches(c.quantity(), partner);
         batchPrice += c.product()
-            .pollBatchesForSale(c.quantity())
-            .stream()
-            .map(Batch::totalPrice)
-            .reduce(Double::sum)
+                .pollBatchesForSale(c.quantity())
+                .stream()
+                .map(Batch::totalPrice)
+                .reduce(Double::sum)
             .orElse(0D);
       }
       batchPrice += batchPrice * this.getRecipe().getAggravatingFactor();
