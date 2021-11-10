@@ -1,7 +1,11 @@
 package ggc.products;
 
-import ggc.exceptions.OutOfStockException;
 import ggc.exceptions.UnavailableProductException;
+import ggc.notifications.BargainProductNotification;
+import ggc.notifications.NewProductNotification;
+import ggc.notifications.Notifiable;
+import ggc.notifications.Notification;
+import ggc.notifications.NotificationSender;
 import ggc.partners.Partner;
 import ggc.transactions.AcquisitionTransaction;
 import ggc.transactions.BreakdownTransaction;
@@ -27,7 +31,8 @@ import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class Product implements Comparable<Product>, Serializable, Visitable {
+public class Product implements Comparable<Product>, Serializable, Visitable,
+        NotificationSender {
   /**
    * Serial number for serialization.
    */
@@ -39,10 +44,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   private final String id;
   private final Map<String, Set<Batch>> batchesByPartner = new TreeMap<>(
-      idComparator);
+          idComparator);
   private final PriorityQueue<Batch> batches = new PriorityQueue<>(
-      batchComparator);
-  private final Set<Partner> subscribers = new HashSet<>();
+          batchComparator);
+  private final Set<Notifiable> subscribers = new HashSet<>();
   private double allTimeMaxPrice = 0D;
 
   public Product(String id) {
@@ -56,8 +61,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   public Stream<Batch> getBatches() {
     return this.batchesByPartner.values()
-        .stream()
-        .flatMap(Collection::stream);
+            .stream()
+            .flatMap(Collection::stream);
   }
 
   /**
@@ -77,14 +82,21 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   private void insertBatch(Batch batch) {
     this.allTimeMaxPrice = Math.max(this.allTimeMaxPrice, batch.price());
+    if (this.batches.size() == 0) {
+      this.sendNotification(
+              new NewProductNotification(this, batch.price()));
+    } else if (this.getCheapestPrice().orElse(0D) > batch.price()) {
+      this.sendNotification(
+              new BargainProductNotification(this, batch.price()));
+    }
     this.batches.add(batch);
     this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
-        (v) -> new TreeSet<>()).add(batch);
+            (v) -> new TreeSet<>()).add(batch);
   }
 
   private void removeBatchFromPartnerMap(Batch batch) {
     Optional.ofNullable(this.batchesByPartner.get(batch.partner().getId()))
-        .ifPresent(set -> set.remove(batch));
+            .ifPresent(set -> set.remove(batch));
   }
 
   /**
@@ -92,9 +104,9 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    */
   public int getQuantityInBatches() {
     return this.batches.stream()
-        .map(Batch::quantity)
-        .reduce(Integer::sum)
-        .orElse(0);
+            .map(Batch::quantity)
+            .reduce(Integer::sum)
+            .orElse(0);
   }
 
   public int getTotalQuantity() {
@@ -108,7 +120,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    * @throws UnavailableProductException if there is not enough of this product
    */
   public void assertPossibleAvailability(int quantity)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -119,11 +131,11 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    * Tries to guarantee real availability in product stock of the given
    * quantity. Note that it is impossible for this to accomplish anything for
    * simple products.
-   * 
-   * @throws UnavailableProductException if unsucessful
+   *
+   * @throws UnavailableProductException if unsuccessful
    */
   public void ensureAvailableInBatches(int quantity, Partner partner)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     this.assertPossibleAvailability(quantity);
   }
 
@@ -139,7 +151,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    *                                     the request
    */
   public Collection<Batch> pollBatchesForSale(int quantity)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity)
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -154,7 +166,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
       if (batch.quantity() + addedQuantity > quantity) {
         int neededQuantity = quantity - addedQuantity;
         Batch leftoverBatch = batch
-            .cloneWithQuantity(batch.quantity() - neededQuantity);
+                .cloneWithQuantity(batch.quantity() - neededQuantity);
         batch = batch.cloneWithQuantity(neededQuantity);
         this.insertBatch(leftoverBatch);
       }
@@ -167,14 +179,13 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   /**
-   * @return the price of the cheapest batch
-   * @throws OutOfStockException if there are no batches for this product (i.e.
-   *                             no product in stock)
+   * @return the price of the cheapest batch or an empty {@link Optional}
+   * if there are no batches for this product
    */
-  public double getCheapestPrice() throws OutOfStockException {
+  public Optional<Double> getCheapestPrice() {
     if (this.batches.size() == 0)
-      throw new OutOfStockException(this);
-    return this.batches.peek().price();
+      return Optional.empty();
+    return Optional.of(this.batches.peek().price());
   }
 
   /**
@@ -194,45 +205,41 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    * @return the price of the batch
    */
   public double getPriceForBreakdown() {
-    try {
-      return this.getCheapestPrice();
-    } catch (OutOfStockException e) {
-      return this.getAllTimeMaxPrice();
-    }
+    return this.getCheapestPrice().orElseGet(this::getAllTimeMaxPrice);
   }
 
   public AcquisitionTransaction acquire(int date, Partner partner, int quantity,
-      double price,
-      Supplier<Integer> idSupplier) {
+                                        double price,
+                                        Supplier<Integer> idSupplier) {
     final Batch batch = this.registerBatch(quantity, price, partner);
     return new AcquisitionTransaction(
-        idSupplier.get(),
-        date,
-        batch);
+            idSupplier.get(),
+            date,
+            batch);
   }
 
   public SaleTransaction sell(int paymentDeadline, Partner partner,
-      int quantity, Supplier<Integer> idSupplier)
-      throws UnavailableProductException {
+                              int quantity, Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     this.assertPossibleAvailability(quantity);
     this.ensureAvailableInBatches(quantity, partner);
     final Collection<Batch> batchesForSale = this.pollBatchesForSale(quantity);
     final double saleValue = batchesForSale.stream()
-        .map(Batch::totalPrice)
-        .reduce(Double::sum)
-        .orElse(0D);
+            .map(Batch::totalPrice)
+            .reduce(Double::sum)
+            .orElse(0D);
     return new SaleTransaction(idSupplier.get(),
-        saleValue,
-        quantity,
-        this,
-        partner,
-        paymentDeadline);
+            saleValue,
+            quantity,
+            this,
+            partner,
+            paymentDeadline);
   }
 
   public Optional<BreakdownTransaction> breakdown(int date, Partner partner,
-      int quantity,
-      Supplier<Integer> idSupplier)
-      throws UnavailableProductException {
+                                                  int quantity,
+                                                  Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     final int available = this.getTotalQuantity();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -241,24 +248,33 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     return Optional.empty();
   }
 
-  public void subscribe(Partner partner) {
-    this.subscribers.add(partner);
+  @Override
+  public void subscribe(Notifiable notifiable) {
+    this.subscribers.add(notifiable);
   }
 
-  public void unsubscribe(Partner partner) {
-    this.subscribers.remove(partner);
+  @Override
+  public void unsubscribe(Notifiable notifiable) {
+    this.subscribers.remove(notifiable);
   }
 
-  public boolean isSubscribed(Partner partner) {
-    return this.subscribers.contains(partner);
+  @Override
+  public boolean isSubscribed(Notifiable notifiable) {
+    return this.subscribers.contains(notifiable);
   }
 
-  public void toggleSubscription(Partner partner) {
-    if (this.isSubscribed(partner)) {
-      this.unsubscribe(partner);
+  @Override
+  public void toggleSubscription(Notifiable notifiable) {
+    if (this.isSubscribed(notifiable)) {
+      this.unsubscribe(notifiable);
     } else {
-      this.subscribe(partner);
+      this.subscribe(notifiable);
     }
+  }
+
+  @Override
+  public void sendNotification(Notification notification) {
+    this.subscribers.forEach(subscriber -> subscriber.notify(notification));
   }
 
   @Override
