@@ -13,21 +13,18 @@ public class SaleTransaction extends Transaction {
   @Serial
   private static final long serialVersionUID = 202111092050L;
 
+  private int paymentDeadline;
   private Double adjustedValue = null;
-  private boolean paid = false;
 
   public SaleTransaction(int id, double value, int quantity, Product product,
-      Partner partner) {
+      Partner partner, int paymentDeadline) {
     super(id, value, quantity, product, partner);
+    this.paymentDeadline = paymentDeadline;
   }
 
-  public boolean isPaid() {
-    return this.paid;
-  }
-
-  public void pay() {
+  public void pay(int date) {
     calculateAdjustedValue();
-    this.paid = true;
+    this.setPaymentDate(date);
   }
 
   public void calculateAdjustedValue() {

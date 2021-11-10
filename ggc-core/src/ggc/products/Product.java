@@ -203,7 +203,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
         batch));
   }
 
-  public void sell(int date, Partner partner, int quantity,
+  public void sell(int paymentDeadline, Partner partner, int quantity,
       Supplier<Integer> idSupplier,
       Consumer<SaleTransaction> saveSaleTransaction)
       throws UnavailableProductException {
@@ -211,11 +211,13 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     final Collection<Batch> batchesForSale = this.getBatchesForSale(quantity);
     saveSaleTransaction.accept(new SaleTransaction(idSupplier.get(),
         batchesForSale.stream()
-            .map(b -> b.price())
-            .reduce(0D, Double::sum),
+            .map(Batch::price)
+            .reduce(Double::sum)
+            .orElse(0D),
         quantity,
         this,
-        partner));
+        partner,
+        paymentDeadline));
   }
 
   public void breakdown(int date, Partner partner, int quantity,

@@ -639,7 +639,7 @@ public class Warehouse implements Serializable {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
-    product.sell(date, partner, quantity, this::getNextTransactionId,
+    product.sell(paymentDeadline, partner, quantity, this::getNextTransactionId,
         transaction -> this.transactions.put(transaction.getId(), transaction));
   }
 
