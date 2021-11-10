@@ -103,7 +103,7 @@ public class DerivedProduct extends Product {
                     () -> -1).asBatch())
             .collect(Collectors.toList());
     final double acquisitionValue = newBatches.stream()
-            .map(Batch::price)
+            .map(Batch::totalPrice)
             .reduce(Double::sum)
             .orElse(0D);
     return Optional.of(new BreakdownTransaction(
