@@ -17,6 +17,7 @@ import ggc.products.Product;
 import ggc.products.Recipe;
 import ggc.products.RecipeComponent;
 import ggc.transactions.AcquisitionTransaction;
+import ggc.transactions.PaymentProcessor;
 import ggc.transactions.SaleTransaction;
 import ggc.transactions.Transaction;
 import ggc.util.AcquisitionTransactionFilter;
@@ -712,7 +713,11 @@ public class Warehouse implements Serializable {
    */
   public void receivePayment(int transactionId)
       throws UnknownTransactionKeyException {
-    // TODO
+    Transaction transaction = this.transactions.get(transactionId);
+    if (transaction == null) {
+      throw new UnknownTransactionKeyException(transactionId);
+    }
+    transaction.accept(new PaymentProcessor(this.date));
   }
 
   /**
