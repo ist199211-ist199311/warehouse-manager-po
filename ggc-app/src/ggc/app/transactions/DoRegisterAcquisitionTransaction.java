@@ -12,7 +12,7 @@ import pt.tecnico.uilib.menus.CommandException;
  * Register order.
  */
 public class DoRegisterAcquisitionTransaction
-    extends Command<WarehouseManager> {
+        extends Command<WarehouseManager> {
 
   public DoRegisterAcquisitionTransaction(WarehouseManager receiver) {
     super(Label.REGISTER_ACQUISITION_TRANSACTION, receiver);
@@ -26,10 +26,10 @@ public class DoRegisterAcquisitionTransaction
   public final void execute() throws CommandException {
     try {
       this.registerAcquisitionTransaction(
-          stringField("partnerId"),
-          stringField("productId"),
-          realField("price"),
-          integerField("quantity"));
+              stringField("partnerId"),
+              stringField("productId"),
+              realField("price"),
+              integerField("quantity"));
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     } catch (ggc.exceptions.UnknownProductKeyException e) {
@@ -38,12 +38,13 @@ public class DoRegisterAcquisitionTransaction
   }
 
   private void registerAcquisitionTransaction(String partnerId,
-      String productId, double value, int quantity)
-      throws ggc.exceptions.UnknownPartnerKeyException,
-      ggc.exceptions.UnknownProductKeyException {
+                                              String productId, double value,
+                                              int quantity)
+          throws ggc.exceptions.UnknownPartnerKeyException,
+          ggc.exceptions.UnknownProductKeyException {
     try {
       _receiver.registerAcquisitionTransaction(partnerId, productId, value,
-          quantity);
+              quantity);
     } catch (ggc.exceptions.UnknownProductKeyException e) {
       try {
         if (Form.confirm(Prompt.addRecipe())) {
@@ -60,14 +61,13 @@ public class DoRegisterAcquisitionTransaction
             productsForm.parse();
             recipeProducts[i] = productsForm.stringField("productId");
             recipeQuantities[i] = productsForm.integerField("quantity");
-            productsForm.clear();
           }
 
           _receiver.registerDerivedProduct(
-              productId,
-              aggravatingFactor,
-              recipeProducts,
-              recipeQuantities);
+                  productId,
+                  aggravatingFactor,
+                  recipeProducts,
+                  recipeQuantities);
         } else {
           _receiver.registerSimpleProduct(productId);
         }
