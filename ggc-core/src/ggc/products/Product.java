@@ -110,10 +110,6 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
         .orElse(0);
   }
 
-  public int getTotalQuantity() {
-    return this.getQuantityInBatches();
-  }
-
   /**
    * Calculates whether this product is presently available, directly OR
    * INDIRECTLY (if applicable).

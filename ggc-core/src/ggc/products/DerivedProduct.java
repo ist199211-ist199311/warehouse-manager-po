@@ -26,25 +26,6 @@ public class DerivedProduct extends Product {
   }
 
   /**
-   * @return the sum of the in-stock quantity and the
-   *         {@link DerivedProduct#getBuildableQuantity() buildable quantity}
-   */
-  @Override
-  public int getTotalQuantity() {
-    return super.getTotalQuantity() + this.getBuildableQuantity();
-  }
-
-  /**
-   * Calculates the quantity of the product that can be built using the recipe.
-   *
-   * @return the quantity of the product that can be built using the recipe
-   */
-  public int getBuildableQuantity() {
-    // TODO
-    return 0;
-  }
-
-  /**
    * Calculates how many units of this product need to be built from its recipe
    * to achieve a given quantity.
    */
@@ -95,16 +76,16 @@ public class DerivedProduct extends Product {
    * @throws UnavailableProductException if it cannot be built
    */
   private void buildFromRecipe(int quantity, Partner partner)
-          throws UnavailableProductException {
+      throws UnavailableProductException {
     for (int i = 0; i < quantity; i++) {
       double batchPrice = 0D;
       for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
         c.product().ensureAvailableInBatches(c.quantity(), partner);
         batchPrice += c.product()
-                .pollBatchesForSale(c.quantity())
-                .stream()
-                .map(Batch::totalPrice)
-                .reduce(Double::sum)
+            .pollBatchesForSale(c.quantity())
+            .stream()
+            .map(Batch::totalPrice)
+            .reduce(Double::sum)
             .orElse(0D);
       }
       batchPrice += batchPrice * this.getRecipe().getAggravatingFactor();
