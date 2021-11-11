@@ -102,14 +102,14 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(Partner partner) {
     return new StringJoiner("|")
-        .add(partner.getId())
-        .add(partner.getName())
-        .add(partner.getAddress())
-        .add("NORMAL") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
-        .add("0") // TODO
+            .add(partner.getId())
+            .add(partner.getName())
+            .add(partner.getAddress())
+            .add("NORMAL") // TODO
+            .add("0") // TODO points
+            .add(Long.toString(Math.round(partner.getPurchasesValue())))
+            .add(Long.toString(Math.round(partner.getSalesValue())))
+            .add(Long.toString(Math.round(partner.getPaidSalesValue())))
         .toString();
   }
 }
