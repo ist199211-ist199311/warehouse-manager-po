@@ -1,10 +1,10 @@
 package ggc.transactions;
 
-import java.io.Serial;
-
 import ggc.partners.Partner;
 import ggc.products.Product;
 import ggc.util.Visitor;
+
+import java.io.Serial;
 
 public class SaleTransaction extends Transaction {
   /**
@@ -13,11 +13,11 @@ public class SaleTransaction extends Transaction {
   @Serial
   private static final long serialVersionUID = 202111092050L;
 
-  private int paymentDeadline;
+  private final int paymentDeadline;
   private Double adjustedValue = null;
 
   public SaleTransaction(int id, double value, int quantity, Product product,
-      Partner partner, int paymentDeadline) {
+                         Partner partner, int paymentDeadline) {
     super(id, value, quantity, product, partner);
     this.paymentDeadline = paymentDeadline;
   }
@@ -28,6 +28,7 @@ public class SaleTransaction extends Transaction {
   }
 
   public void calculateAdjustedValue(int date) {
+    if (isPaid()) return;
     this.adjustedValue = this.getPartner().calculateAdjustedValue(this, date);
   }
 
