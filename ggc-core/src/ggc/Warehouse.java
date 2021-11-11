@@ -21,7 +21,7 @@ import ggc.transactions.PaymentProcessor;
 import ggc.transactions.SaleTransaction;
 import ggc.transactions.Transaction;
 import ggc.util.AcquisitionTransactionFilter;
-import ggc.util.AdjustedValueRetriever;
+import ggc.util.AdjustedValueCalculator;
 import ggc.util.NaturalTextComparator;
 import ggc.util.SaleAndBreakdownTransactionFilter;
 import ggc.util.Visitor;
@@ -257,6 +257,7 @@ public class Warehouse implements Serializable {
     if (t == null) {
       throw new UnknownTransactionKeyException(id);
     }
+    t.accept(new AdjustedValueCalculator(this.date));
     return t;
   }
 
@@ -620,7 +621,7 @@ public class Warehouse implements Serializable {
    * @return the accounting balance
    */
   public double getAccountingBalance() {
-    final AdjustedValueRetriever adjustedValueRetriever = new AdjustedValueRetriever(
+    final AdjustedValueCalculator adjustedValueRetriever = new AdjustedValueCalculator(
         this.date);
     return this.getAvailableBalance() + this.transactions.values()
         .stream()
@@ -723,7 +724,7 @@ public class Warehouse implements Serializable {
   public Collection<Transaction> getPartnerSalesAndBreakdowns(String partnerId)
       throws UnknownPartnerKeyException {
     final Partner partner = this.getPartner(partnerId);
-    final AdjustedValueRetriever adjustedValueRetriever = new AdjustedValueRetriever(
+    final AdjustedValueCalculator adjustedValueRetriever = new AdjustedValueCalculator(
         this.date);
 
     return this.transactions.values()

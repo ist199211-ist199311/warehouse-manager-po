@@ -15,10 +15,10 @@ import ggc.transactions.SaleTransaction;
  * Gets the adjusted value for sale transactions, falling back to 0 for other
  * transactions.
  */
-public class AdjustedValueRetriever extends Visitor<Double> {
+public class AdjustedValueCalculator extends Visitor<Double> {
   private int date;
 
-  public AdjustedValueRetriever(int date) {
+  public AdjustedValueCalculator(int date) {
     this.date = date;
   }
 
