@@ -64,6 +64,10 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     this.address = address;
   }
 
+  public String getStatuteName() {
+    return this.statute.getName();
+  }
+
   public long getPoints() {
     return this.statute.getPoints();
   }
@@ -181,6 +185,8 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     protected int getTransactionPeriodRadius(Transaction transaction) {
       return transaction.getProduct().accept(transactionPeriodRadiusProvider);
     }
+
+    public abstract String getName();
 
     public abstract double calculateAdjustedValue(
         SaleTransaction saleTransaction,

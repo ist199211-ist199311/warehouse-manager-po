@@ -17,6 +17,11 @@ public class NormalPartnerStatute extends Partner.Statute {
   }
 
   @Override
+  public String getName() {
+    return "NORMAL";
+  }
+
+  @Override
   public double calculateAdjustedValue(SaleTransaction saleTransaction,
       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
