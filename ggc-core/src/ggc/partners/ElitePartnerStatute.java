@@ -5,14 +5,14 @@ import java.io.Serial;
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
 
-public class SelectionPartnerStatute extends Partner.Statute {
+public class ElitePartnerStatute extends Partner.Statute {
   /**
    * Serial number for serialization.
    */
   @Serial
-  private static final long serialVersionUID = 202111111156L;
+  private static final long serialVersionUID = 202111111200L;
 
-  public SelectionPartnerStatute(Partner partner, long points) {
+  public ElitePartnerStatute(Partner partner, long points) {
     partner.super(points);
   }
 
@@ -39,11 +39,10 @@ public class SelectionPartnerStatute extends Partner.Statute {
     final double adjusted = this.calculateAdjustedPrice(saleTransaction, date);
     if (delta < 0) { // on time
       this.increasePoints(Math.round(10 * adjusted));
-      this.tryForPromotion();
-    } else if (delta > 2) { // very late
-      this.increasePoints(Math.round(-0.9 * this.getPoints()));
+    } else if (delta > 15) { // very late
+      this.increasePoints(Math.round(-0.75 * this.getPoints()));
       this.setStatute(
-          new NormalPartnerStatute(this.getPartner(), this.getPoints()));
+          new SelectionPartnerStatute(this.getPartner(), this.getPoints()));
     }
     return adjusted;
   }
@@ -53,14 +52,6 @@ public class SelectionPartnerStatute extends Partner.Statute {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
       this.increasePoints(Math.round(10 * breakdownTransaction.baseValue()));
-      this.tryForPromotion();
-    }
-  }
-
-  private void tryForPromotion() {
-    final long points = this.getPoints();
-    if (points > 25000) {
-      this.setStatute(new ElitePartnerStatute(this.getPartner(), points));
     }
   }
 }
