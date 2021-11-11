@@ -24,6 +24,7 @@ public class BreakdownTransaction extends Transaction {
       Product product, Partner partner, Collection<Batch> resultingBatches) {
     super(id, value, quantity, product, partner);
     this.resultingBatches.addAll(resultingBatches);
+    this.getPartner().applyBreakdownBenefits(this, date);
     this.setPaymentDate(date);
   }
 
