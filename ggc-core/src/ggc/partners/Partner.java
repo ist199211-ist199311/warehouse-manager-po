@@ -20,11 +20,13 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
 
-  // TODO add notifications
   private final String id;
   private String name;
   private String address;
   private Statute statute;
+  private double purchasesValue;
+  private double salesValue;
+  private double paidSalesValue;
 
   public Partner(String id, String name, String address) {
     this.id = id;
@@ -67,6 +69,30 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   public void applyBreakdownBenefits(
       BreakdownTransaction breakdownTransaction, int date) {
     this.statute.applyBreakdownBenefits(breakdownTransaction, date);
+  }
+
+  public void increasePurchasesValue(double value) {
+    this.purchasesValue += value;
+  }
+
+  public void increaseSalesValue(double value) {
+    this.salesValue += value;
+  }
+
+  public void increasePaidSalesValue(double value) {
+    this.paidSalesValue = value;
+  }
+
+  public double getPurchasesValue() {
+    return purchasesValue;
+  }
+
+  public double getSalesValue() {
+    return salesValue;
+  }
+
+  public double getPaidSalesValue() {
+    return paidSalesValue;
   }
 
   @Override

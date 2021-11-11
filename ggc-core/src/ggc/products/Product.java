@@ -23,8 +23,6 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -35,15 +33,18 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   @Serial
   private static final long serialVersionUID = 202110221420L;
 
-  private final Comparator<String> idComparator = new NaturalTextComparator();
-  private final Comparator<Batch> batchComparator = new BatchPriceComparator();
+  private static final Comparator<String> ID_COMPARATOR =
+          new NaturalTextComparator();
+  private static final Comparator<Batch> BATCH_COMPARATOR =
+          new BatchPriceComparator();
 
   private final String id;
-  private final Map<String, Set<Batch>> batchesByPartner = new TreeMap<>(
-      idComparator);
+  private final Map<String, Collection<Batch>> batchesByPartner =
+          new TreeMap<>(ID_COMPARATOR);
   private final PriorityQueue<Batch> batches = new PriorityQueue<>(
-      batchComparator);
+          BATCH_COMPARATOR);
   private final Set<Partner> subscribers = new HashSet<>();
+  private double allTimeMaxPrice = 0D;
 
   public Product(String id) {
     // TODO subscribe all existing
@@ -56,8 +57,9 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   public Stream<Batch> getBatches() {
     return this.batchesByPartner.values()
-        .stream()
-        .flatMap(Collection::stream);
+            .stream()
+            .flatMap(Collection::stream)
+            .sorted();
   }
 
   /**
@@ -76,9 +78,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
   }
 
   private void insertBatch(Batch batch) {
+    this.allTimeMaxPrice = Math.max(this.allTimeMaxPrice, batch.price());
     this.batches.add(batch);
     this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
-        (v) -> new TreeSet<>()).add(batch);
+            (v) -> new PriorityQueue<>(BATCH_COMPARATOR)).add(batch);
   }
 
   private void removeBatchFromPartnerMap(Batch batch) {
@@ -139,7 +142,6 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    */
   public Collection<Batch> pollBatchesForSale(int quantity)
       throws UnavailableProductException {
-    // TODO maybe make batches immutable (?)
     final int available = this.getQuantityInBatches();
     if (available < quantity)
       throw new UnavailableProductException(this.getId(), quantity, available);
@@ -183,12 +185,8 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
    *
    * @return the all-time highest price for this product
    */
-  public double getMostExpensivePrice() {
-    // TODO get all time most expensive price (from transactions)
-    return this.batches.stream()
-        .map(Batch::price)
-        .reduce(BinaryOperator.maxBy(Double::compareTo))
-        .orElse(0D);
+  public double getAllTimeMaxPrice() {
+    return this.allTimeMaxPrice;
   }
 
   /**
@@ -201,7 +199,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
     try {
       return this.getCheapestPrice();
     } catch (OutOfStockException e) {
-      return this.getMostExpensivePrice();
+      return this.getAllTimeMaxPrice();
     }
   }
 
@@ -267,7 +265,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable {
 
   @Override
   public int compareTo(Product product) {
-    return this.idComparator.compare(this.getId(), product.getId());
+    return this.ID_COMPARATOR.compare(this.getId(), product.getId());
   }
 
   @Override
