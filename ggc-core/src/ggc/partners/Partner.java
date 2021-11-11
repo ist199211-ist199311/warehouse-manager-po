@@ -2,6 +2,7 @@ package ggc.partners;
 
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
+import ggc.transactions.Transaction;
 import ggc.util.NaturalTextComparator;
 import ggc.util.Visitable;
 import ggc.util.Visitor;
@@ -74,28 +75,45 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   }
 
   public abstract class Statute implements Serializable {
-    private int points = 0;
+    private long points = 0;
 
-    public Statute(int points) {
+    private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider = new TransactionPeriodRadiusProvider();
+
+    public Statute(long points) {
       this.points = points;
-    }
-
-    public int getPoints() {
-      return this.points;
     }
 
     public Partner getPartner() {
       return Partner.this;
     }
 
+    public long getPoints() {
+      return this.points;
+    }
+
+    /**
+     * Increases points by a given amount, guaranteeing resulting amount is
+     * non-negative.
+     * 
+     * @param delta how much to increase - may be negative!
+     */
+    protected void increasePoints(long delta) {
+      this.points = Math.max(0, this.points + delta);
+    }
+
     protected void setStatute(Statute statute) {
       Partner.this.statute = statute;
     }
 
-    public abstract void calculateSaleBenefits(SaleTransaction saleTransaction,
+    protected int getTransactionPeriodRadius(Transaction transaction) {
+      return transaction.getProduct().accept(transactionPeriodRadiusProvider);
+    }
+
+    public abstract double calculateAdjustedPrice(
+        SaleTransaction saleTransaction,
         int date);
 
-    public abstract void applySaleBenefits(SaleTransaction saleTransaction,
+    public abstract double applySaleBenefits(SaleTransaction saleTransaction,
         int date);
 
     public abstract void applyBreakdownBenefits(
