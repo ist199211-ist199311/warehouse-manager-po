@@ -3,7 +3,7 @@ package ggc.app.lookups;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-//FIXME import classes
+import ggc.app.exceptions.UnknownPartnerKeyException;
 
 /**
  * Lookup payments by given partner.
@@ -17,7 +17,11 @@ public class DoLookupPaymentsByPartner extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    // FIXME implement command
+    try {
+      this._receiver.lookupPaymentsByPartner(this.stringField("partnerId"));
+    } catch (ggc.exceptions.UnknownPartnerKeyException e) {
+      throw new UnknownPartnerKeyException(e.getKey());
+    }
   }
 
 }
