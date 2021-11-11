@@ -529,8 +529,6 @@ public class Warehouse implements Serializable {
       throws UnknownProductKeyException {
     if (recipeProducts.length != recipeQuantities.length
         || recipeProducts.length == 0) {
-      // TODO maybe use a custom exception (?) this should never happen
-      // anyway tho if the interface is used correctly
       throw new IllegalArgumentException("expected recipeProducts and " +
           "recipeQuantities to have the same non-zero length");
     }

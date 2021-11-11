@@ -27,7 +27,6 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
 
   private final Comparator<String> idComparator = new NaturalTextComparator();
   private final String id;
-  // TODO add statute, notifications
   private final Queue<Notification> inAppNotifications = new LinkedList<>();
   private String name;
   private String address;
