@@ -9,6 +9,7 @@ import ggc.exceptions.UnavailableProductException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
+import ggc.notifications.Notification;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
@@ -30,7 +31,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -62,18 +62,18 @@ public class Warehouse implements Serializable {
    * Stores the warehouse's products, sorted by their key.
    */
   private final Map<String, Product> products = new TreeMap<>(
-      new NaturalTextComparator());
+          new NaturalTextComparator());
 
   /**
    * Stores the warehouse's partners, sorted by their key.
    */
   private final Map<String, Partner> partners = new TreeMap<>(
-      new NaturalTextComparator());
+          new NaturalTextComparator());
 
   /**
    * Stores the warehouse's transactions.
    */
-  private final Map<Integer, Transaction> transactions = new HashMap<>();
+  private final Map<Integer, Transaction> transactions = new TreeMap<>();
 
   /**
    * Stores the transaction ID to be assigned on the next created transaction.
@@ -171,8 +171,8 @@ public class Warehouse implements Serializable {
    */
   public Collection<Batch> getAllBatches() {
     return this.products.values().stream()
-        .flatMap(Product::getBatches)
-        .collect(Collectors.toList());
+            .flatMap(Product::getBatches)
+            .collect(Collectors.toList());
   }
 
   /**
@@ -183,13 +183,13 @@ public class Warehouse implements Serializable {
    * @throws UnknownPartnerKeyException if the given partner is unknown
    */
   public Collection<Batch> getBatchesByPartner(String partnerId)
-      throws UnknownPartnerKeyException {
+          throws UnknownPartnerKeyException {
     final Partner partner = getPartner(partnerId);
 
     return this.products.values().stream()
-        .flatMap(Product::getBatches)
-        .filter(batch -> partner.equals(batch.partner()))
-        .collect(Collectors.toList());
+            .flatMap(Product::getBatches)
+            .filter(batch -> partner.equals(batch.partner()))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -200,7 +200,7 @@ public class Warehouse implements Serializable {
    * @throws UnknownProductKeyException if the given product is unknown
    */
   public Collection<Batch> getBatchesByProduct(String productId)
-      throws UnknownProductKeyException {
+          throws UnknownProductKeyException {
     final Product product = getProduct(productId);
 
     return product.getBatches().collect(Collectors.toList());
@@ -250,7 +250,7 @@ public class Warehouse implements Serializable {
    *                                        with the given ID
    */
   public Transaction getTransaction(int id)
-      throws UnknownTransactionKeyException {
+          throws UnknownTransactionKeyException {
     Transaction t = this.transactions.get(id);
     if (t == null) {
       throw new UnknownTransactionKeyException(id);
@@ -270,7 +270,7 @@ public class Warehouse implements Serializable {
    *                               correctly formatted for its type
    */
   void importFile(String textFile)
-      throws IOException, BadEntryException, IllegalEntryException {
+          throws IOException, BadEntryException, IllegalEntryException {
     try (BufferedReader s = new BufferedReader(new FileReader(textFile))) {
       String line;
       while ((line = s.readLine()) != null) {
@@ -290,7 +290,7 @@ public class Warehouse implements Serializable {
    *                               for its type
    */
   private void importFromFields(String[] fields)
-      throws BadEntryException, IllegalEntryException {
+          throws BadEntryException, IllegalEntryException {
     switch (fields[0]) {
       case "PARTNER" -> this.importPartner(fields);
       case "BATCH_S" -> this.importSimpleBatch(fields);
@@ -346,13 +346,13 @@ public class Warehouse implements Serializable {
         product = this.registerSimpleProduct(fields[1]);
       }
       product.registerBatch(
-          Integer.parseInt(fields[4]),
-          Double.parseDouble(fields[3]),
-          partner);
+              Integer.parseInt(fields[4]),
+              Double.parseDouble(fields[3]),
+              partner);
       this.dirty();
     } catch (UnknownPartnerKeyException
-        | NumberFormatException
-        | DuplicateProductKeyException e) {
+            | NumberFormatException
+            | DuplicateProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -384,14 +384,14 @@ public class Warehouse implements Serializable {
         product = this.registerDerivedProduct(fields[1], recipe);
       }
       product.registerBatch(
-          Integer.parseInt(fields[4]),
-          Double.parseDouble(fields[3]),
-          partner);
+              Integer.parseInt(fields[4]),
+              Double.parseDouble(fields[3]),
+              partner);
       this.dirty();
     } catch (UnknownPartnerKeyException
-        | NumberFormatException
-        | DuplicateProductKeyException
-        | UnknownProductKeyException e) {
+            | NumberFormatException
+            | DuplicateProductKeyException
+            | UnknownProductKeyException e) {
       throw new IllegalEntryException(fields);
     }
   }
@@ -414,8 +414,8 @@ public class Warehouse implements Serializable {
    */
 
   private Recipe importRecipe(String aggravatingFactor,
-      String productsDescription)
-      throws NumberFormatException, UnknownProductKeyException {
+                              String productsDescription)
+          throws NumberFormatException, UnknownProductKeyException {
     List<RecipeComponent> products = new ArrayList<>();
     String[] productDescriptors = productsDescription.split("#");
     for (String desc : productDescriptors) {
@@ -441,7 +441,7 @@ public class Warehouse implements Serializable {
    *                                      (case-insensitive) already exists
    */
   public Partner registerPartner(String id, String name, String address)
-      throws DuplicatePartnerKeyException {
+          throws DuplicatePartnerKeyException {
     if (this.partners.containsKey(id)) {
       throw new DuplicatePartnerKeyException(id);
     }
@@ -462,12 +462,13 @@ public class Warehouse implements Serializable {
    *                                      (case-insensitive) already exists
    */
   public Product registerSimpleProduct(String id)
-      throws DuplicateProductKeyException {
+          throws DuplicateProductKeyException {
     if (this.products.containsKey(id)) {
       throw new DuplicateProductKeyException(id);
     }
 
     Product p = new Product(id);
+    this.partners.values().forEach(p::subscribe);
     this.products.put(id, p);
     this.dirty();
     return p;
@@ -494,14 +495,14 @@ public class Warehouse implements Serializable {
    * @see Warehouse#buildRecipe(double, String[], int[])
    */
   public DerivedProduct registerDerivedProduct(String id,
-      double aggravatingFactor,
-      String[] recipeProducts,
-      int[] recipeQuantities)
-      throws UnknownProductKeyException, DuplicateProductKeyException {
+                                               double aggravatingFactor,
+                                               String[] recipeProducts,
+                                               int[] recipeQuantities)
+          throws UnknownProductKeyException, DuplicateProductKeyException {
     final Recipe recipe = buildRecipe(
-        aggravatingFactor,
-        recipeProducts,
-        recipeQuantities);
+            aggravatingFactor,
+            recipeProducts,
+            recipeQuantities);
     return registerDerivedProduct(id, recipe);
   }
 
@@ -521,14 +522,14 @@ public class Warehouse implements Serializable {
    *                                    don't have the same non-zero length
    */
   private Recipe buildRecipe(double aggravatingFactor,
-      String[] recipeProducts, int[] recipeQuantities)
-      throws UnknownProductKeyException {
+                             String[] recipeProducts, int[] recipeQuantities)
+          throws UnknownProductKeyException {
     if (recipeProducts.length != recipeQuantities.length
-        || recipeProducts.length == 0) {
+            || recipeProducts.length == 0) {
       // TODO maybe use a custom exception (?) this should never happen
       // anyway tho if the interface is used correctly
       throw new IllegalArgumentException("expected recipeProducts and " +
-          "recipeQuantities to have the same non-zero length");
+              "recipeQuantities to have the same non-zero length");
     }
 
     final List<RecipeComponent> components = new ArrayList<>();
@@ -553,12 +554,13 @@ public class Warehouse implements Serializable {
    *                                      (case-insensitive) already exists
    */
   public DerivedProduct registerDerivedProduct(String id, Recipe recipe)
-      throws DuplicateProductKeyException {
+          throws DuplicateProductKeyException {
     if (this.products.containsKey(id)) {
       throw new DuplicateProductKeyException(id);
     }
 
     DerivedProduct p = new DerivedProduct(id, recipe);
+    this.partners.values().forEach(p::subscribe);
     this.products.put(id, p);
     this.dirty();
     return p;
@@ -570,13 +572,13 @@ public class Warehouse implements Serializable {
    * @param priceLimit the upper price limit, that is, all batches must have a
    *                   price lower than this
    * @return a sorted collection of batches with a lower price than the given
-   *         price
+   * price
    */
   public Collection<Batch> lookupProductBatchesUnderGivenPrice(
-      double priceLimit) {
+          double priceLimit) {
     return this.getAllBatches().stream()
-        .filter(batch -> batch.price() < priceLimit)
-        .collect(Collectors.toList());
+            .filter(batch -> batch.price() < priceLimit)
+            .collect(Collectors.toList());
   }
 
   /**
@@ -621,8 +623,8 @@ public class Warehouse implements Serializable {
    * @throws UnknownProductKeyException if the given product does not exist
    */
   public void registerAcquisitionTransaction(String partnerId,
-      String productId, double value, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+                                             String productId, double value, int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
@@ -634,9 +636,9 @@ public class Warehouse implements Serializable {
   }
 
   public void registerSaleTransaction(String partnerId, String productId,
-      int paymentDeadline, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException,
-      UnavailableProductException {
+                                      int paymentDeadline, int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException,
+          UnavailableProductException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
@@ -647,9 +649,9 @@ public class Warehouse implements Serializable {
   }
 
   public void registerBreakdownTransaction(String partnerId, String productId,
-      int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException,
-      UnavailableProductException {
+                                           int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException,
+          UnavailableProductException {
     final Partner partner = this.getPartner(partnerId);
     final Product product = this.getProduct(productId);
 
@@ -672,14 +674,14 @@ public class Warehouse implements Serializable {
    *                                    exist
    */
   public Collection<Transaction> getPartnerAcquisitions(String partnerId)
-      throws UnknownPartnerKeyException {
+          throws UnknownPartnerKeyException {
     final Partner partner = this.getPartner(partnerId);
 
     return this.transactions.values()
-        .stream()
-        .filter(t -> partner.equals(t.getPartner()))
-        .filter(t -> t.accept(acquisitionTransactionFilter))
-        .collect(Collectors.toList());
+            .stream()
+            .filter(t -> partner.equals(t.getPartner()))
+            .filter(t -> t.accept(acquisitionTransactionFilter))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -691,14 +693,49 @@ public class Warehouse implements Serializable {
    *                                    exist
    */
   public Collection<Transaction> getPartnerSalesAndBreakdowns(String partnerId)
-      throws UnknownPartnerKeyException {
-    final Partner partner = getPartner(partnerId);
+          throws UnknownPartnerKeyException {
+    final Partner partner = this.getPartner(partnerId);
 
     return this.transactions.values()
-        .stream()
-        .filter(t -> partner.equals(t.getPartner()))
-        .filter(t -> t.accept(saleAndBreakdownTransactionFilter))
-        .collect(Collectors.toList());
+            .stream()
+            .filter(t -> partner.equals(t.getPartner()))
+            .filter(t -> t.accept(saleAndBreakdownTransactionFilter))
+            .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets a list of the in-app notifications for a given partner, marking them
+   * as read.
+   *
+   * @param partnerId The key of the partner
+   * @return A collection of the unread in-app notifications
+   * @throws UnknownPartnerKeyException if a partner with the given key does not
+   *                                    exist
+   */
+  public Collection<Notification> readPartnerInAppNotifications(String partnerId)
+          throws UnknownPartnerKeyException {
+    final Partner partner = this.getPartner(partnerId);
+
+    return partner.readInAppNotifications();
+  }
+
+  /**
+   * Toggles the subscription of notifications for the given partner on the
+   * given product.
+   *
+   * @param partnerId The key of the partner
+   * @param productId The key of the product
+   * @throws UnknownPartnerKeyException if a partner with the given key does not
+   *                                    exist
+   * @throws UnknownProductKeyException if a product with the given key does not
+   *                                    exist
+   */
+  public void toggleProductNotificationsForPartner(String partnerId, String productId)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
+    final Partner partner = this.getPartner(partnerId);
+    final Product product = this.getProduct(productId);
+
+    product.toggleSubscription(partner);
   }
 
 }
