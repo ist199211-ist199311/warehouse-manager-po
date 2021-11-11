@@ -48,9 +48,9 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
       BATCH_COMPARATOR);
   private final Set<Notifiable> subscribers = new HashSet<>();
   private double allTimeMaxPrice = 0D;
+  private boolean hasHadBatches = false;
 
   public Product(String id) {
-    // TODO subscribe all existing
     this.id = id;
   }
 
@@ -76,19 +76,20 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
    */
   public Batch registerBatch(int quantity, double price, Partner partner) {
     Batch batch = new Batch(quantity, price, this, partner);
+    if (this.hasHadBatches && this.batches.size() == 0) {
+      this.sendNotification(
+              new NewProductNotification(this, batch.price()));
+    } else if (this.getCheapestPrice().orElse(0D) > batch.price()) {
+      this.sendNotification(
+              new BargainProductNotification(this, batch.price()));
+    }
     this.insertBatch(batch);
     return batch;
   }
 
   private void insertBatch(Batch batch) {
     this.allTimeMaxPrice = Math.max(this.allTimeMaxPrice, batch.price());
-    if (this.batches.size() == 0) {
-      this.sendNotification(
-          new NewProductNotification(this, batch.price()));
-    } else if (this.getCheapestPrice().orElse(0D) > batch.price()) {
-      this.sendNotification(
-          new BargainProductNotification(this, batch.price()));
-    }
+    this.hasHadBatches = true;
     this.batches.add(batch);
     this.batchesByPartner.computeIfAbsent(batch.partner().getId(),
         (v) -> new PriorityQueue<>(BATCH_COMPARATOR)).add(batch);
