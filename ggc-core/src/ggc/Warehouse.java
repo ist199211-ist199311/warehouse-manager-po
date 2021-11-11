@@ -627,10 +627,10 @@ public class Warehouse implements Serializable {
     final Product product = this.getProduct(productId);
 
     AcquisitionTransaction transaction = product.acquire(date, partner,
-            quantity, value, this::getNextTransactionId);
+        quantity, value, this::getNextTransactionId);
     this.transactions.put(transaction.getId(), transaction);
     this.availableBalance -= transaction.totalValue();
-    partner.increasePurchasesValue(transaction.totalValue());
+    partner.increaseAcquisitionsValue(transaction.totalValue());
   }
 
   public void registerSaleTransaction(String partnerId, String productId,
@@ -641,7 +641,7 @@ public class Warehouse implements Serializable {
     final Product product = this.getProduct(productId);
 
     SaleTransaction transaction = product.sell(paymentDeadline, partner,
-            quantity, this::getNextTransactionId);
+        quantity, this::getNextTransactionId);
     this.transactions.put(transaction.getId(), transaction);
     partner.increaseSalesValue(transaction.baseValue());
   }
@@ -654,14 +654,13 @@ public class Warehouse implements Serializable {
     final Product product = this.getProduct(productId);
 
     product.breakdown(
-            this.date,
-            partner,
-            quantity,
-            this::getNextTransactionId
-    ).ifPresent(transaction -> {
-      transactions.put(transaction.getId(), transaction);
-      this.availableBalance += Math.max(0, transaction.baseValue());
-    });
+        this.date,
+        partner,
+        quantity,
+        this::getNextTransactionId).ifPresent(transaction -> {
+          transactions.put(transaction.getId(), transaction);
+          this.availableBalance += Math.max(0, transaction.baseValue());
+        });
   }
 
   /**

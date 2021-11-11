@@ -24,7 +24,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   private String name;
   private String address;
   private Statute statute;
-  private double purchasesValue;
+  private double acquisitionsValue;
   private double salesValue;
   private double paidSalesValue;
 
@@ -71,8 +71,8 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
     this.statute.applyBreakdownBenefits(breakdownTransaction, date);
   }
 
-  public void increasePurchasesValue(double value) {
-    this.purchasesValue += value;
+  public void increaseAcquisitionsValue(double value) {
+    this.acquisitionsValue += value;
   }
 
   public void increaseSalesValue(double value) {
@@ -84,7 +84,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
   }
 
   public double getPurchasesValue() {
-    return purchasesValue;
+    return acquisitionsValue;
   }
 
   public double getSalesValue() {
