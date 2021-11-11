@@ -61,11 +61,11 @@ public abstract class Transaction implements Serializable, Visitable {
   }
 
   public boolean isPaid() {
-    return paymentDate != null;
+    return this.paymentDate != null;
   }
 
   public Optional<Integer> getPaymentDate() {
-    return Optional.ofNullable(paymentDate);
+    return Optional.ofNullable(this.paymentDate);
   }
 
   protected void setPaymentDate(int date) {

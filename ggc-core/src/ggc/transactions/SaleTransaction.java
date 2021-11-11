@@ -17,7 +17,7 @@ public class SaleTransaction extends Transaction {
   private Double adjustedValue = null;
 
   public SaleTransaction(int id, double value, int quantity, Product product,
-                         Partner partner, int paymentDeadline) {
+      Partner partner, int paymentDeadline) {
     super(id, value, quantity, product, partner);
     this.paymentDeadline = paymentDeadline;
   }
@@ -28,16 +28,17 @@ public class SaleTransaction extends Transaction {
   }
 
   public void calculateAdjustedValue(int date) {
-    if (isPaid()) return;
+    if (this.isPaid())
+      return;
     this.adjustedValue = this.getPartner().calculateAdjustedValue(this, date);
   }
 
   public double adjustedValue() {
-    return adjustedValue == null ? this.baseValue() : adjustedValue;
+    return this.adjustedValue == null ? this.baseValue() : this.adjustedValue;
   }
 
   public int getPaymentDeadline() {
-    return paymentDeadline;
+    return this.paymentDeadline;
   }
 
   @Override
