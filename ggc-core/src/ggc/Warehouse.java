@@ -21,6 +21,7 @@ import ggc.transactions.PaymentProcessor;
 import ggc.transactions.SaleTransaction;
 import ggc.transactions.Transaction;
 import ggc.util.AcquisitionTransactionFilter;
+import ggc.util.AdjustedValueCalculator;
 import ggc.util.NaturalTextComparator;
 import ggc.util.SaleAndBreakdownTransactionFilter;
 import ggc.util.Visitor;
@@ -256,6 +257,7 @@ public class Warehouse implements Serializable {
     if (t == null) {
       throw new UnknownTransactionKeyException(id);
     }
+    t.accept(new AdjustedValueCalculator(this.date));
     return t;
   }
 
@@ -527,8 +529,6 @@ public class Warehouse implements Serializable {
       throws UnknownProductKeyException {
     if (recipeProducts.length != recipeQuantities.length
         || recipeProducts.length == 0) {
-      // TODO maybe use a custom exception (?) this should never happen
-      // anyway tho if the interface is used correctly
       throw new IllegalArgumentException("expected recipeProducts and " +
           "recipeQuantities to have the same non-zero length");
     }
@@ -582,9 +582,8 @@ public class Warehouse implements Serializable {
     }
     return this.transactions.values()
         .stream()
-        .filter(transaction -> transaction
-            .accept(this.saleAndBreakdownTransactionFilter))
-        .filter(transaction -> transaction.getPartner().equals(partner))
+        .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
+        .filter(t -> t.getPartner().equals(partner))
         .filter(Transaction::isPaid)
         .collect(Collectors.toList());
   }
@@ -620,8 +619,13 @@ public class Warehouse implements Serializable {
    * @return the accounting balance
    */
   public double getAccountingBalance() {
-    // TODO sum with pending sale transactions
-    return this.getAvailableBalance();
+    final AdjustedValueCalculator adjustedValueRetriever = new AdjustedValueCalculator(
+        this.date);
+    return this.getAvailableBalance() + this.transactions.values()
+        .stream()
+        .map(t -> t.accept(adjustedValueRetriever))
+        .reduce(Double::sum)
+        .orElse(0D);
   }
 
   /**
@@ -682,9 +686,9 @@ public class Warehouse implements Serializable {
         this.date,
         partner,
         quantity,
-        this::getNextTransactionId).ifPresent(transaction -> {
-          transactions.put(transaction.getId(), transaction);
-          this.availableBalance += Math.max(0, transaction.baseValue());
+        this::getNextTransactionId).ifPresent(t -> {
+          transactions.put(t.getId(), t);
+          this.availableBalance += Math.max(0, t.baseValue());
         });
   }
 
@@ -718,11 +722,17 @@ public class Warehouse implements Serializable {
   public Collection<Transaction> getPartnerSalesAndBreakdowns(String partnerId)
       throws UnknownPartnerKeyException {
     final Partner partner = this.getPartner(partnerId);
+    final AdjustedValueCalculator adjustedValueRetriever = new AdjustedValueCalculator(
+        this.date);
 
     return this.transactions.values()
         .stream()
         .filter(t -> partner.equals(t.getPartner()))
-        .filter(t -> t.accept(saleAndBreakdownTransactionFilter))
+        .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
+        .map(t -> {
+          t.accept(adjustedValueRetriever);
+          return t;
+        })
         .collect(Collectors.toList());
   }
 
