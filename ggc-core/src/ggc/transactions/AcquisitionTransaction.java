@@ -13,7 +13,6 @@ public class AcquisitionTransaction extends Transaction {
   private static final long serialVersionUID = 202111092052L;
 
   public AcquisitionTransaction(int id, int date, Batch batch) {
-    // TODO maybe store the batch itself?
     super(id,
         batch.price(),
         batch.quantity(),

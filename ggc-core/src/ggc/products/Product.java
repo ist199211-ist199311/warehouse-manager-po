@@ -241,7 +241,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
       int quantity,
       Supplier<Integer> idSupplier)
       throws UnavailableProductException {
-    final int available = this.getTotalQuantity();
+    final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
