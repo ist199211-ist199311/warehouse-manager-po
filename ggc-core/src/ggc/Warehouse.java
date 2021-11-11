@@ -632,6 +632,7 @@ public class Warehouse implements Serializable {
             quantity, value, this::getNextTransactionId);
     this.transactions.put(transaction.getId(), transaction);
     this.availableBalance -= transaction.totalValue();
+    partner.increasePurchasesValue(transaction.totalValue());
   }
 
   public void registerSaleTransaction(String partnerId, String productId,
@@ -644,6 +645,7 @@ public class Warehouse implements Serializable {
     SaleTransaction transaction = product.sell(paymentDeadline, partner,
             quantity, this::getNextTransactionId);
     this.transactions.put(transaction.getId(), transaction);
+    partner.increaseSalesValue(transaction.baseValue());
   }
 
   public void registerBreakdownTransaction(String partnerId, String productId,
