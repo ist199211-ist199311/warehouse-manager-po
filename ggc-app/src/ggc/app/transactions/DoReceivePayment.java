@@ -13,13 +13,13 @@ public class DoReceivePayment extends Command<WarehouseManager> {
 
   public DoReceivePayment(WarehouseManager receiver) {
     super(Label.RECEIVE_PAYMENT, receiver);
-    addStringField("transactionId", Prompt.transactionKey());
+    addIntegerField("transactionId", Prompt.transactionKey());
   }
 
   @Override
   public final void execute() throws CommandException {
     try {
-      this._receiver.receivePayment(this.stringField("transactionId"));
+      this._receiver.receivePayment(this.integerField("transactionId"));
     } catch (UnknownTransactionKeyException e) {
       throw new ggc.app.exceptions.UnknownTransactionKeyException(e.getKey());
     }

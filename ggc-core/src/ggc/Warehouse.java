@@ -710,7 +710,7 @@ public class Warehouse implements Serializable {
    * @param transactionId The key of the transaction
    * @throws UnknownTransactionKeyException if no such transaction is found
    */
-  public void receivePayment(String transactionId)
+  public void receivePayment(int transactionId)
       throws UnknownTransactionKeyException {
     // TODO
   }

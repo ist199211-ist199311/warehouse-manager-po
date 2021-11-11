@@ -206,9 +206,9 @@ public class WarehouseManager {
   }
 
   /**
-   * @see Warehouse#receivePayment(String)
+   * @see Warehouse#receivePayment(int)
    */
-  public void receivePayment(String transactionId)
+  public void receivePayment(int transactionId)
       throws UnknownTransactionKeyException {
     this._warehouse.receivePayment(transactionId);
   }
