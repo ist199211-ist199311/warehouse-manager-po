@@ -58,7 +58,9 @@ public class NormalPartnerStatute extends Partner.Statute {
 
   private void tryForPromotion() {
     final long points = this.getPoints();
-    if (points > 2000) {
+    if (points > 25000) {
+      this.setStatute(new ElitePartnerStatute(this.getPartner(), points));
+    } else if (points > 2000) {
       this.setStatute(new SelectionPartnerStatute(this.getPartner(), points));
     }
   }
