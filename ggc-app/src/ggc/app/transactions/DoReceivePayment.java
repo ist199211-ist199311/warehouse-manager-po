@@ -4,6 +4,7 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
 //FIXME import classes
+import ggc.exceptions.UnknownTransactionKeyException;
 
 /**
  * Receive payment for sale transaction.
@@ -17,7 +18,11 @@ public class DoReceivePayment extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    // FIXME implement command
+    try {
+      this._receiver.receivePayment(this.stringField("transactionId"));
+    } catch (UnknownTransactionKeyException e) {
+      throw new ggc.app.exceptions.UnknownTransactionKeyException(e.getKey());
+    }
   }
 
 }
