@@ -728,7 +728,7 @@ public class Warehouse implements Serializable {
     return this.transactions.values()
         .stream()
         .filter(t -> partner.equals(t.getPartner()))
-        .filter(t -> t.accept(saleAndBreakdownTransactionFilter))
+        .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
         .collect(Collectors.toList());
   }
 
