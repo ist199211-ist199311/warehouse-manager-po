@@ -568,6 +568,28 @@ public class Warehouse implements Serializable {
   }
 
   /**
+   * Lookup transactions paid for by a given partner.
+   * 
+   * @param partnerId the key of the partner
+   * @return a sorted collection of paid transactions
+   * @throws UnknownPartnerKeyException if no such transaction can be found
+   */
+  public Collection<Transaction> lookupPaymentsByPartner(
+      String partnerId) throws UnknownPartnerKeyException {
+    Partner partner = this.partners.get(partnerId);
+    if (partner == null) {
+      throw new UnknownPartnerKeyException(partnerId);
+    }
+    return this.transactions.values()
+        .stream()
+        .filter(transaction -> transaction
+            .accept(this.saleAndBreakdownTransactionFilter))
+        .filter(transaction -> transaction.getPartner().equals(partner))
+        .filter(Transaction::isPaid)
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Lookup all the batches under a given price, ordered by their natural order.
    *
    * @param priceLimit the upper price limit, that is, all batches must have a

@@ -92,6 +92,14 @@ public class WarehouseManager {
   }
 
   /**
+   * @see Warehouse#lookupPaymentsByPartner(String)
+   */
+  public Collection<? extends Visitable> lookupPaymentsByPartner(
+      String partnerId) throws UnknownPartnerKeyException {
+    return this._warehouse.lookupPaymentsByPartner(partnerId);
+  }
+
+  /**
    * @see Warehouse#lookupProductBatchesUnderGivenPrice(double)
    */
   public Collection<? extends Visitable> lookupProductBatchesUnderGivenPrice(
