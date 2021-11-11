@@ -53,6 +53,22 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
     this.address = address;
   }
 
+  public double calculateAdjustedPrice(
+      SaleTransaction saleTransaction,
+      int date) {
+    return this.statute.calculateAdjustedPrice(saleTransaction, date);
+  }
+
+  public double applySaleBenefits(SaleTransaction saleTransaction,
+      int date) {
+    return this.statute.applySaleBenefits(saleTransaction, date);
+  }
+
+  public void applyBreakdownBenefits(
+      BreakdownTransaction breakdownTransaction, int date) {
+    this.statute.applyBreakdownBenefits(breakdownTransaction, date);
+  }
+
   @Override
   public int compareTo(Partner partner) {
     return idComparator.compare(this.getId(), partner.getId());
