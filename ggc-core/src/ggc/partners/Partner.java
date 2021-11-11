@@ -1,5 +1,8 @@
 package ggc.partners;
 
+import ggc.transactions.BreakdownTransaction;
+import ggc.transactions.SaleTransaction;
+import ggc.transactions.Transaction;
 import ggc.notifications.Notifiable;
 import ggc.notifications.Notification;
 import ggc.notifications.NotificationDeliveryMethod;
@@ -15,7 +18,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Partner implements Comparable<Partner>, Serializable, Visitable,
-        Notifiable {
+    Notifiable {
   /**
    * Serial number for serialization.
    */
@@ -28,9 +31,9 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   private final Queue<Notification> inAppNotifications = new LinkedList<>();
   private String name;
   private String address;
-  private NotificationDeliveryMethod notificationDeliveryMethod =
-          inAppNotifications::add;
-  private double purchasesValue;
+  private Statute statute;
+  private NotificationDeliveryMethod notificationDeliveryMethod = inAppNotifications::add;
+  private double acquisitionsValue;
   private double salesValue;
   private double paidSalesValue;
 
@@ -38,6 +41,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     this.id = id;
     this.name = name;
     this.address = address;
+    this.statute = new NormalPartnerStatute(this, 0);
   }
 
   public String getId() {
@@ -60,8 +64,32 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     this.address = address;
   }
 
-  public void increasePurchasesValue(double value) {
-    this.purchasesValue += value;
+  public String getStatuteName() {
+    return this.statute.getName();
+  }
+
+  public long getPoints() {
+    return this.statute.getPoints();
+  }
+
+  public double calculateAdjustedValue(
+      SaleTransaction saleTransaction,
+      int date) {
+    return this.statute.calculateAdjustedValue(saleTransaction, date);
+  }
+
+  public double applySaleBenefits(SaleTransaction saleTransaction,
+      int date) {
+    return this.statute.applySaleBenefits(saleTransaction, date);
+  }
+
+  public void applyBreakdownBenefits(
+      BreakdownTransaction breakdownTransaction, int date) {
+    this.statute.applyBreakdownBenefits(breakdownTransaction, date);
+  }
+
+  public void increaseAcquisitionsValue(double value) {
+    this.acquisitionsValue += value;
   }
 
   public void increaseSalesValue(double value) {
@@ -73,7 +101,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   }
 
   public double getPurchasesValue() {
-    return purchasesValue;
+    return acquisitionsValue;
   }
 
   public double getSalesValue() {
@@ -90,13 +118,14 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   }
 
   @Override
-  public void setNotificationDeliveryMethod(NotificationDeliveryMethod deliveryMethod) {
+  public void setNotificationDeliveryMethod(
+      NotificationDeliveryMethod deliveryMethod) {
     this.notificationDeliveryMethod = deliveryMethod;
   }
 
   public Collection<Notification> readInAppNotifications() {
-    Collection<Notification> notifications =
-            new LinkedList<>(this.inAppNotifications);
+    Collection<Notification> notifications = new LinkedList<>(
+        this.inAppNotifications);
     this.inAppNotifications.clear();
     return notifications;
   }
@@ -120,5 +149,54 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   @Override
   public <T> T accept(Visitor<T> visitor) {
     return visitor.visit(this);
+  }
+
+  public abstract class Statute implements Serializable {
+    private long points = 0;
+
+    private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider = new TransactionPeriodRadiusProvider();
+
+    public Statute(long points) {
+      this.points = points;
+    }
+
+    public Partner getPartner() {
+      return Partner.this;
+    }
+
+    public long getPoints() {
+      return this.points;
+    }
+
+    /**
+     * Increases points by a given amount, guaranteeing resulting amount is
+     * non-negative.
+     * 
+     * @param delta how much to increase - may be negative!
+     */
+    protected void increasePoints(long delta) {
+      this.points = Math.max(0, this.points + delta);
+    }
+
+    protected void setStatute(Statute statute) {
+      Partner.this.statute = statute;
+    }
+
+    protected int getTransactionPeriodRadius(Transaction transaction) {
+      return transaction.getProduct().accept(transactionPeriodRadiusProvider);
+    }
+
+    public abstract String getName();
+
+    public abstract double calculateAdjustedValue(
+        SaleTransaction saleTransaction,
+        int date);
+
+    public abstract double applySaleBenefits(SaleTransaction saleTransaction,
+        int date);
+
+    public abstract void applyBreakdownBenefits(
+        BreakdownTransaction breakdownTransaction, int date);
+
   }
 }

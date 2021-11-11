@@ -78,10 +78,10 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
     Batch batch = new Batch(quantity, price, this, partner);
     if (this.hasHadBatches && this.batches.size() == 0) {
       this.sendNotification(
-              new NewProductNotification(this, batch.price()));
+          new NewProductNotification(this, batch.price()));
     } else if (this.getCheapestPrice().orElse(0D) > batch.price()) {
       this.sendNotification(
-              new BargainProductNotification(this, batch.price()));
+          new BargainProductNotification(this, batch.price()));
     }
     this.insertBatch(batch);
     return batch;

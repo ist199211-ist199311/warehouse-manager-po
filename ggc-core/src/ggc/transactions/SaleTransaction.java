@@ -23,12 +23,12 @@ public class SaleTransaction extends Transaction {
   }
 
   public void pay(int date) {
-    calculateAdjustedValue();
+    this.adjustedValue = this.getPartner().applySaleBenefits(this, date);
     this.setPaymentDate(date);
   }
 
-  public void calculateAdjustedValue() {
-    // TODO this.partner.calculateSaleTransactionBenefits(this)
+  public void calculateAdjustedValue(int date) {
+    this.adjustedValue = this.getPartner().calculateAdjustedValue(this, date);
   }
 
   public double adjustedValue() {
