@@ -31,7 +31,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -74,7 +73,7 @@ public class Warehouse implements Serializable {
   /**
    * Stores the warehouse's transactions.
    */
-  private final Map<Integer, Transaction> transactions = new HashMap<>();
+  private final Map<Integer, Transaction> transactions = new TreeMap<>();
 
   /**
    * Stores the transaction ID to be assigned on the next created transaction.
