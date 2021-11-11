@@ -7,6 +7,7 @@ import ggc.util.Visitor;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -34,21 +35,40 @@ public class DerivedProduct extends Product {
   }
 
   /**
-   * Calculates whether this product is presently available, either directly or
-   * through building (for derived products), recursively checking recipe
-   * components.
-   * 
-   * @throws UnavailableProductException if there is not enough of a component,
-   *                                     if a build would be necessary (this
-   *                                     exception references the first missing
-   *                                     component)
+   * Add this product to an existing product-amount stock mapping. This is
+   * recursive, also adding recipe components.
    */
   @Override
-  public void assertPossibleAvailability(int quantity)
-      throws UnavailableProductException {
-    final int neededQuantity = this.getMissingQuantity(quantity);
+  public void addToStockMap(Map<Product, Integer> stock) {
+    super.addToStockMap(stock);
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-      c.product().assertPossibleAvailability(c.quantity() * neededQuantity);
+      c.product().addToStockMap(stock);
+    }
+  }
+
+  /**
+   * Calculates whether this product is available, either directly OR INDIRECTLY
+   * (through building, for derived products), against a specific, hypothetical
+   * stock. This traverses and asserts availability for recipe components
+   * recursively.
+   * 
+   * @param quantity how much of this product is needed
+   * @param stock    product-amount mapping against which to check availability
+   * @throws UnavailableProductException if there is not enough of a component
+   *                                     to build the required amount of units
+   *                                     (this exception references the first
+   *                                     missing component)
+   */
+  @Override
+  protected void assertPossibleAvailability(int quantity,
+      Map<Product, Integer> stock) throws UnavailableProductException {
+    final int available = stock.getOrDefault(this, 0);
+    final int neededQuantity = Math.max(0, quantity - available);
+    stock.put(this, available - Math.min(quantity, available));
+    for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
+      c.product().assertPossibleAvailability(
+          c.quantity() * neededQuantity,
+          stock);
     }
   }
 

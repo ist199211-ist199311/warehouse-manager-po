@@ -19,6 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,17 +112,40 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
   }
 
   /**
-   * Calculates whether this product is presently available, directly OR
-   * INDIRECTLY (if applicable).
+   * Add this product to an existing product-amount stock mapping.
+   */
+  public void addToStockMap(Map<Product, Integer> stock) {
+    stock.put(this, stock.getOrDefault(this, 0) + this.getQuantityInBatches());
+  }
+
+  /**
+   * Calculates whether this product is available, directly OR INDIRECTLY (if
+   * applicable).
    *
-   * @throws UnavailableProductException if there is not enough of this product
+   * @throws UnavailableProductException if there are not enough units
    */
   public void assertPossibleAvailability(int quantity)
       throws UnavailableProductException {
-    final int available = this.getQuantityInBatches();
+    final Map<Product, Integer> stock = new HashMap<>();
+    this.addToStockMap(stock);
+    assertPossibleAvailability(quantity, stock);
+  }
+
+  /**
+   * Calculates whether this product is available, either directly OR
+   * INDIRECTLY, against a specific, hypothetical stock.
+   * 
+   * @param quantity how much of this product is needed
+   * @param stock    product-amount mapping against which to check availability
+   * @throws UnavailableProductException if there are not enough units
+   */
+  protected void assertPossibleAvailability(int quantity,
+      Map<Product, Integer> stock) throws UnavailableProductException {
+    final int available = stock.getOrDefault(this, 0);
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
+    stock.put(this, available - quantity);
   }
 
   /**
