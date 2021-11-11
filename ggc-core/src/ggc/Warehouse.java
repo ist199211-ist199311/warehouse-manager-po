@@ -583,9 +583,8 @@ public class Warehouse implements Serializable {
     }
     return this.transactions.values()
         .stream()
-        .filter(transaction -> transaction
-            .accept(this.saleAndBreakdownTransactionFilter))
-        .filter(transaction -> transaction.getPartner().equals(partner))
+        .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
+        .filter(t -> t.getPartner().equals(partner))
         .filter(Transaction::isPaid)
         .collect(Collectors.toList());
   }
@@ -625,7 +624,7 @@ public class Warehouse implements Serializable {
         this.date);
     return this.getAvailableBalance() + this.transactions.values()
         .stream()
-        .map(transaction -> transaction.accept(adjustedValueRetriever))
+        .map(t -> t.accept(adjustedValueRetriever))
         .reduce(Double::sum)
         .orElse(0D);
   }
@@ -688,9 +687,9 @@ public class Warehouse implements Serializable {
         this.date,
         partner,
         quantity,
-        this::getNextTransactionId).ifPresent(transaction -> {
-          transactions.put(transaction.getId(), transaction);
-          this.availableBalance += Math.max(0, transaction.baseValue());
+        this::getNextTransactionId).ifPresent(t -> {
+          transactions.put(t.getId(), t);
+          this.availableBalance += Math.max(0, t.baseValue());
         });
   }
 
@@ -724,11 +723,17 @@ public class Warehouse implements Serializable {
   public Collection<Transaction> getPartnerSalesAndBreakdowns(String partnerId)
       throws UnknownPartnerKeyException {
     final Partner partner = this.getPartner(partnerId);
+    final AdjustedValueRetriever adjustedValueRetriever = new AdjustedValueRetriever(
+        this.date);
 
     return this.transactions.values()
         .stream()
         .filter(t -> partner.equals(t.getPartner()))
         .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
+        .map(t -> {
+          t.accept(adjustedValueRetriever);
+          return t;
+        })
         .collect(Collectors.toList());
   }
 
