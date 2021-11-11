@@ -28,14 +28,10 @@ public class ElitePartnerStatute extends Partner.Statute {
     final int radius = this
         .getTransactionPeriodRadius(saleTransaction);
     double value = saleTransaction.baseValue();
-    if (-delta >= radius) { // P1
+    if (delta < 0) { // P1 & P2
       return 0.9 * value;
-    } else if (2 <= -delta && -delta < radius) { // P2 & >=2 days
+    } else if (0 < delta && delta <= radius) { // P3
       return 0.95 * value;
-    } else if (1 < delta && delta <= radius) { // P3 & >1 day
-      return (1 + (delta * 0.02)) * value;
-    } else if (delta > radius) { // P4
-      return (1 + (delta * 0.05)) * value;
     }
     return value;
   }
