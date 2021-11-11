@@ -3,8 +3,7 @@ package ggc.app.transactions;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-//FIXME import classes
-import ggc.exceptions.UnknownTransactionKeyException;
+import ggc.app.exceptions.UnknownTransactionKeyException;
 
 /**
  * Receive payment for sale transaction.
@@ -20,8 +19,8 @@ public class DoReceivePayment extends Command<WarehouseManager> {
   public final void execute() throws CommandException {
     try {
       this._receiver.receivePayment(this.integerField("transactionId"));
-    } catch (UnknownTransactionKeyException e) {
-      throw new ggc.app.exceptions.UnknownTransactionKeyException(e.getKey());
+    } catch (ggc.exceptions.UnknownTransactionKeyException e) {
+      throw new UnknownTransactionKeyException(e.getKey());
     }
   }
 
