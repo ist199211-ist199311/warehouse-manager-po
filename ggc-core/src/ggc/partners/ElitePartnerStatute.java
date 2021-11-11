@@ -16,6 +16,7 @@ public class ElitePartnerStatute extends Partner.Statute {
     partner.super(points);
   }
 
+  @Override
   public double calculateAdjustedPrice(SaleTransaction saleTransaction,
       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
@@ -34,6 +35,7 @@ public class ElitePartnerStatute extends Partner.Statute {
     return price;
   }
 
+  @Override
   public double applySaleBenefits(SaleTransaction saleTransaction, int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
     final double adjusted = this.calculateAdjustedPrice(saleTransaction, date);
@@ -47,6 +49,7 @@ public class ElitePartnerStatute extends Partner.Statute {
     return adjusted;
   }
 
+  @Override
   public void applyBreakdownBenefits(
       BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
