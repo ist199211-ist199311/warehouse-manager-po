@@ -107,7 +107,7 @@ public class Stringifier extends Visitor<String> {
         .add(partner.getName())
         .add(partner.getAddress())
         .add("NORMAL") // TODO
-        .add("0") // TODO points
+        .add(Long.toString(partner.getPoints()))
         .add(Long.toString(Math.round(partner.getPurchasesValue())))
         .add(Long.toString(Math.round(partner.getSalesValue())))
         .add(Long.toString(Math.round(partner.getPaidSalesValue())))

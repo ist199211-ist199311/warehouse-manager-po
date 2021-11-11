@@ -64,6 +64,10 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     this.address = address;
   }
 
+  public long getPoints() {
+    return this.statute.getPoints();
+  }
+
   public double calculateAdjustedValue(
       SaleTransaction saleTransaction,
       int date) {
