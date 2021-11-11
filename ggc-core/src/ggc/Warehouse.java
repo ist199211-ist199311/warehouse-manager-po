@@ -21,6 +21,7 @@ import ggc.transactions.PaymentProcessor;
 import ggc.transactions.SaleTransaction;
 import ggc.transactions.Transaction;
 import ggc.util.AcquisitionTransactionFilter;
+import ggc.util.AdjustedValueRetriever;
 import ggc.util.NaturalTextComparator;
 import ggc.util.SaleAndBreakdownTransactionFilter;
 import ggc.util.Visitor;
@@ -620,8 +621,13 @@ public class Warehouse implements Serializable {
    * @return the accounting balance
    */
   public double getAccountingBalance() {
-    // TODO sum with pending sale transactions
-    return this.getAvailableBalance();
+    final AdjustedValueRetriever adjustedValueRetriever = new AdjustedValueRetriever(
+        this.date);
+    return this.getAvailableBalance() + this.transactions.values()
+        .stream()
+        .map(transaction -> transaction.accept(adjustedValueRetriever))
+        .reduce(Double::sum)
+        .orElse(0D);
   }
 
   /**
