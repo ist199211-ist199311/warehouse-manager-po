@@ -28,7 +28,7 @@ public class SaleTransaction extends Transaction {
   }
 
   public void calculateAdjustedValue(int date) {
-    this.adjustedValue = this.getPartner().calculateAdjustedPrice(this, date);
+    this.adjustedValue = this.getPartner().calculateAdjustedValue(this, date);
   }
 
   public double adjustedValue() {

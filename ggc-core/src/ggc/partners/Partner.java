@@ -53,10 +53,10 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
     this.address = address;
   }
 
-  public double calculateAdjustedPrice(
+  public double calculateAdjustedValue(
       SaleTransaction saleTransaction,
       int date) {
-    return this.statute.calculateAdjustedPrice(saleTransaction, date);
+    return this.statute.calculateAdjustedValue(saleTransaction, date);
   }
 
   public double applySaleBenefits(SaleTransaction saleTransaction,
@@ -125,7 +125,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable {
       return transaction.getProduct().accept(transactionPeriodRadiusProvider);
     }
 
-    public abstract double calculateAdjustedPrice(
+    public abstract double calculateAdjustedValue(
         SaleTransaction saleTransaction,
         int date);
 

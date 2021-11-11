@@ -17,26 +17,26 @@ public class NormalPartnerStatute extends Partner.Statute {
   }
 
   @Override
-  public double calculateAdjustedPrice(SaleTransaction saleTransaction,
+  public double calculateAdjustedValue(SaleTransaction saleTransaction,
       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
     final int radius = this
         .getTransactionPeriodRadius(saleTransaction);
-    double price = saleTransaction.baseValue();
+    double value = saleTransaction.baseValue();
     if (-delta >= radius) { // P1
-      return 0.9 * price;
+      return 0.9 * value;
     } else if (0 < delta && delta <= radius) { // P3
-      return (1 + (delta * 0.05)) * price;
+      return (1 + (delta * 0.05)) * value;
     } else if (delta > radius) { // P4
-      return (1 + (delta * 0.1)) * price;
+      return (1 + (delta * 0.1)) * value;
     }
-    return price;
+    return value;
   }
 
   @Override
   public double applySaleBenefits(SaleTransaction saleTransaction, int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
-    final double adjusted = this.calculateAdjustedPrice(saleTransaction, date);
+    final double adjusted = this.calculateAdjustedValue(saleTransaction, date);
     if (delta < 0) { // on time
       this.increasePoints(Math.round(10 * adjusted));
       this.tryForPromotion();
