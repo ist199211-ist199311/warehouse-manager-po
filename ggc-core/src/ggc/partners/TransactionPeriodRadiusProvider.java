@@ -1,5 +1,7 @@
 package ggc.partners;
 
+import ggc.notifications.BargainProductNotification;
+import ggc.notifications.NewProductNotification;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
 import ggc.products.Product;
@@ -39,6 +41,14 @@ public class TransactionPeriodRadiusProvider extends Visitor<Integer> {
   }
 
   public Integer visit(Partner partner) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Integer visit(NewProductNotification notification) {
+    throw new UnsupportedOperationException();
+  }
+
+  public Integer visit(BargainProductNotification notification) {
     throw new UnsupportedOperationException();
   }
 }
