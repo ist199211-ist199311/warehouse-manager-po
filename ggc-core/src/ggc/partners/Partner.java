@@ -32,8 +32,8 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   private String name;
   private String address;
   private Statute statute;
-  private double acquisitionsValue;
   private NotificationDeliveryMethod notificationDeliveryMethod = inAppNotifications::add;
+  private double acquisitionsValue;
   private double salesValue;
   private double paidSalesValue;
 
