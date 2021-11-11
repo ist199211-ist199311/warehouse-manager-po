@@ -739,7 +739,10 @@ public class Warehouse implements Serializable {
     if (transaction == null) {
       throw new UnknownTransactionKeyException(transactionId);
     }
-    transaction.accept(new PaymentProcessor(this.date));
+    final double paidValue = transaction
+        .accept(new PaymentProcessor(this.date));
+    transaction.getPartner().increasePaidSalesValue(paidValue);
+    this.availableBalance += paidValue;
   }
 
   /**
