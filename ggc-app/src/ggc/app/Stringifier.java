@@ -1,5 +1,7 @@
 package ggc.app;
 
+import ggc.notifications.BargainProductNotification;
+import ggc.notifications.NewProductNotification;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
@@ -41,8 +43,7 @@ public class Stringifier extends Visitor<String> {
         .add(Integer.toString(transaction.getPaymentDate().orElse(0)))
         .add(transaction.getResultingBatches()
             .stream()
-            .map(batch ->
-                batch.product().getId() + ":" +
+            .map(batch -> batch.product().getId() + ":" +
                 batch.quantity() + ":" +
                 Math.round(batch.price() * batch.quantity()))
             .collect(Collectors.joining("#")))
@@ -52,16 +53,16 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(SaleTransaction transaction) {
     StringJoiner joiner = new StringJoiner("|")
-            .add("VENDA")
-            .add(Integer.toString(transaction.getId()))
-            .add(transaction.getPartner().getId())
-            .add(transaction.getProduct().getId())
-            .add(Integer.toString(transaction.getQuantity()))
-            .add(Long.toString(Math.round(transaction.baseValue())))
-            .add(Long.toString(Math.round(transaction.adjustedValue())))
-            .add(Integer.toString(transaction.getPaymentDeadline()));
+        .add("VENDA")
+        .add(Integer.toString(transaction.getId()))
+        .add(transaction.getPartner().getId())
+        .add(transaction.getProduct().getId())
+        .add(Integer.toString(transaction.getQuantity()))
+        .add(Long.toString(Math.round(transaction.baseValue())))
+        .add(Long.toString(Math.round(transaction.adjustedValue())))
+        .add(Integer.toString(transaction.getPaymentDeadline()));
     transaction.getPaymentDate()
-            .ifPresent(date -> joiner.add(Integer.toString(date)));
+        .ifPresent(date -> joiner.add(Integer.toString(date)));
     return joiner.toString();
   }
 
@@ -77,8 +78,8 @@ public class Stringifier extends Visitor<String> {
 
   @Override
   public String visit(Recipe recipe) {
-    return recipe.getAggravatingFactor() + "|"
-        + recipe.getRecipeComponents()
+    return recipe.getAggravatingFactor() + "|" +
+        recipe.getRecipeComponents()
             .stream()
             .map(comp -> comp.product().getId() + ":" + comp.quantity())
             .collect(Collectors.joining("#"));
@@ -87,8 +88,8 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(Product product) {
     return new StringJoiner("|")
-            .add(product.getId())
-            .add(Long.toString(Math.round(product.getAllTimeMaxPrice())))
+        .add(product.getId())
+        .add(Long.toString(Math.round(product.getAllTimeMaxPrice())))
         .add(Integer.toString(product.getQuantityInBatches()))
         .toString();
   }
@@ -102,14 +103,32 @@ public class Stringifier extends Visitor<String> {
   @Override
   public String visit(Partner partner) {
     return new StringJoiner("|")
-            .add(partner.getId())
-            .add(partner.getName())
-            .add(partner.getAddress())
-            .add("NORMAL") // TODO
-            .add("0") // TODO points
-            .add(Long.toString(Math.round(partner.getPurchasesValue())))
-            .add(Long.toString(Math.round(partner.getSalesValue())))
-            .add(Long.toString(Math.round(partner.getPaidSalesValue())))
+        .add(partner.getId())
+        .add(partner.getName())
+        .add(partner.getAddress())
+        .add("NORMAL") // TODO
+        .add("0") // TODO points
+        .add(Long.toString(Math.round(partner.getPurchasesValue())))
+        .add(Long.toString(Math.round(partner.getSalesValue())))
+        .add(Long.toString(Math.round(partner.getPaidSalesValue())))
+        .toString();
+  }
+
+  @Override
+  public String visit(NewProductNotification notification) {
+    return new StringJoiner("|")
+        .add("NEW")
+        .add(notification.getProduct().getId())
+        .add(Long.toString(Math.round(notification.getProductPrice())))
+        .toString();
+  }
+
+  @Override
+  public String visit(BargainProductNotification notification) {
+    return new StringJoiner("|")
+        .add("BARGAIN")
+        .add(notification.getProduct().getId())
+        .add(Long.toString(Math.round(notification.getProductPrice())))
         .toString();
   }
 }

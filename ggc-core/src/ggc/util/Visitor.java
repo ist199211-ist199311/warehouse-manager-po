@@ -1,5 +1,7 @@
 package ggc.util;
 
+import ggc.notifications.BargainProductNotification;
+import ggc.notifications.NewProductNotification;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
@@ -28,5 +30,9 @@ public abstract class Visitor<T> implements Serializable {
   public abstract T visit(DerivedProduct product);
 
   public abstract T visit(Partner partner);
+
+  public abstract T visit(NewProductNotification notification);
+
+  public abstract T visit(BargainProductNotification notification);
 
 }

@@ -1,5 +1,7 @@
 package ggc.util;
 
+import ggc.notifications.BargainProductNotification;
+import ggc.notifications.NewProductNotification;
 import ggc.partners.Partner;
 import ggc.products.Batch;
 import ggc.products.DerivedProduct;
@@ -48,6 +50,16 @@ public class SaleAndBreakdownTransactionFilter extends Visitor<Boolean> {
 
   @Override
   public Boolean visit(Partner partner) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(NewProductNotification notification) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Boolean visit(BargainProductNotification notification) {
     throw new UnsupportedOperationException();
   }
 }

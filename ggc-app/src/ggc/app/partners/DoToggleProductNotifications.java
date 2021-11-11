@@ -1,9 +1,10 @@
 package ggc.app.partners;
 
+import ggc.WarehouseManager;
+import ggc.app.exceptions.UnknownPartnerKeyException;
+import ggc.app.exceptions.UnknownProductKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import ggc.WarehouseManager;
-//FIXME import classes
 
 /**
  * Toggle product-related notifications.
@@ -18,7 +19,15 @@ class DoToggleProductNotifications extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    // FIXME implement command
+    try {
+      this._receiver.toggleProductNotificationsForPartner(
+              this.stringField("partnerId"),
+              this.stringField("productId"));
+    } catch (ggc.exceptions.UnknownPartnerKeyException e) {
+      throw new UnknownPartnerKeyException(e.getKey());
+    } catch (ggc.exceptions.UnknownProductKeyException e) {
+      throw new UnknownProductKeyException(e.getKey());
+    }
   }
 
 }
