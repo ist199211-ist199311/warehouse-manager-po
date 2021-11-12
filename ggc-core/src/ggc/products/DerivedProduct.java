@@ -112,7 +112,7 @@ public class DerivedProduct extends Product {
                 .reduce(Double::sum)
                 .orElse(0D);
       }
-      batchPrice += batchPrice * this.getRecipe().getAggravatingFactor();
+      batchPrice *= 1 + this.getRecipe().getAggravatingFactor();
       this.registerBatch(1, batchPrice, partner);
     }
   }
