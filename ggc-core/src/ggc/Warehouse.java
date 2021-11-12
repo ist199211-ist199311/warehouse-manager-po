@@ -622,10 +622,11 @@ public class Warehouse implements Serializable {
     final AdjustedValueCalculator adjustedValueRetriever = new AdjustedValueCalculator(
         this.date);
     return this.getAvailableBalance() + this.transactions.values()
-        .stream()
-        .map(t -> t.accept(adjustedValueRetriever))
-        .reduce(Double::sum)
-        .orElse(0D);
+            .stream()
+            .filter(t -> !t.isPaid())
+            .map(t -> t.accept(adjustedValueRetriever))
+            .reduce(Double::sum)
+            .orElse(0D);
   }
 
   /**
