@@ -21,7 +21,8 @@ public class BreakdownTransaction extends Transaction {
   private final Set<Batch> resultingBatches = new TreeSet<>();
 
   public BreakdownTransaction(int id, int date, double value, int quantity,
-      Product product, Partner partner, Collection<Batch> resultingBatches) {
+                              Product product, Partner partner,
+                              Collection<Batch> resultingBatches) {
     super(id, value, quantity, product, partner);
     this.resultingBatches.addAll(resultingBatches);
     this.getPartner().applyBreakdownSideEffects(this, date);
