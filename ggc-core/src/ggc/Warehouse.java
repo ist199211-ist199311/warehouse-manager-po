@@ -726,14 +726,11 @@ public class Warehouse implements Serializable {
         this.date);
 
     return this.transactions.values()
-        .stream()
-        .filter(t -> partner.equals(t.getPartner()))
-        .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
-        .map(t -> {
-          t.accept(adjustedValueRetriever);
-          return t;
-        })
-        .collect(Collectors.toList());
+            .stream()
+            .filter(t -> partner.equals(t.getPartner()))
+            .filter(t -> t.accept(this.saleAndBreakdownTransactionFilter))
+            .peek(t -> t.accept(adjustedValueRetriever))
+            .collect(Collectors.toList());
   }
 
   /**

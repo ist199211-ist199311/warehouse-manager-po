@@ -1,11 +1,11 @@
 package ggc.partners;
 
-import ggc.transactions.BreakdownTransaction;
-import ggc.transactions.SaleTransaction;
-import ggc.transactions.Transaction;
 import ggc.notifications.Notifiable;
 import ggc.notifications.Notification;
 import ggc.notifications.NotificationDeliveryMethod;
+import ggc.transactions.BreakdownTransaction;
+import ggc.transactions.SaleTransaction;
+import ggc.transactions.Transaction;
 import ggc.util.NaturalTextComparator;
 import ggc.util.Visitable;
 import ggc.util.Visitor;
@@ -96,7 +96,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   }
 
   public void increasePaidSalesValue(double value) {
-    this.paidSalesValue = value;
+    this.paidSalesValue += value;
   }
 
   public double getPurchasesValue() {
