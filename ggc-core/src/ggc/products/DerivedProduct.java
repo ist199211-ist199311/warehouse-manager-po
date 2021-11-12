@@ -6,7 +6,9 @@ import ggc.transactions.BreakdownTransaction;
 import ggc.util.Visitor;
 
 import java.io.Serial;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -37,7 +39,7 @@ public class DerivedProduct extends Product {
    * Calculates whether this product is presently available, either directly or
    * through building (for derived products), recursively checking recipe
    * components.
-   * 
+   *
    * @throws UnavailableProductException if there is not enough of a component,
    *                                     if a build would be necessary (this
    *                                     exception references the first missing
@@ -45,22 +47,41 @@ public class DerivedProduct extends Product {
    */
   @Override
   public void assertPossibleAvailability(int quantity)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
+    Map<Product, Integer> missingStock = new HashMap<>();
+    this.assertPossibleAvailability(quantity, missingStock);
+    for (Map.Entry<Product, Integer> entry : missingStock.entrySet()) {
+      final int availableInBatches = entry.getKey().getQuantityInBatches();
+      if (availableInBatches < entry.getValue()) {
+        throw new UnavailableProductException(entry.getKey().getId(), entry.getValue(), availableInBatches);
+      }
+    }
+  }
+
+  /**
+   * Recursively builds up a map of the stock of simple products required to
+   * sell a given amount of this product.
+   *
+   * @param quantity      The quantity required of this product.
+   * @param requiredStock The map to store the required stock
+   */
+  @Override
+  protected void assertPossibleAvailability(int quantity, Map<Product, Integer> requiredStock) {
     final int neededQuantity = this.getMissingQuantity(quantity);
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-      c.product().assertPossibleAvailability(c.quantity() * neededQuantity);
+      c.product().assertPossibleAvailability(c.quantity() * neededQuantity, requiredStock);
     }
   }
 
   /**
    * Tries to guarantee real availability in product stock of the given
    * quantity, building units from its recipe if necessary.
-   * 
-   * @throws UnavailableProductException if unsucessful
+   *
+   * @throws UnavailableProductException if unsuccessful
    */
   @Override
   public void ensureAvailableInBatches(int quantity, Partner partner)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     final int neededQuantity = this.getMissingQuantity(quantity);
     if (neededQuantity > 0) {
       this.buildFromRecipe(neededQuantity, partner);
