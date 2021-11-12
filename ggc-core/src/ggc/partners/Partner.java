@@ -5,7 +5,6 @@ import ggc.notifications.Notification;
 import ggc.notifications.NotificationDeliveryMethod;
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
-import ggc.transactions.Transaction;
 import ggc.util.NaturalTextComparator;
 import ggc.util.Visitable;
 import ggc.util.Visitor;
@@ -151,9 +150,7 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
   }
 
   public abstract class Statute implements Serializable {
-    private long points = 0;
-
-    private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider = new TransactionPeriodRadiusProvider();
+    private long points;
 
     public Statute(long points) {
       this.points = points;
@@ -179,10 +176,6 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
 
     protected void setStatute(Statute statute) {
       Partner.this.statute = statute;
-    }
-
-    protected int getTransactionPeriodRadius(Transaction transaction) {
-      return transaction.getProduct().accept(transactionPeriodRadiusProvider);
     }
 
     public abstract String getName();

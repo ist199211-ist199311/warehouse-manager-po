@@ -12,6 +12,9 @@ public class ElitePartnerStatute extends Partner.Statute {
   @Serial
   private static final long serialVersionUID = 202111111200L;
 
+  private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider
+          = new TransactionPeriodRadiusProvider();
+
   public ElitePartnerStatute(Partner partner, long points) {
     partner.super(points);
   }
@@ -23,11 +26,11 @@ public class ElitePartnerStatute extends Partner.Statute {
 
   @Override
   public double calculateAdjustedValue(SaleTransaction saleTransaction,
-      int date) {
+                                       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
-    final int radius = this
-        .getTransactionPeriodRadius(saleTransaction);
-    double value = saleTransaction.baseValue();
+    final int radius = saleTransaction.getProduct()
+            .accept(transactionPeriodRadiusProvider);
+    final double value = saleTransaction.baseValue();
     if (delta <= 0) { // P1 & P2
       return 0.9 * value;
     } else if (delta <= radius) { // P3
@@ -45,14 +48,14 @@ public class ElitePartnerStatute extends Partner.Statute {
     } else if (delta > 15) { // very late
       this.increasePoints(Math.round(-0.75 * this.getPoints()));
       this.setStatute(
-          new SelectionPartnerStatute(this.getPartner(), this.getPoints()));
+              new SelectionPartnerStatute(this.getPartner(), this.getPoints()));
     }
     return adjusted;
   }
 
   @Override
   public void applyBreakdownBenefits(
-      BreakdownTransaction breakdownTransaction, int date) {
+          BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
       this.increasePoints(Math.round(10 * breakdownTransaction.baseValue()));

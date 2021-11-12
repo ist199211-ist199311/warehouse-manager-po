@@ -1,9 +1,9 @@
 package ggc.partners;
 
-import java.io.Serial;
-
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
+
+import java.io.Serial;
 
 public class SelectionPartnerStatute extends Partner.Statute {
   /**
@@ -11,6 +11,9 @@ public class SelectionPartnerStatute extends Partner.Statute {
    */
   @Serial
   private static final long serialVersionUID = 202111111156L;
+
+  private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider
+          = new TransactionPeriodRadiusProvider();
 
   public SelectionPartnerStatute(Partner partner, long points) {
     partner.super(points);
@@ -23,11 +26,11 @@ public class SelectionPartnerStatute extends Partner.Statute {
 
   @Override
   public double calculateAdjustedValue(SaleTransaction saleTransaction,
-      int date) {
+                                       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
-    final int radius = this
-        .getTransactionPeriodRadius(saleTransaction);
-    double value = saleTransaction.baseValue();
+    final int radius = saleTransaction.getProduct()
+            .accept(transactionPeriodRadiusProvider);
+    final double value = saleTransaction.baseValue();
     if (-delta >= radius) { // P1
       return 0.9 * value;
     } else if (2 <= -delta && -delta < radius) { // P2 & >=2 days
@@ -50,14 +53,14 @@ public class SelectionPartnerStatute extends Partner.Statute {
     } else if (delta > 2) { // very late
       this.increasePoints(Math.round(-0.9 * this.getPoints()));
       this.setStatute(
-          new NormalPartnerStatute(this.getPartner(), this.getPoints()));
+              new NormalPartnerStatute(this.getPartner(), this.getPoints()));
     }
     return adjusted;
   }
 
   @Override
   public void applyBreakdownBenefits(
-      BreakdownTransaction breakdownTransaction, int date) {
+          BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
       this.increasePoints(Math.round(10 * breakdownTransaction.baseValue()));

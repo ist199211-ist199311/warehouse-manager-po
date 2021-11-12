@@ -1,9 +1,9 @@
 package ggc.partners;
 
-import java.io.Serial;
-
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
+
+import java.io.Serial;
 
 public class NormalPartnerStatute extends Partner.Statute {
   /**
@@ -11,6 +11,9 @@ public class NormalPartnerStatute extends Partner.Statute {
    */
   @Serial
   private static final long serialVersionUID = 202111101757L;
+
+  private final TransactionPeriodRadiusProvider transactionPeriodRadiusProvider
+          = new TransactionPeriodRadiusProvider();
 
   public NormalPartnerStatute(Partner partner, long points) {
     partner.super(points);
@@ -23,11 +26,11 @@ public class NormalPartnerStatute extends Partner.Statute {
 
   @Override
   public double calculateAdjustedValue(SaleTransaction saleTransaction,
-      int date) {
+                                       int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
-    final int radius = this
-        .getTransactionPeriodRadius(saleTransaction);
-    double value = saleTransaction.baseValue();
+    final int radius = saleTransaction.getProduct()
+            .accept(transactionPeriodRadiusProvider);
+    final double value = saleTransaction.baseValue();
     if (-delta >= radius) { // P1
       return 0.9 * value;
     } else if (0 < delta && delta <= radius) { // P3
@@ -53,7 +56,7 @@ public class NormalPartnerStatute extends Partner.Statute {
 
   @Override
   public void applyBreakdownBenefits(
-      BreakdownTransaction breakdownTransaction, int date) {
+          BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
       this.increasePoints(Math.round(10 * breakdownTransaction.baseValue()));
