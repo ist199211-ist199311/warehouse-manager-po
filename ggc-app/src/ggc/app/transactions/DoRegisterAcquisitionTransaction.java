@@ -29,7 +29,8 @@ public class DoRegisterAcquisitionTransaction
               stringField("partnerId"),
               stringField("productId"),
               realField("price"),
-              integerField("quantity"));
+              integerField("quantity")
+      );
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     } catch (ggc.exceptions.UnknownProductKeyException e) {
@@ -67,7 +68,8 @@ public class DoRegisterAcquisitionTransaction
                   productId,
                   aggravatingFactor,
                   recipeProducts,
-                  recipeQuantities);
+                  recipeQuantities
+          );
         } else {
           _receiver.registerSimpleProduct(productId);
         }

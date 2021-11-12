@@ -53,7 +53,8 @@ public class DerivedProduct extends Product {
     for (Map.Entry<Product, Integer> entry : missingStock.entrySet()) {
       final int availableInBatches = entry.getKey().getQuantityInBatches();
       if (availableInBatches < entry.getValue()) {
-        throw new UnavailableProductException(entry.getKey().getId(), entry.getValue(), availableInBatches);
+        throw new UnavailableProductException(entry.getKey().getId(),
+                entry.getValue(), availableInBatches);
       }
     }
   }
@@ -66,10 +67,12 @@ public class DerivedProduct extends Product {
    * @param requiredStock The map to store the required stock
    */
   @Override
-  protected void assertPossibleAvailability(int quantity, Map<Product, Integer> requiredStock) {
+  protected void assertPossibleAvailability(int quantity,
+                                            Map<Product, Integer> requiredStock) {
     final int neededQuantity = this.getMissingQuantity(quantity);
     for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
-      c.product().assertPossibleAvailability(c.quantity() * neededQuantity, requiredStock);
+      c.product().assertPossibleAvailability(c.quantity() * neededQuantity,
+              requiredStock);
     }
   }
 
@@ -97,17 +100,17 @@ public class DerivedProduct extends Product {
    * @throws UnavailableProductException if it cannot be built
    */
   private void buildFromRecipe(int quantity, Partner partner)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     for (int i = 0; i < quantity; i++) {
       double batchPrice = 0D;
       for (RecipeComponent c : this.getRecipe().getRecipeComponents()) {
         c.product().ensureAvailableInBatches(c.quantity(), partner);
         batchPrice += c.product()
-            .pollBatchesForSale(c.quantity())
-            .stream()
-            .map(Batch::totalPrice)
-            .reduce(Double::sum)
-            .orElse(0D);
+                .pollBatchesForSale(c.quantity())
+                .stream()
+                .map(Batch::totalPrice)
+                .reduce(Double::sum)
+                .orElse(0D);
       }
       batchPrice += batchPrice * this.getRecipe().getAggravatingFactor();
       this.registerBatch(1, batchPrice, partner);
@@ -120,39 +123,44 @@ public class DerivedProduct extends Product {
 
   @Override
   public Optional<BreakdownTransaction> breakdown(int date, Partner partner,
-      int quantity,
-      Supplier<Integer> idSupplier)
-      throws UnavailableProductException {
+                                                  int quantity,
+                                                  Supplier<Integer> idSupplier)
+          throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
     double saleValue = this.sell(
-        date,
-        partner,
-        quantity,
-        () -> -1).baseValue();
-    final List<Batch> newBatches = this.getRecipe().getRecipeComponents()
-        .stream()
-        .map(component -> component.product().acquire(
             date,
             partner,
-            quantity * component.quantity(),
-            component.product().getPriceForBreakdown(),
-            () -> -1).asBatch())
-        .collect(Collectors.toList());
+            quantity,
+            () -> -1
+    ).baseValue();
+    final List<Batch> newBatches = this.getRecipe().getRecipeComponents()
+            .stream()
+            .map(component -> component.product()
+                    .acquire(
+                            date,
+                            partner,
+                            quantity * component.quantity(),
+                            component.product().getPriceForBreakdown(),
+                            () -> -1
+                    ).asBatch()
+            )
+            .collect(Collectors.toList());
     final double acquisitionValue = newBatches.stream()
-        .map(Batch::totalPrice)
-        .reduce(Double::sum)
-        .orElse(0D);
+            .map(Batch::totalPrice)
+            .reduce(Double::sum)
+            .orElse(0D);
     return Optional.of(new BreakdownTransaction(
-        idSupplier.get(),
-        date,
-        saleValue - acquisitionValue,
-        quantity,
-        this,
-        partner,
-        newBatches));
+            idSupplier.get(),
+            date,
+            saleValue - acquisitionValue,
+            quantity,
+            this,
+            partner,
+            newBatches
+    ));
   }
 
   @Override

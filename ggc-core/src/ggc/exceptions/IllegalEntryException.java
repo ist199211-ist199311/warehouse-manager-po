@@ -1,15 +1,22 @@
 package ggc.exceptions;
 
+import java.io.Serial;
+
 /**
  * Exception for known import file entries that do not provide the correct
  * fields.
  */
 public class IllegalEntryException extends Exception {
 
-  /** Class serial number. */
+  /**
+   * Class serial number.
+   */
+  @Serial
   private static final long serialVersionUID = 202110221433L;
 
-  /** Illegal entry fields. */
+  /**
+   * Illegal entry fields.
+   */
   private String[] _entryFields;
 
   /**
@@ -20,7 +27,7 @@ public class IllegalEntryException extends Exception {
   }
 
   /**
-   * @param entrySpecification
+   * @param entryFields
    * @param cause
    */
   public IllegalEntryException(String[] entryFields, Exception cause) {

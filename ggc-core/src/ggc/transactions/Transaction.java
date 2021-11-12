@@ -24,7 +24,7 @@ public abstract class Transaction implements Serializable, Visitable {
   private Integer paymentDate = null;
 
   protected Transaction(int id, double value, int quantity, Product product,
-      Partner partner) {
+                        Partner partner) {
     this.id = id;
     this.value = value;
     this.quantity = quantity;
@@ -38,10 +38,11 @@ public abstract class Transaction implements Serializable, Visitable {
 
   public Batch asBatch() {
     return new Batch(
-        this.quantity,
-        this.baseValue(),
-        this.product,
-        this.partner);
+            this.quantity,
+            this.baseValue(),
+            this.product,
+            this.partner
+    );
   }
 
   public int getId() {

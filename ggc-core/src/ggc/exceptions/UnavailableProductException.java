@@ -1,9 +1,14 @@
 package ggc.exceptions;
 
-/** Exception thrown when a product is unavailable. */
+import java.io.Serial;
+
+/**
+ * Exception thrown when a product is unavailable.
+ */
 public class UnavailableProductException extends Exception {
 
   /** Serial number for serialization. */
+  @Serial
   private static final long serialVersionUID = 202111071611L;
 
   private String key;

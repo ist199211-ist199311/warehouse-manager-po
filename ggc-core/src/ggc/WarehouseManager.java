@@ -12,7 +12,6 @@ import ggc.exceptions.UnavailableProductException;
 import ggc.exceptions.UnknownPartnerKeyException;
 import ggc.exceptions.UnknownProductKeyException;
 import ggc.exceptions.UnknownTransactionKeyException;
-import ggc.products.Batch;
 import ggc.util.Visitable;
 
 import java.io.BufferedInputStream;
@@ -79,15 +78,15 @@ public class WarehouseManager {
    * @see Warehouse#getBatchesByPartner(String)
    */
   public Collection<? extends Visitable> getBatchesByPartner(String partnerId)
-      throws UnknownPartnerKeyException {
+          throws UnknownPartnerKeyException {
     return this._warehouse.getBatchesByPartner(partnerId);
   }
 
   /**
    * @see Warehouse#getBatchesByProduct(String)
    */
-  public Collection<Batch> getBatchesByProduct(String productId)
-      throws UnknownProductKeyException {
+  public Collection<? extends Visitable> getBatchesByProduct(String productId)
+          throws UnknownProductKeyException {
     return this._warehouse.getBatchesByProduct(productId);
   }
 
@@ -95,7 +94,7 @@ public class WarehouseManager {
    * @see Warehouse#lookupPaymentsByPartner(String)
    */
   public Collection<? extends Visitable> lookupPaymentsByPartner(
-      String partnerId) throws UnknownPartnerKeyException {
+          String partnerId) throws UnknownPartnerKeyException {
     return this._warehouse.lookupPaymentsByPartner(partnerId);
   }
 
@@ -103,7 +102,7 @@ public class WarehouseManager {
    * @see Warehouse#lookupProductBatchesUnderGivenPrice(double)
    */
   public Collection<? extends Visitable> lookupProductBatchesUnderGivenPrice(
-      double priceLimit) {
+          double priceLimit) {
     return this._warehouse.lookupProductBatchesUnderGivenPrice(priceLimit);
   }
 
@@ -118,7 +117,7 @@ public class WarehouseManager {
    * @see Warehouse#getTransaction(int)
    */
   public Visitable getTransaction(int id)
-      throws UnknownTransactionKeyException {
+          throws UnknownTransactionKeyException {
     return this._warehouse.getTransaction(id);
   }
 
@@ -126,7 +125,7 @@ public class WarehouseManager {
    * @see Warehouse#registerSimpleProduct(String)
    */
   public void registerSimpleProduct(String id)
-      throws DuplicateProductKeyException {
+          throws DuplicateProductKeyException {
     this._warehouse.registerSimpleProduct(id);
   }
 
@@ -134,17 +133,18 @@ public class WarehouseManager {
    * @see Warehouse#registerDerivedProduct(String, double, String[], int[])
    */
   public void registerDerivedProduct(String id, double aggravatingFactor,
-      String[] recipeProducts, int[] recipeQuantities)
-      throws UnknownProductKeyException, DuplicateProductKeyException {
+                                     String[] recipeProducts,
+                                     int[] recipeQuantities)
+          throws UnknownProductKeyException, DuplicateProductKeyException {
     this._warehouse.registerDerivedProduct(id, aggravatingFactor,
-        recipeProducts, recipeQuantities);
+            recipeProducts, recipeQuantities);
   }
 
   /**
    * @see Warehouse#registerPartner(String, String, String)
    */
   public void registerPartner(String id, String name, String address)
-      throws DuplicatePartnerKeyException {
+          throws DuplicatePartnerKeyException {
     this._warehouse.registerPartner(id, name, address);
   }
 
@@ -165,42 +165,40 @@ public class WarehouseManager {
   /**
    * @see Warehouse#registerAcquisitionTransaction(String, String, double, int)
    */
-  public void registerAcquisitionTransaction(String partnerId,
-      String productId, double value, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+  public void registerAcquisitionTransaction(String partnerId, String productId,
+                                             double value, int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
     this._warehouse.registerAcquisitionTransaction(partnerId, productId,
-        value, quantity);
+            value, quantity);
   }
 
   /**
    * @see Warehouse#registerSaleTransaction(String, String, int, int)
    */
   public void registerSaleTransaction(String partnerId, String productId,
-      int paymentDeadline, int quantity)
-      throws UnknownPartnerKeyException, UnknownProductKeyException,
-      UnavailableProductException {
+                                      int paymentDeadline, int quantity)
+          throws UnknownPartnerKeyException, UnknownProductKeyException,
+          UnavailableProductException {
     this._warehouse.registerSaleTransaction(partnerId, productId,
-        paymentDeadline, quantity);
+            paymentDeadline, quantity);
   }
 
   /**
    * @see Warehouse#registerBreakdownTransaction(String, String, int)
    */
   public void registerBreakdownTransaction(String partnerId, String productId,
-      int quantity) throws UnknownProductKeyException,
-      UnknownPartnerKeyException, UnavailableProductException {
-    this._warehouse.registerBreakdownTransaction(
-        partnerId,
-        productId,
-        quantity);
+                                           int quantity) throws UnknownProductKeyException,
+          UnknownPartnerKeyException, UnavailableProductException {
+    this._warehouse.registerBreakdownTransaction(partnerId, productId,
+            quantity);
   }
 
   /**
    * @see Warehouse#getPartnerAcquisitions(String)
    */
   public Collection<? extends Visitable> getPartnerAcquisitions(
-      String partnerId)
-      throws UnknownPartnerKeyException {
+          String partnerId)
+          throws UnknownPartnerKeyException {
     return this._warehouse.getPartnerAcquisitions(partnerId);
   }
 
@@ -208,8 +206,8 @@ public class WarehouseManager {
    * @see Warehouse#getPartnerSalesAndBreakdowns(String)
    */
   public Collection<? extends Visitable> getPartnerSalesAndBreakdowns(
-      String partnerId)
-      throws UnknownPartnerKeyException {
+          String partnerId)
+          throws UnknownPartnerKeyException {
     return this._warehouse.getPartnerSalesAndBreakdowns(partnerId);
   }
 
@@ -217,7 +215,7 @@ public class WarehouseManager {
    * @see Warehouse#receivePayment(int)
    */
   public void receivePayment(int transactionId)
-      throws UnknownTransactionKeyException {
+          throws UnknownTransactionKeyException {
     this._warehouse.receivePayment(transactionId);
   }
 
@@ -225,8 +223,8 @@ public class WarehouseManager {
    * @see Warehouse#readPartnerInAppNotifications(String)
    */
   public Collection<? extends Visitable> readPartnerInAppNotifications(
-      String partnerId)
-      throws UnknownPartnerKeyException {
+          String partnerId)
+          throws UnknownPartnerKeyException {
     return this._warehouse.readPartnerInAppNotifications(partnerId);
   }
 
@@ -234,8 +232,8 @@ public class WarehouseManager {
    * @see Warehouse#toggleProductNotificationsForPartner(String, String)
    */
   public void toggleProductNotificationsForPartner(String partnerId,
-      String productId)
-      throws UnknownPartnerKeyException, UnknownProductKeyException {
+                                                   String productId)
+          throws UnknownPartnerKeyException, UnknownProductKeyException {
     this._warehouse.toggleProductNotificationsForPartner(partnerId, productId);
   }
 
@@ -251,13 +249,13 @@ public class WarehouseManager {
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
   public void save() throws IOException, FileNotFoundException,
-      MissingFileAssociationException {
+          MissingFileAssociationException {
     if (_filename == null || _filename.isBlank())
       throw new MissingFileAssociationException();
 
     if (_warehouse.isDirty()) {
       try (ObjectOutputStream out = new ObjectOutputStream(
-          new BufferedOutputStream(new FileOutputStream(_filename)))) {
+              new BufferedOutputStream(new FileOutputStream(_filename)))) {
         out.writeObject(_warehouse);
       }
       _warehouse.clean();
@@ -277,7 +275,7 @@ public class WarehouseManager {
    * @throws MissingFileAssociationException if the file to save to is unknown
    */
   public void saveAs(String fileName) throws MissingFileAssociationException,
-      FileNotFoundException, IOException {
+          FileNotFoundException, IOException {
     _filename = fileName;
     save();
   }
@@ -294,7 +292,7 @@ public class WarehouseManager {
    */
   public void load(String fileName) throws UnavailableFileException {
     try (ObjectInputStream in = new ObjectInputStream(
-        new BufferedInputStream(new FileInputStream(fileName)))) {
+            new BufferedInputStream(new FileInputStream(fileName)))) {
       _warehouse = (Warehouse) in.readObject();
       this._filename = fileName;
     } catch (IOException | ClassNotFoundException e) {

@@ -22,9 +22,9 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
   public final void execute() throws CommandException {
     try {
       _receiver.getBatchesByProduct(stringField("productId"))
-          .stream()
-          .map(v -> v.accept(stringifier))
-          .forEach(_display::popup);
+              .stream()
+              .map(v -> v.accept(stringifier))
+              .forEach(_display::popup);
     } catch (ggc.exceptions.UnknownProductKeyException e) {
       throw new UnknownProductKeyException(e.getKey());
     }

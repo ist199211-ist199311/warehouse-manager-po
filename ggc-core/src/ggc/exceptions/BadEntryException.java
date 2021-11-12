@@ -1,14 +1,21 @@
 package ggc.exceptions;
 
+import java.io.Serial;
+
 /**
  * Exception for unknown import file entries.
  */
 public class BadEntryException extends Exception {
 
-  /** Class serial number. */
+  /**
+   * Class serial number.
+   */
+  @Serial
   private static final long serialVersionUID = 201409301048L;
 
-  /** Bad bad entry specification. */
+  /**
+   * Bad entry specification.
+   */
   private String _entrySpecification;
 
   /**

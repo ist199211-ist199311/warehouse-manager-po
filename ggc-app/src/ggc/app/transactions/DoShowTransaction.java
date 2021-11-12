@@ -21,8 +21,10 @@ public class DoShowTransaction extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     try {
-      _display.popup(_receiver.getTransaction(integerField("transactionId"))
-          .accept(stringifier));
+      _display.popup(
+              _receiver.getTransaction(integerField("transactionId"))
+                      .accept(stringifier)
+      );
     } catch (ggc.exceptions.UnknownTransactionKeyException e) {
       throw new UnknownTransactionKeyException(e.getKey());
     }

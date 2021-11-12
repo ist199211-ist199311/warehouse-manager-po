@@ -10,7 +10,7 @@ import ggc.products.Recipe;
 import ggc.util.Visitor;
 
 public class PaymentProcessor extends Visitor<Double> {
-  private int date;
+  private final int date;
 
   public PaymentProcessor(int date) {
     this.date = date;

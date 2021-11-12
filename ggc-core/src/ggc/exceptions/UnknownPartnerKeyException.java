@@ -1,9 +1,14 @@
 package ggc.exceptions;
 
-/** Exception for unknown product keys. */
+import java.io.Serial;
+
+/**
+ * Exception for unknown product keys.
+ */
 public class UnknownPartnerKeyException extends Exception {
 
   /** Serial number for serialization. */
+  @Serial
   private static final long serialVersionUID = 202110232154L;
 
   /** The key that had an attempted access */

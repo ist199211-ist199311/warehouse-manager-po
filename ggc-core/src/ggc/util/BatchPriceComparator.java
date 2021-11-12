@@ -20,13 +20,13 @@ public class BatchPriceComparator implements Comparator<Batch>, Serializable {
 
   private void setComparator() {
     this.comparator = Comparator
-        .comparingDouble(Batch::price)
-        .thenComparingInt(Batch::quantity);
+            .comparingDouble(Batch::price)
+            .thenComparingInt(Batch::quantity);
   }
 
   @Serial
   private void readObject(ObjectInputStream ois) throws IOException,
-      ClassNotFoundException {
+          ClassNotFoundException {
     ois.defaultReadObject();
     setComparator();
   }

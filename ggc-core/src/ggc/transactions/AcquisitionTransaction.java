@@ -1,9 +1,9 @@
 package ggc.transactions;
 
-import java.io.Serial;
-
 import ggc.products.Batch;
 import ggc.util.Visitor;
+
+import java.io.Serial;
 
 public class AcquisitionTransaction extends Transaction {
   /**
@@ -13,11 +13,8 @@ public class AcquisitionTransaction extends Transaction {
   private static final long serialVersionUID = 202111092052L;
 
   public AcquisitionTransaction(int id, int date, Batch batch) {
-    super(id,
-        batch.price(),
-        batch.quantity(),
-        batch.product(),
-        batch.partner());
+    super(id, batch.price(), batch.quantity(), batch.product(),
+            batch.partner());
     this.setPaymentDate(date);
   }
 

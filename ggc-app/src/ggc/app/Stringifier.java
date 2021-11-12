@@ -44,8 +44,8 @@ public class Stringifier extends Visitor<String> {
         .add(transaction.getResultingBatches()
             .stream()
             .map(batch -> batch.product().getId() + ":" +
-                batch.quantity() + ":" +
-                Math.round(batch.price() * batch.quantity()))
+                    batch.quantity() + ":" +
+                    Math.round(batch.totalPrice()))
             .collect(Collectors.joining("#")))
         .toString();
   }

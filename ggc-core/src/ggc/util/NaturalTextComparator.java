@@ -23,7 +23,7 @@ public class NaturalTextComparator implements Comparator<String>, Serializable {
 
   @Serial
   private void readObject(ObjectInputStream ois)
-      throws IOException, ClassNotFoundException {
+          throws IOException, ClassNotFoundException {
     ois.defaultReadObject();
     _collator = Collator.getInstance(Locale.getDefault());
     _collator.setStrength(Collator.PRIMARY);

@@ -22,7 +22,8 @@ class DoToggleProductNotifications extends Command<WarehouseManager> {
     try {
       this._receiver.toggleProductNotificationsForPartner(
               this.stringField("partnerId"),
-              this.stringField("productId"));
+              this.stringField("productId")
+      );
     } catch (ggc.exceptions.UnknownPartnerKeyException e) {
       throw new UnknownPartnerKeyException(e.getKey());
     } catch (ggc.exceptions.UnknownProductKeyException e) {

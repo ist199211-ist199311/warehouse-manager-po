@@ -16,7 +16,7 @@ import ggc.transactions.SaleTransaction;
  * transactions.
  */
 public class AdjustedValueCalculator extends Visitor<Double> {
-  private int date;
+  private final int date;
 
   public AdjustedValueCalculator(int date) {
     this.date = date;
@@ -34,7 +34,7 @@ public class AdjustedValueCalculator extends Visitor<Double> {
 
   @Override
   public Double visit(SaleTransaction transaction) {
-    transaction.calculateAdjustedValue(date);
+    transaction.calculateAdjustedValue(this.date);
     return transaction.adjustedValue();
   }
 

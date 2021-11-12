@@ -1,11 +1,16 @@
 package ggc.exceptions;
 
+import java.io.Serial;
+
 /**
  * Class for representing a read error.
  */
 public class ImportFileException extends Exception {
 
-  /** Serial number for serialization. */
+  /**
+   * Serial number for serialization.
+   */
+  @Serial
   private static final long serialVersionUID = 201708301010L;
 
   /**
