@@ -59,7 +59,7 @@ public class NormalPartnerStatute extends Partner.Statute {
           BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
-      this.increasePoints(Math.round(10 * breakdownTransaction.baseValue()));
+      this.increasePoints(Math.round(10 * value));
       this.tryForPromotion();
     }
   }
