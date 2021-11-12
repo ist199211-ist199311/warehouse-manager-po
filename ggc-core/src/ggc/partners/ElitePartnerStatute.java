@@ -1,9 +1,9 @@
 package ggc.partners;
 
-import java.io.Serial;
-
 import ggc.transactions.BreakdownTransaction;
 import ggc.transactions.SaleTransaction;
+
+import java.io.Serial;
 
 public class ElitePartnerStatute extends Partner.Statute {
   /**
@@ -28,9 +28,9 @@ public class ElitePartnerStatute extends Partner.Statute {
     final int radius = this
         .getTransactionPeriodRadius(saleTransaction);
     double value = saleTransaction.baseValue();
-    if (delta < 0) { // P1 & P2
+    if (delta <= 0) { // P1 & P2
       return 0.9 * value;
-    } else if (0 < delta && delta <= radius) { // P3
+    } else if (delta <= radius) { // P3
       return 0.95 * value;
     }
     return value;
