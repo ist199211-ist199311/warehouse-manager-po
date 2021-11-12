@@ -23,7 +23,7 @@ public class SaleTransaction extends Transaction {
   }
 
   public void pay(int date) {
-    this.adjustedValue = this.getPartner().applySaleBenefits(this, date);
+    this.adjustedValue = this.getPartner().applySaleSideEffects(this, date);
     this.setPaymentDate(date);
   }
 

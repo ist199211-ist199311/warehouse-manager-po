@@ -40,7 +40,7 @@ public class ElitePartnerStatute extends Partner.Statute {
   }
 
   @Override
-  public double applySaleBenefits(SaleTransaction saleTransaction, int date) {
+  public double applySaleSideEffects(SaleTransaction saleTransaction, int date) {
     final int delta = date - saleTransaction.getPaymentDeadline();
     final double adjusted = this.calculateAdjustedValue(saleTransaction, date);
     if (delta < 0) { // on time
@@ -54,7 +54,7 @@ public class ElitePartnerStatute extends Partner.Statute {
   }
 
   @Override
-  public void applyBreakdownBenefits(
+  public void applyBreakdownSideEffects(
           BreakdownTransaction breakdownTransaction, int date) {
     final double value = breakdownTransaction.baseValue();
     if (value > 0) {
