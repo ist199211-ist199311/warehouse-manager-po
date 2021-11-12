@@ -76,14 +76,14 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
     return this.statute.calculateAdjustedValue(saleTransaction, date);
   }
 
-  public double applySaleBenefits(SaleTransaction saleTransaction,
+  public double applySaleSideEffects(SaleTransaction saleTransaction,
       int date) {
-    return this.statute.applySaleBenefits(saleTransaction, date);
+    return this.statute.applySaleSideEffects(saleTransaction, date);
   }
 
-  public void applyBreakdownBenefits(
+  public void applyBreakdownSideEffects(
       BreakdownTransaction breakdownTransaction, int date) {
-    this.statute.applyBreakdownBenefits(breakdownTransaction, date);
+    this.statute.applyBreakdownSideEffects(breakdownTransaction, date);
   }
 
   public void increaseAcquisitionsValue(double value) {
@@ -184,10 +184,10 @@ public class Partner implements Comparable<Partner>, Serializable, Visitable,
         SaleTransaction saleTransaction,
         int date);
 
-    public abstract double applySaleBenefits(SaleTransaction saleTransaction,
+    public abstract double applySaleSideEffects(SaleTransaction saleTransaction,
         int date);
 
-    public abstract void applyBreakdownBenefits(
+    public abstract void applyBreakdownSideEffects(
         BreakdownTransaction breakdownTransaction, int date);
 
   }
