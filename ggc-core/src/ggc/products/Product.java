@@ -117,11 +117,23 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
    * @throws UnavailableProductException if there is not enough of this product
    */
   public void assertPossibleAvailability(int quantity)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     final int available = this.getQuantityInBatches();
     if (available < quantity) {
       throw new UnavailableProductException(this.getId(), quantity, available);
     }
+  }
+
+  /**
+   * Adds to the given map the required stock of simple product to sell a given
+   * quantity of this property. If this product already exists on the map,
+   * it is added to the quantity already in there.
+   *
+   * @param quantity      The quantity required of this product.
+   * @param requiredStock The map to store the required stock
+   */
+  protected void assertPossibleAvailability(int quantity, Map<Product, Integer> requiredStock) {
+    requiredStock.merge(this, quantity, Integer::sum);
   }
 
   /**
@@ -132,7 +144,7 @@ public class Product implements Comparable<Product>, Serializable, Visitable,
    * @throws UnavailableProductException if unsuccessful
    */
   public void ensureAvailableInBatches(int quantity, Partner partner)
-      throws UnavailableProductException {
+          throws UnavailableProductException {
     this.assertPossibleAvailability(quantity);
   }
 
