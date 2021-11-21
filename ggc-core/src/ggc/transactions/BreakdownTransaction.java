@@ -6,10 +6,9 @@ import ggc.products.Product;
 import ggc.util.Visitor;
 
 import java.io.Serial;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class BreakdownTransaction extends Transaction {
   /**
@@ -18,7 +17,7 @@ public class BreakdownTransaction extends Transaction {
   @Serial
   private static final long serialVersionUID = 202111092051L;
 
-  private final Set<Batch> resultingBatches = new TreeSet<>();
+  private final Collection<Batch> resultingBatches = new ArrayList<>();
 
   public BreakdownTransaction(int id, int date, double value, int quantity,
                               Product product, Partner partner,
@@ -34,7 +33,7 @@ public class BreakdownTransaction extends Transaction {
   }
 
   public Collection<Batch> getResultingBatches() {
-    return Collections.unmodifiableSet(this.resultingBatches);
+    return Collections.unmodifiableCollection(this.resultingBatches);
   }
 
   @Override
