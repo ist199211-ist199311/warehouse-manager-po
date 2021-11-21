@@ -453,6 +453,7 @@ public class Warehouse implements Serializable {
 
     Partner p = new Partner(id, name, address);
     this.partners.put(id, p);
+    this.products.values().forEach(product -> product.subscribe(p));
     this.dirty();
     return p;
   }
